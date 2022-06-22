@@ -51,10 +51,6 @@ wy2017_clean <- wy2017 %>%
 
 #test the 2017 data
 if(nrow(wy2017) != nrow(wy2017_clean)) stop("Check clean dataframe dimensions")
-
-#read in the 2018 data 
-wy2018 <- read_excel(path = here(filepath, "WY2018.S2_Breakpoint.xlsx"), 
-                     skip =3)
 ```
 
 # 2018 water year data 
@@ -69,6 +65,13 @@ Possibly the clock was moving super slowly for some of it?
 For Oct 9-10 there was no rain for flow to increase.
 Oct 11-15 clock was stuck and the pin did not move forward in time.
 ```{r, include=FALSE}
+#read in the 2018 data 
+wy2018 <- read_excel(path = here(filepath, "WY2018.S2_Breakpoint.xlsx"), 
+                     skip =3)
+
+#create a function to set NA values during custom time periods 
+`%between%` <- function(x, interval) x >= interval[1] & x <= interval[2]
+
 #clean the 2018 data
 wy2018_clean <- wy2018 %>% 
   rename(datetime = "Date/time",
@@ -78,35 +81,18 @@ wy2018_clean <- wy2018 %>%
   mutate(date = format(as.POSIXct(datetime,format='%m/%d/%Y %H:%M:%S'),format='%Y-%m-%d'),
          date = as.POSIXct(date)) 
 
+#December NA values 
 wy2018_clean$stream_height_ft[wy2018_clean$date %between% as.Date(c('2018-12-01', '2018-12-03'))] <- NA
+wy2018_clean$stream_height_ft[wy2018_clean$date %between% as.Date(c('2018-12-08', '2018-12-10'))] <- NA
+wy2018_clean$stream_height_ft[wy2018_clean$date %between% as.Date(c('2018-12-11', '2018-12-31'))] <- NA
 
-# 
-# 
-# 
-# 
-# subset <- wy2018_clean %>% 
-#   subset(datetime >= as.POSIXct("2018-12-01 00:00:00", tz = "UTC") & 
-#                    datetime <= as.POSIXct("2018-12-03 12:00:00", tz = "UTC")) %>% 
-#   mutate(stream_height_ft = NA)
-#   
-# subset2 <- wy2018_clean
-# 
-# 
-# 
-# 
-# if (subset2$datetime >= as.POSIXct("2018-12-01 00:00:00", tz = "UTC") & 
-#                    subset2$datetime <= as.POSIXct("2018-12-03 12:00:00", tz = "UTC")) {
-#   subset2$stream_height_ft[subset2$stream_height_ft <- 99]
-# } else{
-#   
-# }
-# 
-# #create a function to set NA values during custom time periods 
-# `%between%` <- function(x, interval) x >= interval[1] & x <= interval[2]
-# 
-# wy2018_na <- wy2018_clean %>% 
-#   within(stream_height_ft <- NA * (date %between% as.Date(c('2018-12-01', '2018-12-03'))))
+#November NA values 
+wy2018_clean$stream_height_ft[wy2018_clean$date %between% as.Date(c('2018-11-10', '2018-11-14'))] <- NA
+wy2018_clean$stream_height_ft[wy2018_clean$date %between% as.Date(c('2018-11-25', '2018-12-04'))] <- NA
 
+#October NA values 
+wy2018_clean$stream_height_ft[wy2018_clean$date %between% as.Date(c('2018-10-09', '2018-10-10'))] <- NA
+wy2018_clean$stream_height_ft[wy2018_clean$date %between% as.Date(c('2018-10-11', '2018-10-15'))] <- NA
 
 #test the 2018 data
 if(nrow(wy2018) != nrow(wy2018_clean)) stop("Check clean dataframe dimensions")
