@@ -75,36 +75,38 @@ wy2018_clean <- wy2018 %>%
          stream_height_ft = "Stage.ft") %>% 
   select(c("datetime", "stream_height_ft")) %>% 
   clean_names() %>% 
-  mutate(date = format(as.POSIXct(datetime,format='%m/%d/%Y %H:%M:%S'),format='%Y-%m-%d'))
-  
+  mutate(date = format(as.POSIXct(datetime,format='%m/%d/%Y %H:%M:%S'),format='%Y-%m-%d'),
+         date = as.POSIXct(date)) 
 
-#create a function to set NA values during custom time periods 
-`%between%` <- function(x, interval) x >= interval[1] & x <= interval[2]
+wy2018_clean$stream_height_ft[wy2018_clean$date %between% as.Date(c('2018-12-01', '2018-12-03'))] <- NA
 
-wy2018_na <- wy2018_clean %>% 
-  within(stream_height_ft <- 99 * (date %between% as.POSIXct(c('2018-12-01', '2018-12-03'))))
+# 
+# 
+# 
+# 
+# subset <- wy2018_clean %>% 
+#   subset(datetime >= as.POSIXct("2018-12-01 00:00:00", tz = "UTC") & 
+#                    datetime <= as.POSIXct("2018-12-03 12:00:00", tz = "UTC")) %>% 
+#   mutate(stream_height_ft = NA)
+#   
+# subset2 <- wy2018_clean
+# 
+# 
+# 
+# 
+# if (subset2$datetime >= as.POSIXct("2018-12-01 00:00:00", tz = "UTC") & 
+#                    subset2$datetime <= as.POSIXct("2018-12-03 12:00:00", tz = "UTC")) {
+#   subset2$stream_height_ft[subset2$stream_height_ft <- 99]
+# } else{
+#   
+# }
+# 
+# #create a function to set NA values during custom time periods 
+# `%between%` <- function(x, interval) x >= interval[1] & x <= interval[2]
+# 
+# wy2018_na <- wy2018_clean %>% 
+#   within(stream_height_ft <- NA * (date %between% as.Date(c('2018-12-01', '2018-12-03'))))
 
-
-
-subset <- subset(wy2018_clean, datetime >= as.POSIXct("2018-12-01 00:00:00", tz = "UTC") & 
-                   datetime <= as.POSIXct("2018-12-03 12:00:00", tz = "UTC"))
-
-subset2 <- subset %>% 
-  mutate(stream_height_ft = replace(stream_height_ft, datetime == 0, 99))
-
-
-
-
-
-subset3 <- within(subset, stream_height_ft <- NA * (datetime %between% as.Date(c('2018-12-01 00:00:00', '2018-12-03 12:00:00'))))
-
-
-
-
-
-if(wy2018_clean$datetime >= as.POSIXct("2018-12-01 00:00:00", tz = "UTC") & wy2018_clean$datetime <= as.POSIXct("2018-12-03 12:00:00", tz = "UTC")){
-  print("hi")
-}
 
 #test the 2018 data
 if(nrow(wy2018) != nrow(wy2018_clean)) stop("Check clean dataframe dimensions")
@@ -138,7 +140,7 @@ ggplot(data = wy2017_clean) +
   labs(x = "Time", 
        y = "Stream Height (Ft)")
 
-ggplot(data = wy2018_na) + 
+ggplot(data = wy2018_clean) + 
   geom_line(aes(x = datetime, y = stream_height_ft)) + 
   theme_classic() + 
   labs(x = "Time", 
