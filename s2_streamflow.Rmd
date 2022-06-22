@@ -4,7 +4,7 @@ author: "Mia Forsline"
 date: '2022-06-21'
 output: html_document
 ---
-
+# Set Up 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,
                       message = FALSE, 
@@ -18,6 +18,47 @@ if (!require(librarian)){
 
 librarian::shelf(
   here,
-  tidyverse)
+  janitor,
+  #lubridate,
+  readxl,
+  tidyverse,
+  #writexl,
+  #zoo
+  )
+```
+
+# Read in and clean up 2017 streamflow data 
+```{r, include=FALSE}
+# Set working directory path
+setwd("/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/Hydro/Streamflow/L0_subdaily/StripCharts/AnnualBreakPoint/S2")
+#setwd("~/../../Box/External-MEF_DATA/Hydro/Streamflow/L0_subdaily/StripCharts")
+
+#create filepath 
+filepath <- "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/Hydro/Streamflow/L0_subdaily/StripCharts/AnnualBreakPoint/S2"
+
+
+#read in the data 
+wy2017 <- read_excel(path = here(filepath, "WY2017.S2_Breakpoint.xlsx"), 
+                     skip =3)
+
+#clean the data
+wy2017_clean <- wy2017 %>% 
+  rename(datetime = "Date/time",
+         stream_height_ft = "Stage.ft") %>% 
+  select(c("datetime", "stream_height_ft")) %>% 
+  clean_names()
+
+#test 
+if(nrow(wy2017) != nrow(wy2017_clean)) stop("Check clean dataframe dimensions")
+
+```
+
+## Plot 
+```{r}
+ggplot(data = wy2017_clean) + 
+  geom_line(aes(x = datetime, y = stream_height_ft)) + 
+  theme_classic() + 
+  labs(x = "Time", 
+       y = "Stream Height (Ft)")
 ```
 
