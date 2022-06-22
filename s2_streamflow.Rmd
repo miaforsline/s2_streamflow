@@ -74,10 +74,33 @@ wy2018_clean <- wy2018 %>%
   rename(datetime = "Date/time",
          stream_height_ft = "Stage.ft") %>% 
   select(c("datetime", "stream_height_ft")) %>% 
-  clean_names() 
+  clean_names() %>% 
+  mutate(date = format(as.POSIXct(datetime,format='%m/%d/%Y %H:%M:%S'),format='%Y-%m-%d'))
+  
+
+#create a function to set NA values during custom time periods 
+`%between%` <- function(x, interval) x >= interval[1] & x <= interval[2]
+
+wy2018_na <- wy2018_clean %>% 
+  within(stream_height_ft <- 99 * (date %between% as.POSIXct(c('2018-12-01', '2018-12-03'))))
+
+
 
 subset <- subset(wy2018_clean, datetime >= as.POSIXct("2018-12-01 00:00:00", tz = "UTC") & 
                    datetime <= as.POSIXct("2018-12-03 12:00:00", tz = "UTC"))
+
+subset2 <- subset %>% 
+  mutate(stream_height_ft = replace(stream_height_ft, datetime == 0, 99))
+
+
+
+
+
+subset3 <- within(subset, stream_height_ft <- NA * (datetime %between% as.Date(c('2018-12-01 00:00:00', '2018-12-03 12:00:00'))))
+
+
+
+
 
 if(wy2018_clean$datetime >= as.POSIXct("2018-12-01 00:00:00", tz = "UTC") & wy2018_clean$datetime <= as.POSIXct("2018-12-03 12:00:00", tz = "UTC")){
   print("hi")
@@ -115,7 +138,7 @@ ggplot(data = wy2017_clean) +
   labs(x = "Time", 
        y = "Stream Height (Ft)")
 
-ggplot(data = wy2018_clean) + 
+ggplot(data = wy2018_na) + 
   geom_line(aes(x = datetime, y = stream_height_ft)) + 
   theme_classic() + 
   labs(x = "Time", 
