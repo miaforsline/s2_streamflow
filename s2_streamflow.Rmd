@@ -37,25 +37,67 @@ setwd("/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/Hydro/S
 filepath <- "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/Hydro/Streamflow/L0_subdaily/StripCharts/AnnualBreakPoint/S2"
 
 
-#read in the data 
+#read in the 2017 data 
 wy2017 <- read_excel(path = here(filepath, "WY2017.S2_Breakpoint.xlsx"), 
                      skip =3)
 
-#clean the data
+#clean the 2017 data
 wy2017_clean <- wy2017 %>% 
   rename(datetime = "Date/time",
          stream_height_ft = "Stage.ft") %>% 
   select(c("datetime", "stream_height_ft")) %>% 
   clean_names()
 
-#test 
+#test the 2017 data
 if(nrow(wy2017) != nrow(wy2017_clean)) stop("Check clean dataframe dimensions")
 
+#read in the 2018 data 
+wy2018 <- read_excel(path = here(filepath, "WY2018.S2_Breakpoint.xlsx"), 
+                     skip =3)
+
+#clean the 2018 data
+wy2018_clean <- wy2018 %>% 
+  rename(datetime = "Date/time",
+         stream_height_ft = "Stage.ft") %>% 
+  select(c("datetime", "stream_height_ft")) %>% 
+  clean_names()
+
+#test the 2018 data
+if(nrow(wy2018) != nrow(wy2018_clean)) stop("Check clean dataframe dimensions")
+
+#read in the 2019 data 
+wy2019 <- read_excel(path = here(filepath, "WY2019.S2_Breakpoint.xlsx"), 
+                     skip =3)
+
+#clean the 2019 data
+wy2019_clean <- wy2019 %>% 
+  rename(datetime = "Date/time",
+         stream_height_ft = "Stage.ft") %>% 
+  select(c("datetime", "stream_height_ft")) %>% 
+  clean_names()
+
+#test the 2019 data 
+if(nrow(wy2019) != nrow(wy2019_clean)) stop("Check clean dataframe dimensions")
+
 ```
+
+
 
 ## Plot 
 ```{r}
 ggplot(data = wy2017_clean) + 
+  geom_line(aes(x = datetime, y = stream_height_ft)) + 
+  theme_classic() + 
+  labs(x = "Time", 
+       y = "Stream Height (Ft)")
+
+ggplot(data = wy2018_clean) + 
+  geom_line(aes(x = datetime, y = stream_height_ft)) + 
+  theme_classic() + 
+  labs(x = "Time", 
+       y = "Stream Height (Ft)")
+
+ggplot(data = wy2019_clean) + 
   geom_line(aes(x = datetime, y = stream_height_ft)) + 
   theme_classic() + 
   labs(x = "Time", 
