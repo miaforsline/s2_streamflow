@@ -47,7 +47,7 @@ librarian::shelf(
 #setwd("/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/Hydro/Streamflow/L0_subdaily/StripCharts/AnnualBreakPoint/S2")
 #setwd("~/../../Box/External-MEF_DATA/Hydro/Streamflow/L0_subdaily/StripCharts")
 
-#create filepath 
+#create filepath to call the data from Box 
 filepath <- "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/Hydro/Streamflow/L0_subdaily/StripCharts/AnnualBreakPoint/S2"
 ```
 
@@ -77,9 +77,10 @@ wy2017_clean <- wy2017 %>%
          stream_height_ft = "Stage.ft") %>% 
   select(c("datetime", "stream_height_ft")) %>% 
   clean_names() %>% 
-  mutate(date = datetime,
-         date = format(as.POSIXct(datetime,format='%m/%d/%Y %H:%M:%S'),format='%Y-%m-%d'),
-         date = as.POSIXct(date)) 
+  mutate(date = format(as.POSIXct(datetime, format = '%m/%d/%Y %H:%M:%S', 
+                                  tz = "GMT"), 
+                       format = '%Y-%m-%d'),
+         date = as.POSIXct(date, tz = "GMT")) 
 
 #test the 2017 data
 if(nrow(wy2017) != nrow(wy2017_clean)) stop("Check clean dataframe dimensions")
@@ -134,8 +135,10 @@ wy2018_clean <- wy2018 %>%
          stream_height_ft = "Stage.ft") %>% 
   select(c("datetime", "stream_height_ft")) %>% 
   clean_names() %>% 
-  mutate(date = format(as.POSIXct(datetime,format='%m/%d/%Y %H:%M:%S'),format='%Y-%m-%d'),
-         date = as.POSIXct(date)) 
+  mutate(date = format(as.POSIXct(datetime, format = '%m/%d/%Y %H:%M:%S', 
+                                  tz = "GMT"), 
+                       format = '%Y-%m-%d'),
+         date = as.POSIXct(date, tz = "GMT")) 
 
 #create a function to specify custom time intervals 
 `%between%` <- function(x, interval) x >= interval[1] & x <= interval[2]
@@ -220,8 +223,10 @@ wy2019_clean <- wy2019 %>%
          stream_height_ft = "Stage.ft") %>% 
   select(c("datetime", "stream_height_ft")) %>% 
   clean_names() %>% 
-  mutate(date = format(as.POSIXct(datetime,format='%m/%d/%Y %H:%M:%S'),format='%Y-%m-%d'),
-         date = as.POSIXct(date)) 
+  mutate(date = format(as.POSIXct(datetime, format = '%m/%d/%Y %H:%M:%S', 
+                                  tz = "GMT"), 
+                       format = '%Y-%m-%d'),
+         date = as.POSIXct(date, tz = "GMT")) 
 
 #February NA values 
 wy2019_clean$stream_height_ft[wy2019_clean$date %between% as.Date(c('2019-04-01', '2019-04-02'))] <- NA
