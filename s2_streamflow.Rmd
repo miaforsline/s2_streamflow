@@ -312,6 +312,35 @@ ggplot(data = precip_clean) +
        title = "2017 - 2019 Precipitation Sum Every 15 Min")
 ```
 
+# Peatland Daily Water Table 
+
+```{r}
+#set file path to read in data from Box 
+filepath = "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/EDI/peatland_water_table_daily/edi.562.2/data_objects/"
+
+#read in the raw data 
+bogwell <- read_csv(here(filepath, "MEF_daily_peatland_water_table.csv"))
+
+#clean the data
+bogwell_clean <- bogwell %>% 
+  clean_names() %>% 
+  subset(peatland == "S2") %>% 
+  mutate(year = format(as.POSIXct(date, format = '%Y-%m-%d', 
+                                  tz = "GMT"), 
+                       format = '%Y'),
+         year = as.numeric(year)) %>% 
+  subset(year <= 2019 & year >= 2017)
+
+#plot
+ggplot(data = bogwell_clean) + 
+  geom_line(aes(x = date, y = wte)) + 
+  theme_classic() + 
+  labs(x = "Time", 
+       y = "Water Table Elevation (m above sea level)",
+       title = "S2 Daily Peatland Water Table Elevation")
+```
+
+
 # Compare stream height and precipitation using `patchwork`
 
 ```{r}
