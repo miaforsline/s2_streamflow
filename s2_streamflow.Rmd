@@ -1,15 +1,15 @@
 ---
 title: 'Marcell Experimental Forest: S2 Stream Height (Water Years 2017 - 2019)'
 author: "Mia Forsline"
-date: '2022-06-24'
+date: '`r format(Sys.time(), "%B %d, %Y")`'
 output:
-  pdf_document:
-    toc: yes
   html_document:
     theme: flatly
     code_folding: show
     toc: yes
     toc_float: yes
+  pdf_document:
+    toc: yes
 editor_options:
   markdown:
     wrap: 72
@@ -390,7 +390,7 @@ all_daily_avg <- all %>%
 p2 <- ggplot() + 
   #precipitation data
   geom_line(data = all_daily_avg,
-            aes(x = date(),
+            aes(x = date,
                 y = precip_daily_avg,
                 colour = I("grey"))) +
   #streamflow data
@@ -398,37 +398,16 @@ p2 <- ggplot() +
              aes(x = date,
                  y = streamflow_daily_avg),
             color = "red") +
-  #bogwell data
-  geom_line(data = all_daily_avg,
-            aes(x = date,
-                y = wte),
-            color = "blue") +
+  # #bogwell data
+  # geom_line(data = all_daily_avg,
+  #           aes(x = date,
+  #               y = wte),
+  #           color = "blue") +
   theme_classic() + 
   labs(x = "Time", 
        title = "2017 - 2019 S2 Bog Streamflow, Precipitation, and Daily Peatland Water Table Elevation") 
 p2
 
 ggplotly(p2)
-```
-
-
-# Compare stream height and precipitation using `patchwork`
-
-```{r}
-a <- ggplot(data = all_streamflow) + 
-  geom_line(aes(x = datetime, y = stream_height_ft)) + 
-  theme_classic() + 
-  labs(x = "Time", 
-       y = "Stream Height (Ft)",
-       title = "WY 2017 - 2019 S2 Bog Stream Height")
-
-b <- ggplot(data = precip_clean) + 
-  geom_line(aes(x = timestamp, y = south_pcp)) + 
-  theme_classic() + 
-  labs(x = "Time", 
-       y = "South Precipitation (cm)", 
-       title = "2017 - 2019 Precipitation Sum Every 15 Min")
-
-a / b
 ```
 
