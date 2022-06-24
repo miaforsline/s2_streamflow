@@ -36,6 +36,7 @@ librarian::shelf(
   here,
   janitor,
   naniar,
+  patchwork,
   #lubridate,
   readxl,
   tidyverse,
@@ -94,7 +95,7 @@ ggplot(data = wy2017_clean) +
        title = "WY 2017 S2 Bog Stream Height")
 ```
 
-# Water Year 2018 
+# Water Year 2018
 
 -   Read in the WY 2018 data from the External-MEF_DATA Box folder
 -   Clean and manipulate the WY 2018 data into a tidy format
@@ -167,7 +168,7 @@ ggplot(data = wy2018_clean) +
        title = "WY 2018 S2 Bog Stream Height")
 ```
 
-# Water Year 2019 
+# Water Year 2019
 
 -   Read in the WY 2019 data from the External-MEF_DATA Box folder
 -   Clean and manipulate the WY 2019 data into a tidy format
@@ -274,3 +275,60 @@ ggplot(data = all_streamflow) +
        y = "Stream Height (Ft)",
        title = "WY 2017 - 2019 S2 Bog Stream Height")
 ```
+
+# Precipitation Every 15min
+
+-   Read in the data
+
+-   Clean the data
+
+    -   Extract year to subset all precipitation data to only 2017 -
+        2019
+
+-   Plot
+
+```{r}
+#set file path to read in data from Box 
+filepath = "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/EDI/precipitation_15min/edi.849.2/data_objects/"
+
+#read in the raw data 
+precip <- read_csv(here(filepath, "MEF_South_precip_15min.csv"))
+
+#clean the data 
+precip_clean <- precip %>% 
+  clean_names() %>% 
+  mutate(year = format(as.POSIXct(timestamp, format = '%Y-%m-%d %H:%M:%S', 
+                                  tz = "GMT"), 
+                       format = '%Y'),
+         year = as.numeric(year)) %>% 
+  subset(year <= 2019 & year >= 2017)
+
+#plot 
+ggplot(data = precip_clean) + 
+  geom_line(aes(x = timestamp, y = south_pcp)) + 
+  theme_classic() + 
+  labs(x = "Time", 
+       y = "South Precipitation (cm)", 
+       title = "2017 - 2019 Precipitation Sum Every 15 Min")
+```
+
+# Compare stream height and precipitation using `patchwork`
+
+```{r}
+a <- ggplot(data = all_streamflow) + 
+  geom_line(aes(x = datetime, y = stream_height_ft)) + 
+  theme_classic() + 
+  labs(x = "Time", 
+       y = "Stream Height (Ft)",
+       title = "WY 2017 - 2019 S2 Bog Stream Height")
+
+b <- ggplot(data = precip_clean) + 
+  geom_line(aes(x = timestamp, y = south_pcp)) + 
+  theme_classic() + 
+  labs(x = "Time", 
+       y = "South Precipitation (cm)", 
+       title = "2017 - 2019 Precipitation Sum Every 15 Min")
+
+a / b
+```
+
