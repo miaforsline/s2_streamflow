@@ -350,13 +350,20 @@ precip_join <- precip_clean %>%
 
 streamflow_precip <- full_join(x = all_streamflow, y = precip_join, by = "datetime")
 
-p <- ggplot(data = streamflow_precip) + 
-  geom_line(aes(x = datetime, 
-             y = south_pcp,
-             colour = I("grey"))) + 
-  geom_point(aes(x = datetime, 
-                y = stream_height_ft, 
-                color = "red"), 
+ggplot(data = streamflow_precip) + 
+  geom_line(data = streamflow_precip[!is.na(streamflow_precip$stream_height_ft),],
+            aes(x = datetime, 
+                y = stream_height_ft))
+
+p <- ggplot() + 
+  geom_line(data = streamflow_precip, 
+            aes(x = datetime, 
+                y = south_pcp,
+                colour = I("grey"))) + 
+  geom_point(data = streamflow_precip[!is.na(streamflow_precip$stream_height_ft),],
+             aes(x = datetime, 
+                 y = stream_height_ft, 
+                 color = "red"), 
              size = 0.1) + 
   theme_classic() + 
   labs(x = "Time", 
