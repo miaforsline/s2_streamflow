@@ -303,7 +303,7 @@ precip_clean <- precip %>%
                                   tz = "GMT"), 
                        format = '%Y'),
          year = as.numeric(year)) %>% 
-  subset(year <= 2019 & year >= 2017))
+  subset(year <= 2019 & year >= 2017)
 
 #plot 
 ggplot(data = precip_clean) + 
@@ -342,7 +342,7 @@ ggplot(data = bogwell_clean) +
        title = "S2 Daily Peatland Water Table Elevation")
 ```
 
-# Combine water year and precipitation data 
+# Combine streamflow and precipitation data 
 
 ```{r}
 precip_join <- precip_clean %>% 
@@ -350,21 +350,17 @@ precip_join <- precip_clean %>%
 
 streamflow_precip <- full_join(x = all_streamflow, y = precip_join, by = "datetime")
 
-ggplot(data = streamflow_precip) + 
-  geom_line(data = streamflow_precip[!is.na(streamflow_precip$stream_height_ft),],
-            aes(x = datetime, 
-                y = stream_height_ft))
-
 p <- ggplot() + 
+  #precipitation data 
   geom_line(data = streamflow_precip, 
             aes(x = datetime, 
                 y = south_pcp,
                 colour = I("grey"))) + 
-  geom_point(data = streamflow_precip[!is.na(streamflow_precip$stream_height_ft),],
+  #streamflow data 
+  geom_line(data = streamflow_precip[!is.na(streamflow_precip$stream_height_ft),],
              aes(x = datetime, 
                  y = stream_height_ft, 
-                 color = "red"), 
-             size = 0.1) + 
+                 color = "red")) + 
   theme_classic() + 
   labs(x = "Time", 
        title = "2017 - 2019 S2 Bog Streamflow and Precipitation") + 
@@ -382,10 +378,32 @@ p
 ggplotly(p)
 ```
 
-
+# Combine streamflow, precipitation, and bogwell data 
 ```{r}
-all <- full_join(x = streamflow_precip, y = bogwell_clean, by = "date")
+all <- full_join(x = streamflow_precip, y = bogwell_clean, by = c("date", "year"))
 
+p2 <- ggplot() + 
+  #precipitation data 
+  geom_line(data = all, 
+            aes(x = datetime, 
+                y = south_pcp,
+                colour = I("grey"))) + 
+  #streamflow data 
+  geom_line(data = all[!is.na(all$stream_height_ft),],
+             aes(x = datetime, 
+                 y = stream_height_ft, 
+                 color = "red")) + 
+  # #bogwell data
+  # geom_line(data = all[!is.na(all$wte),],
+  #           aes(x = date,
+  #               y = wte,
+  #               color = "blue")) + 
+  theme_classic() + 
+  labs(x = "Time", 
+       title = "2017 - 2019 S2 Bog Streamflow, Precipitation, and Daily Peatland Water Table Elevation") 
+p2
+
+ggplotly(p2)
 ```
 
 
