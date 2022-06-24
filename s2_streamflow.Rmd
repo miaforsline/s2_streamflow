@@ -382,22 +382,27 @@ ggplotly(p)
 ```{r}
 all <- full_join(x = streamflow_precip, y = bogwell_clean, by = c("date", "year"))
 
+all_daily_avg <- all %>% 
+  group_by(date) %>% 
+  mutate(precip_daily_avg = mean(south_pcp, na.rm = TRUE),
+         streamflow_daily_avg = mean(stream_height_ft, na.rm = TRUE))
+
 p2 <- ggplot() + 
-  #precipitation data 
-  geom_line(data = all, 
-            aes(x = datetime, 
-                y = south_pcp,
-                colour = I("grey"))) + 
-  #streamflow data 
-  geom_line(data = all[!is.na(all$stream_height_ft),],
-             aes(x = datetime, 
-                 y = stream_height_ft, 
-                 color = "red")) + 
-  # #bogwell data
-  # geom_line(data = all[!is.na(all$wte),],
-  #           aes(x = date,
-  #               y = wte,
-  #               color = "blue")) + 
+  #precipitation data
+  geom_line(data = all_daily_avg,
+            aes(x = date(),
+                y = precip_daily_avg,
+                colour = I("grey"))) +
+  #streamflow data
+  geom_line(data = all_daily_avg,
+             aes(x = date,
+                 y = streamflow_daily_avg),
+            color = "red") +
+  #bogwell data
+  geom_line(data = all_daily_avg,
+            aes(x = date,
+                y = wte),
+            color = "blue") +
   theme_classic() + 
   labs(x = "Time", 
        title = "2017 - 2019 S2 Bog Streamflow, Precipitation, and Daily Peatland Water Table Elevation") 
