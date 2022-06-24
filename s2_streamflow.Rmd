@@ -33,10 +33,12 @@ if (!require(librarian)){
 }
 
 librarian::shelf(
+  gapminder,
   here,
   janitor,
   naniar,
   patchwork,
+  plotly,
   #lubridate,
   readxl,
   tidyverse,
@@ -301,7 +303,7 @@ precip_clean <- precip %>%
                                   tz = "GMT"), 
                        format = '%Y'),
          year = as.numeric(year)) %>% 
-  subset(year <= 2019 & year >= 2017)
+  subset(year <= 2019 & year >= 2017))
 
 #plot 
 ggplot(data = precip_clean) + 
@@ -338,6 +340,45 @@ ggplot(data = bogwell_clean) +
   labs(x = "Time", 
        y = "Water Table Elevation (m above sea level)",
        title = "S2 Daily Peatland Water Table Elevation")
+```
+
+# Combine water year and precipitation data 
+
+```{r}
+precip_join <- precip_clean %>% 
+  rename(datetime = timestamp)
+
+streamflow_precip <- full_join(x = all_streamflow, y = precip_join, by = "datetime")
+
+p <- ggplot(data = streamflow_precip) + 
+  geom_line(aes(x = datetime, 
+             y = south_pcp,
+             colour = I("grey"))) + 
+  geom_point(aes(x = datetime, 
+                y = stream_height_ft, 
+                color = "red"), 
+             size = 0.1) + 
+  theme_classic() + 
+  labs(x = "Time", 
+       title = "2017 - 2019 S2 Bog Streamflow and Precipitation") + 
+  scale_y_continuous(
+    
+    # Features of the first axis
+    name = "Stream Height",
+    
+    # Add a second axis and specify its features
+    sec.axis = sec_axis(trans = ~.*0.698509267, name = "South Precip")
+  ) 
+
+p
+
+ggplotly(p)
+```
+
+
+```{r}
+all <- full_join(x = streamflow_precip, y = bogwell_clean, by = "date")
+
 ```
 
 
