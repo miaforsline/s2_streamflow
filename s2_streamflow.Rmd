@@ -19,7 +19,7 @@ editor_options:
 
 -   Install/load necessary R packages
 -   Set working directory if necessary (or create a file path to use
-    throughout the RMD)
+    throughout the RMD to call the data from Box)
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,
@@ -47,11 +47,10 @@ librarian::shelf(
   )
 
 # Set working directory path
-#setwd("/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/Hydro/Streamflow/L0_subdaily/StripCharts/AnnualBreakPoint/S2")
+## Mia's working directory path
+setwd("/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/Hydro/Streamflow/L0_subdaily/StripCharts/AnnualBreakPoint/S2")
+## Nina's working directory path 
 #setwd("~/../../Box/External-MEF_DATA/Hydro/Streamflow/L0_subdaily/StripCharts")
-
-#create filepath to call the data from Box 
-filepath <- "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/Hydro/Streamflow/L0_subdaily/StripCharts/AnnualBreakPoint/S2"
 ```
 
 # Water Year 2017
@@ -70,6 +69,10 @@ filepath <- "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/H
 -   Graph the WY 2017 data
 
 ```{r}
+#create file path to call the data from Box 
+## Mia's file path 
+filepath <- "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/Hydro/Streamflow/L0_subdaily/StripCharts/AnnualBreakPoint/S2"
+
 #read in the 2017 data 
 wy2017 <- read_excel(path = here(filepath, "WY2017.S2_Breakpoint.xlsx"), 
                      skip =3)
@@ -89,12 +92,15 @@ wy2017_clean <- wy2017 %>%
 if(nrow(wy2017) != nrow(wy2017_clean)) stop("Check clean dataframe dimensions")
 
 #plot 
-ggplot(data = wy2017_clean) + 
+p_2017 <- ggplot(data = wy2017_clean) + 
   geom_line(aes(x = datetime, y = stream_height_ft)) + 
   theme_classic() + 
   labs(x = "Time", 
        y = "Stream Height (Ft)", 
        title = "WY 2017 S2 Bog Stream Height")
+
+#interactive plot 
+ggplotly(p_2017)
 ```
 
 # Water Year 2018
@@ -126,6 +132,8 @@ ggplot(data = wy2017_clean) +
 -   Test that the manipulated data frame has the same number of rows as
     the original data frame
 -   Graph the WY 2018 data
+
+# Check Oct 31 - Nov 1 date values 
 
 ```{r}
 #read in the 2018 data 
@@ -162,12 +170,14 @@ wy2018_clean$stream_height_ft[wy2018_clean$date %between% as.Date(c('2018-12-11'
 #test the 2018 data
 if(nrow(wy2018) != nrow(wy2018_clean)) stop("Check clean dataframe dimensions")
 
-ggplot(data = wy2018_clean) + 
+p_2018 <- ggplot(data = wy2018_clean) + 
   geom_line(aes(x = datetime, y = stream_height_ft)) + 
   theme_classic() + 
   labs(x = "Time", 
        y = "Stream Height (Ft)", 
        title = "WY 2018 S2 Bog Stream Height")
+
+ggplotly(p_2018)
 ```
 
 # Water Year 2019
@@ -252,12 +262,14 @@ wy2019_clean$stream_height_ft[wy2019_clean$date %between% as.Date(c('2019-09-03'
 if(nrow(wy2019) != nrow(wy2019_clean)) stop("Check clean dataframe dimensions")
 
 #plot 
-ggplot(data = wy2019_clean) + 
+p_2019 <- ggplot(data = wy2019_clean) + 
   geom_line(aes(x = datetime, y = stream_height_ft)) + 
   theme_classic() + 
   labs(x = "Time", 
        y = "Stream Height (Ft)",
        title = "WY 2019 S2 Bog Stream Height")
+
+ggplotly(p_2019)
 
 ```
 
@@ -270,12 +282,14 @@ ggplot(data = wy2019_clean) +
 ```{r}
 all_streamflow <- rbind(wy2017_clean, wy2018_clean, wy2019_clean)
 
-ggplot(data = all_streamflow) + 
+p_all <- ggplot(data = all_streamflow) + 
   geom_line(aes(x = datetime, y = stream_height_ft)) + 
   theme_classic() + 
   labs(x = "Time", 
        y = "Stream Height (Ft)",
        title = "WY 2017 - 2019 S2 Bog Stream Height")
+
+ggplotly(p_all)
 ```
 
 # Precipitation Every 15min
@@ -294,10 +308,10 @@ ggplot(data = all_streamflow) +
 filepath = "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/EDI/precipitation_15min/edi.849.2/data_objects/"
 
 #read in the raw data 
-precip <- read_csv(here(filepath, "MEF_South_precip_15min.csv"))
+precip_15 <- read_csv(here(filepath, "MEF_South_precip_15min.csv"))
 
 #clean the data 
-precip_clean <- precip %>% 
+precip_15_clean <- precip_15 %>% 
   clean_names() %>% 
   mutate(year = format(as.POSIXct(timestamp, format = '%Y-%m-%d %H:%M:%S', 
                                   tz = "GMT"), 
@@ -306,13 +320,47 @@ precip_clean <- precip %>%
   subset(year <= 2019 & year >= 2017)
 
 #plot 
-ggplot(data = precip_clean) + 
+p_15 <- ggplot(data = precip_15_clean) + 
   geom_line(aes(x = timestamp, y = south_pcp)) + 
   theme_classic() + 
   labs(x = "Time", 
        y = "South Precipitation (cm)", 
        title = "2017 - 2019 Precipitation Sum Every 15 Min")
+
+ggplotly(p_15)
 ```
+# Precipitation Daily 
+
+```{r}
+#set file path to read in data from Box 
+filepath = "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/EDI/precipitation_daily/edi.563.3/data_objects/"
+
+#read in the raw data 
+precip_daily <- read_csv(here(filepath, "MEF_precipitation_daily.csv"))
+
+#clean the data 
+precip_daily_clean <- precip_daily %>% 
+  clean_names() %>% 
+  select(date, south_pcp, south_flag) %>% 
+  mutate(year = format(as.POSIXct(date, format = '%Y-%m-%d', 
+                                  tz = "GMT"), 
+                       format = '%Y'),
+         year = as.numeric(year)) %>% 
+  subset(year <= 2019 & year >= 2017)
+
+#plot 
+p_daily <- ggplot(data = precip_daily_clean) + 
+  geom_line(aes(x = date, y = south_pcp)) + 
+  theme_classic() + 
+  labs(x = "Time", 
+       y = "South Precipitation (cm)", 
+       title = "2017 - 2019 Precipitation Daily Sum")
+
+ggplotly(p_daily)
+```
+
+
+# Air Temperature Daily 
 
 # Peatland Daily Water Table 
 
