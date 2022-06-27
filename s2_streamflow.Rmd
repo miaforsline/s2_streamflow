@@ -361,11 +361,18 @@ precip_15_clean <- precip_15 %>%
                                   tz = "GMT"), 
                        format = '%Y'),
          year = as.numeric(year)) %>% 
-  subset(year >= 2017)
+  subset(year >= 2017) %>% 
+  rename(precip_in = south_pcp) %>% 
+  mutate(precip_10 = (precip_in / 10)) %>% 
+  pivot_longer(
+    cols = c("precip_in", "precip_10"),
+    names_to = "precip_type",
+    values_to = "precip_in"
+  )
 
 #plot 
 p_15 <- ggplot(data = precip_15_clean) + 
-  geom_line(aes(x = timestamp, y = south_pcp)) + 
+  geom_line(aes(x = timestamp, y = precip_in, color = precip_type)) + 
   theme_classic() + 
   labs(x = "Time", 
        y = "South Precipitation (cm)", 
