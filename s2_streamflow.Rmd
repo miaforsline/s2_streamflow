@@ -135,8 +135,6 @@ ggplotly(p_2017)
     the original data frame
 -   Graph the WY 2018 data
 
-## Check Oct 31 - Nov 1 date values 
-
 ```{r}
 #read in the 2018 data 
 wy2018 <- read_excel(path = here(filepath, "WY2018.S2_Breakpoint.xlsx"), 
@@ -181,6 +179,29 @@ p_2018 <- ggplot(data = wy2018_clean) +
 
 ggplotly(p_2018)
 ```
+
+## Check Oct 31 - Nov 1, 2018 date values 
+
+```{r}
+subset_2018 <- wy2018_clean %>% 
+  subset(date %between% as.Date(c('2018-10-30', '2018-11-02'))) 
+
+p_subset <- ggplot(data = subset_2018) + 
+  geom_line(aes(x = datetime, y = stream_height_ft))
+
+ggplotly(p_subset)
+
+#removed wonky values below 0.10 
+subset_2018_altered <- wy2018_clean %>% 
+  subset(date %between% as.Date(c('2018-10-30', '2018-11-02'))) %>% 
+  subset(stream_height_ft > 0.10)
+
+p_subset_altered <- ggplot(data = subset_2018_altered) + 
+  geom_line(aes(x = datetime, y = stream_height_ft))
+
+ggplotly(p_subset_altered)
+```
+
 
 ## Water Year 2019
 
@@ -307,8 +328,8 @@ ggplotly(p_all)
 
 -   Clean the data
 
-    -   Extract year to subset all precipitation data to only 2017 -
-        2019
+    -   Extract year to subset all precipitation data to 2017 -
+        present
 
 -   Plot
 
@@ -326,7 +347,7 @@ precip_15_clean <- precip_15 %>%
                                   tz = "GMT"), 
                        format = '%Y'),
          year = as.numeric(year)) %>% 
-  subset(year <= 2019 & year >= 2017)
+  subset(year >= 2017)
 
 #plot 
 p_15 <- ggplot(data = precip_15_clean) + 
@@ -355,7 +376,7 @@ precip_daily_clean <- precip_daily %>%
                                   tz = "GMT"), 
                        format = '%Y'),
          year = as.numeric(year)) %>% 
-  subset(year <= 2019 & year >= 2017)
+  subset(year >= 2017)
 
 #plot 
 p_daily <- ggplot(data = precip_daily_clean) + 
@@ -420,15 +441,17 @@ bogwell_clean <- bogwell %>%
                                   tz = "GMT"), 
                        format = '%Y'),
          year = as.numeric(year)) %>% 
-  subset(year <= 2019 & year >= 2017)
+  subset(year >= 2017)
 
 #plot
-ggplot(data = bogwell_clean) + 
+p_bogwell <- ggplot(data = bogwell_clean) + 
   geom_line(aes(x = date, y = wte)) + 
   theme_classic() + 
   labs(x = "Time", 
        y = "Water Table Elevation (m above sea level)",
        title = "S2 Daily Peatland Water Table Elevation")
+
+ggplotly(p_bogwell)
 ```
 
 # Compare streamflow and climate data 
