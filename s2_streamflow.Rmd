@@ -516,31 +516,6 @@ ggplot(data = streamflow_precip[!is.na(streamflow_precip$value),]) +
                 y = value,
                 color = type))
 
-p <- ggplot() + 
-  #precipitation data 
-  geom_line(data = streamflow_precip, 
-            aes(x = datetime, 
-                y = south_pcp,
-                colour = I("grey"))) + 
-  #streamflow data 
-  geom_line(data = streamflow_precip[!is.na(streamflow_precip$stream_height_ft),],
-             aes(x = datetime, 
-                 y = stream_height_ft, 
-                 color = "red")) + 
-  theme_classic() + 
-  labs(x = "Time", 
-       title = "2017 - 2019 S2 Bog Streamflow and Precipitation") + 
-  scale_y_continuous(
-    
-    # Features of the first axis
-    name = "Stream Height",
-    
-    # Add a second axis and specify its features
-    sec.axis = sec_axis(trans = ~.*0.698509267, name = "South Precip")
-  ) 
-
-p
-
 ggplotly(p)
 ```
 
