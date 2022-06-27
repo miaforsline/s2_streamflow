@@ -136,6 +136,9 @@ ggplotly(p_2017)
 -   Graph the WY 2018 data
 
 ```{r}
+#create a function to specify custom time intervals 
+`%between%` <- function(x, interval) x >= interval[1] & x <= interval[2]
+
 #read in the 2018 data 
 wy2018 <- read_excel(path = here(filepath, "WY2018.S2_Breakpoint.xlsx"), 
                      skip =3)
@@ -150,9 +153,6 @@ wy2018_clean <- wy2018 %>%
                                   tz = "GMT"), 
                        format = '%Y-%m-%d'),
          date = as.POSIXct(date, tz = "GMT")) 
-
-#create a function to specify custom time intervals 
-`%between%` <- function(x, interval) x >= interval[1] & x <= interval[2]
 
 #assign October NA values 
 wy2018_clean$stream_height_ft[wy2018_clean$date %between% as.Date(c('2018-10-09', '2018-10-10'))] <- NA
@@ -170,7 +170,17 @@ wy2018_clean$stream_height_ft[wy2018_clean$date %between% as.Date(c('2018-12-11'
 #test the 2018 data
 if(nrow(wy2018) != nrow(wy2018_clean)) stop("Check clean dataframe dimensions")
 
-p_2018 <- ggplot(data = wy2018_clean) + 
+#we need to remove wonky values from Oct 31 - Nov 1, 2018 (for more details see the code chunk below)
+wy2018_altered <- wy2018_clean
+#remove values < 0.10 during the time period of interest 
+wy2018_altered$stream_height_ft[wy2018_altered$date %between% as.Date(c('2018-10-31', '2018-11-01')) & wy2018_altered$stream_height_ft < 0.10] <- NA
+#remove NA values to plot a continous line 
+wy2018_altered <- wy2018_altered[!is.na(wy2018_altered$stream_height_ft),]
+
+#test the 2018 altered data
+if(nrow(wy2018_altered) == nrow(wy2018_clean)) stop("Check altered dataframe dimensions")
+
+p_2018 <- ggplot(data = wy2018_altered) + 
   geom_line(aes(x = datetime, y = stream_height_ft)) + 
   theme_classic() + 
   labs(x = "Time", 
@@ -180,22 +190,27 @@ p_2018 <- ggplot(data = wy2018_clean) +
 ggplotly(p_2018)
 ```
 
-## Check Oct 31 - Nov 1, 2018 date values 
+### Altered Oct 31 - Nov 1, 2018 date value
+
+During this time, it is most likely that the dates were read/input incorrectly, resulting in an unnatural oscillation of streamflow values on Oct 31 and Nov 1 of 2018. Therefore, we removed values < 0.10 during this time period to smooth out the overall curve of streamflow. 
 
 ```{r}
-subset_2018 <- wy2018_clean %>% 
+#subset the time period of interest
+subset_2018<- wy2018_clean %>% 
   subset(date %between% as.Date(c('2018-10-30', '2018-11-02'))) 
 
+#plot the data 
 p_subset <- ggplot(data = subset_2018) + 
   geom_line(aes(x = datetime, y = stream_height_ft))
 
 ggplotly(p_subset)
 
-#removed wonky values below 0.10 
+#remove unusual values below 0.10 
 subset_2018_altered <- wy2018_clean %>% 
   subset(date %between% as.Date(c('2018-10-30', '2018-11-02'))) %>% 
   subset(stream_height_ft > 0.10)
 
+#plot the altered data
 p_subset_altered <- ggplot(data = subset_2018_altered) + 
   geom_line(aes(x = datetime, y = stream_height_ft))
 
@@ -319,7 +334,7 @@ ggplotly(p_all)
 
 ## Water Year 2021 
 
-# Climate data 
+# Climate and Bogwell data 
 
 ## Precipitation Every 15min
 
