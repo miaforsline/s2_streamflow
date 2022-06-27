@@ -53,7 +53,9 @@ setwd("/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/Hydro/S
 #setwd("~/../../Box/External-MEF_DATA/Hydro/Streamflow/L0_subdaily/StripCharts")
 ```
 
-# Water Year 2017
+# Streamflow data 
+
+## Water Year 2017
 
 -   Read in the WY 2017 data from the External-MEF_DATA Box folder
 -   Specifically, raw data is found at the following file path:
@@ -103,7 +105,7 @@ p_2017 <- ggplot(data = wy2017_clean) +
 ggplotly(p_2017)
 ```
 
-# Water Year 2018
+## Water Year 2018
 
 -   Read in the WY 2018 data from the External-MEF_DATA Box folder
 -   Clean and manipulate the WY 2018 data into a tidy format
@@ -133,7 +135,7 @@ ggplotly(p_2017)
     the original data frame
 -   Graph the WY 2018 data
 
-# Check Oct 31 - Nov 1 date values 
+## Check Oct 31 - Nov 1 date values 
 
 ```{r}
 #read in the 2018 data 
@@ -180,7 +182,7 @@ p_2018 <- ggplot(data = wy2018_clean) +
 ggplotly(p_2018)
 ```
 
-# Water Year 2019
+## Water Year 2019
 
 -   Read in the WY 2019 data from the External-MEF_DATA Box folder
 -   Clean and manipulate the WY 2019 data into a tidy format
@@ -273,7 +275,7 @@ ggplotly(p_2019)
 
 ```
 
-# All Water Years Combined
+## 2017 - 2019 Water Years Combined
 
 -   Combine all 3 water years using `rbind()`
 
@@ -292,7 +294,14 @@ p_all <- ggplot(data = all_streamflow) +
 ggplotly(p_all)
 ```
 
-# Precipitation Every 15min
+## Water Year 2020 
+
+
+## Water Year 2021 
+
+# Climate data 
+
+## Precipitation Every 15min
 
 -   Read in the data
 
@@ -329,7 +338,7 @@ p_15 <- ggplot(data = precip_15_clean) +
 
 ggplotly(p_15)
 ```
-# Precipitation Daily 
+## Precipitation Daily 
 
 ```{r}
 #set file path to read in data from Box 
@@ -360,7 +369,7 @@ ggplotly(p_daily)
 ```
 
 
-# Air Temperature Daily 
+## Air Temperature Daily 
 
 ```{r}
 #set file path to read in data from Box 
@@ -394,7 +403,7 @@ ggplotly(p_air_daily)
 ```
 
 
-# Peatland Daily Water Table 
+## Peatland Daily Water Table 
 
 ```{r}
 #set file path to read in data from Box 
@@ -422,7 +431,9 @@ ggplot(data = bogwell_clean) +
        title = "S2 Daily Peatland Water Table Elevation")
 ```
 
-# Combine streamflow and precipitation data 
+# Compare streamflow and climate data 
+
+## Combine streamflow and precipitation data 
 
 ```{r}
 precip_join <- precip_clean %>% 
@@ -458,7 +469,7 @@ p
 ggplotly(p)
 ```
 
-# Combine streamflow, precipitation, and bogwell data 
+## Combine streamflow, precipitation, and bogwell data 
 ```{r}
 all <- full_join(x = streamflow_precip, y = bogwell_clean, by = c("date", "year"))
 
