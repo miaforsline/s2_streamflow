@@ -495,9 +495,26 @@ ggplotly(p_bogwell)
 
 ```{r}
 precip_join <- precip_15_clean %>% 
-  rename(datetime = timestamp)
+  rename(datetime = timestamp) %>% 
+  pivot_wider(
+    names_from = "precip_type",
+    values_from = "precip_in"
+  )
 
-streamflow_precip <- full_join(x = all_streamflow, y = precip_join, by = "datetime")
+streamflow_precip <- full_join(x = all_streamflow, y = precip_join, by = "datetime") %>% 
+  rename(precip_10_in = precip_10) %>% 
+  select(-precip_in) %>% 
+  pivot_longer(
+    cols = c("stream_height_ft",
+             "precip_10_in"),
+    names_to = "type",
+    values_to = "value"
+  )
+
+ggplot(data = streamflow_precip[!is.na(streamflow_precip$value),]) + 
+  geom_line(aes(x = datetime,
+                y = value,
+                color = type))
 
 p <- ggplot() + 
   #precipitation data 
