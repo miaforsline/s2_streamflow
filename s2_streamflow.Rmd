@@ -569,7 +569,7 @@ p_sp <- ggplot() +
   geom_line(data = all_streamflow,
              aes(x = datetime, 
                  y = stream_height_ft),
-            color = "red",
+            color = "blue",
             size = 0.25) + 
   theme_classic() + 
   labs(x = "Time", 
@@ -591,6 +591,51 @@ ggsave(filename = "streamflow_and_scaled_precip.png",
 
 ggplotly(p_sp)
 ```
+
+## Combine streamflow, precipitation, and air temp 
+
+```{r}
+airtemp_join <- air_temp_30_clean %>% 
+  pivot_wider(
+    names_from = "airtemp_type",
+    values_from = "airtempC"
+  )
+
+p_spa <- ggplot() + 
+  #precipitation data 
+  geom_line(data = streamflow_precip, 
+            aes(x = datetime, 
+                y = precip_10_in,
+                colour = I("grey")),
+            size = 0.25) + 
+  #airtemp data
+  geom_line(data = airtemp_join, 
+            aes(x = datetime, 
+                y = airtempc_100),
+            color = "pink",
+            alpha = 0.5,
+            size = 0.25) + 
+  #streamflow data 
+  geom_line(data = all_streamflow,
+             aes(x = datetime, 
+                 y = stream_height_ft),
+            color = "blue",
+            size = 0.25) + 
+  theme_classic() + 
+  labs(x = "Time", 
+       title = "2017 - 2019 S2 Bog Streamflow, Precipitation, and Air Temperature")
+
+ggsave(filename = "streamflow_precip_airtemp.png",
+       plot = p_spa,
+       path = "figures/",
+       width = 6,
+       height = 3,
+       units = c("in"),
+       dpi = 300)
+
+ggplotly(p_spa)
+```
+
 
 ## Combine streamflow, daily precipitation, and bogwell data
 
@@ -627,13 +672,13 @@ p_spb <- ggplot() +
   geom_line(data = streamflow_precip_bogwell,
              aes(x = date, 
                  y = sum_stream_height_ft),
-            color = "red",
+            color = "blue",
             size = 0.25) + 
   #bogwell data
   geom_line(data = streamflow_precip_bogwell,
             aes(x = date,
                 y = wte_100),
-            color = "blue",
+            color = "red",
             size = 0.25) +
   theme_classic() + 
   labs(x = "Time", 
