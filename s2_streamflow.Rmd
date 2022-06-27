@@ -317,7 +317,6 @@ ggplotly(p_all)
 
 ## Water Year 2020 
 
-
 ## Water Year 2021 
 
 # Climate data 
@@ -459,7 +458,7 @@ ggplotly(p_bogwell)
 ## Combine streamflow and precipitation data 
 
 ```{r}
-precip_join <- precip_clean %>% 
+precip_join <- precip_15_clean %>% 
   rename(datetime = timestamp)
 
 streamflow_precip <- full_join(x = all_streamflow, y = precip_join, by = "datetime")
