@@ -373,6 +373,7 @@ p_15 <- ggplot(data = precip_15_clean) +
 
 ggplotly(p_15)
 ```
+
 ## Precipitation Daily 
 
 ```{r}
@@ -390,14 +391,21 @@ precip_daily_clean <- precip_daily %>%
                                   tz = "GMT"), 
                        format = '%Y'),
          year = as.numeric(year)) %>% 
-  subset(year >= 2017)
+  subset(year >= 2017) %>% 
+  rename(precip_in = south_pcp) %>% 
+  mutate(precip_10 = (precip_in / 10)) %>% 
+  pivot_longer(
+    cols = c("precip_in", "precip_10"),
+    names_to = "precip_type",
+    values_to = "precip_in"
+  )
 
 #plot 
 p_daily <- ggplot(data = precip_daily_clean) + 
-  geom_line(aes(x = date, y = south_pcp)) + 
+  geom_line(aes(x = date, y = precip_in, color = precip_type)) + 
   theme_classic() + 
   labs(x = "Time", 
-       y = "South Precipitation (cm)", 
+       y = "South Precipitation (in)", 
        title = "2017 - 2019 Precipitation Daily Sum")
 
 ggplotly(p_daily)
