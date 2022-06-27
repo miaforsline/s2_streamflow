@@ -330,6 +330,26 @@ p_all <- ggplot(data = all_streamflow) +
 ggplotly(p_all)
 ```
 
+## Manual Checks (2017 - 2021)
+
+```{r}
+#create file path to call the data from Box 
+## Mia's file path 
+filepath <- "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/Hydro/Streamflow/L0_subdaily/ManualChecks"
+
+#read in the 2017 data 
+mc <- read_csv(here(filepath, "2017-2021_S2Stage.csv"))
+
+mc_clean <- mc %>% 
+  clean_names() %>% 
+  subset(name == "S2 WEIR") %>%
+  mutate(collected = as.POSIXct(collected, format = '%m/%d/%Y %H:%M', tz = "GMT"))
+
+ggplot(data = mc_clean) + 
+  geom_point(aes(x = collected, y = stripchart_stage))
+```
+
+
 ## Water Year 2020 
 
 ## Water Year 2021 
