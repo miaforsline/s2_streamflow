@@ -403,8 +403,47 @@ p_daily <- ggplot(data = precip_daily_clean) +
 ggplotly(p_daily)
 ```
 
+## Air Temperature Every 30 Min (2017 - 2022)
 
-## Air Temperature Daily 
+```{r}
+#set file path to read in data from Box 
+filepath = "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/EDI/airT_RH_BP_30min/edi.990.1/data_objects/"
+
+#read in the raw data 
+air_temp_30 <- read_csv(here(filepath, "MEF_S2Bog_Met_30min.csv"))
+
+#clean the data 
+air_temp_30_clean <- air_temp_30 %>% 
+  clean_names() %>% 
+  rename(airtempc = air_t,
+         rel_humidity = rh,
+         datetime = timestamp) %>% 
+  mutate(year = format(as.POSIXct(datetime, format = '%Y-%m-%d %H:%M:%S', 
+                                  tz = "GMT"), 
+                       format = '%Y'),
+         year = as.numeric(year),
+         airtempc_10 = (airtempc / 10),
+         airtempc_100 = (airtempc / 100)
+         ) %>% 
+  pivot_longer(
+    cols = c("airtempc", "airtempc_10", "airtempc_100"),
+    names_to = "airtemp_type",
+    values_to = "airtempC"
+  )
+
+#plot 
+p_air_30 <- ggplot(data = air_temp_30_clean) + 
+  geom_line(aes(x = datetime, y = airtempC, color = airtemp_type)) + 
+  theme_classic() + 
+  labs(x = "Time", 
+       y = "Air Temperature (ºC)", 
+       title = "2017 - 2022 Daily Air Temperatures")
+
+ggplotly(p_air_30)
+```
+
+
+## Air Temperature Daily Max/Min 
 
 ```{r}
 #set file path to read in data from Box 
