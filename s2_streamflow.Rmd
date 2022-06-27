@@ -443,39 +443,6 @@ ggplotly(p_air_30)
 ```
 
 
-## Air Temperature Daily Max/Min 
-
-```{r}
-#set file path to read in data from Box 
-filepath = "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/EDI/air_temperature_daily/edi.583.2/data_objects/"
-
-#read in the raw data 
-air_temp_daily <- read_csv(here(filepath, "MEF_airTemp_daily.csv"))
-
-#clean the data 
-air_temp_daily_clean <- air_temp_daily %>% 
-  clean_names() %>% 
-  subset(station == "S2Bog") %>% 
-  mutate(year = format(as.POSIXct(date, format = '%Y-%m-%d', 
-                                  tz = "GMT"), 
-                       format = '%Y'),
-         year = as.numeric(year)) %>% 
-  subset(year <= 2019 & year >= 2017) %>% 
-  pivot_longer(cols = c("maxc", "minc"),
-               names_to = "temp_type",
-               values_to = "tempC")
-
-#plot 
-p_air_daily <- ggplot(data = air_temp_daily_clean) + 
-  geom_line(aes(x = date, y = tempC, color = temp_type)) + 
-  theme_classic() + 
-  labs(x = "Time", 
-       y = "Air Temperature (ºC)", 
-       title = "2017 - 2019 Daily Max/Mean Air Temperatures")
-
-ggplotly(p_air_daily)
-```
-
 
 ## Peatland Daily Water Table 
 
