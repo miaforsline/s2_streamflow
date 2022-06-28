@@ -188,25 +188,18 @@ p_2018_clean <- ggplot(data = wy2018_clean) +
   theme(plot.title = element_text(hjust = 0.5))
 
 p_2018_clean
-p_test
-```
 
-
-```{r}
 #we need to remove wonky values from Oct 31 - Nov 1, 2018 (for more details see the code chunk below)
 wy2018_altered <- wy2018_clean
 
 #for now, remove erroneous values < 0.10 during the time period of interest 
-wy2018_altered$stream_height_ft[wy2018_altered$date %between% as.Date(c('2018-10-31', '2018-11-01')) & wy2018_altered$stream_height_ft < 0.10] <- NA
-
-#remove NA values to plot a continous line 
-wy2018_altered <- wy2018_altered[!is.na(wy2018_altered$stream_height_ft),]
+wy2018_altered <- subset(wy2018_altered, !(wy2018_altered$date %between% as.Date(c('2018-10-31', '2018-11-01')) & wy2018_altered$stream_height_ft < 0.10))
 
 #test the 2018 altered data - there should be fewer rows in the altered dataframe than the original/cleaned dataframe 
 if(nrow(wy2018_altered) == nrow(wy2018_clean)) stop("Check altered dataframe dimensions")
 
 #plot
-p_2018 <- ggplot(data = wy2018_altered) + 
+p_2018_altered <- ggplot(data = wy2018_altered) + 
   geom_line(aes(x = datetime, y = stream_height_ft)) + 
   theme_classic() + 
   labs(x = "Time", 
@@ -214,38 +207,10 @@ p_2018 <- ggplot(data = wy2018_altered) +
        title = "WY 2018 S2 Bog Stream Height") + 
   theme(plot.title = element_text(hjust = 0.5))
 
-p_2018
+p_2018_altered
 
 #ggplotly(p_2018)
 ```
-
-
-```{r}
-#`%outside%` <- function(x, interval) x <= interval[1] | x >= interval[2]
-
-#2018-11-01 23:59:59
-#2018-10-31 00:00:00
-
-test <- wy2018_clean 
-# test$stream_height_ft[test$date %between% as.Date(c('2018-10-31', '2018-11-01')) & test$stream_height_ft < 0.10] <- NA
-test <- subset(test, !(test$date %between% as.Date(c('2018-10-31', '2018-11-01')) & test$stream_height_ft < 0.10))
-
-p_test <- ggplot(data = test) + 
-  geom_line(aes(x = datetime, y = stream_height_ft)) + 
-  theme_classic() + 
-  labs(x = "Time", 
-       y = "Stream Height (ft)", 
-       title = "Test1") + 
-  theme(plot.title = element_text(hjust = 0.5))
-
-p_test
-
-```
-
-
-
-
-
 
 ### Altered Oct 31 - Nov 1, 2018 date value
 
