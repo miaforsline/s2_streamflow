@@ -510,7 +510,7 @@ ggplotly(p_daily)
 
 -   Plot
 
-```{r}
+```{r airtemp_30}
 #set file path to read in data from Box 
 filepath = "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/EDI/airT_RH_BP_30min/edi.990.1/data_objects/"
 
@@ -558,7 +558,7 @@ ggplotly(p_air_30)
 
 -   Plot
 
-```{r}
+```{r bogwell_daily}
 #set file path to read in data from Box 
 filepath = "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/EDI/peatland_water_table_daily/edi.562.2/data_objects/"
 
