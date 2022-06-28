@@ -370,12 +370,13 @@ ggplot(data = mc_clean) +
 
 -   Combine all 3 water years using `rbind()`
 
--   Plot stripchart data (as lines) and manual streamflow data (as
-    points)
+-   Plot stripchart data (as lines) and manual checks (as points)
 
-```{r}
+```{r wy2017-2019}
+#combine 2017 - 2019 data
 all_streamflow <- rbind(wy2017_clean, wy2018_clean, wy2019_clean)
 
+#plot
 p_all <- ggplot(data = all_streamflow) + 
   geom_line(aes(x = datetime, y = stream_height_ft),
             size = 0.25) + 
@@ -398,7 +399,7 @@ ggsave(filename = "streamflow_with_manual_checks.png",
        units = c("in"),
        dpi = 300)
 
-ggplotly(p_all)
+#ggplotly(p_all)
 ```
 
 ## Water Year 2020
@@ -409,15 +410,16 @@ ggplotly(p_all)
 
 ## Precipitation Every 15min
 
--   Read in the data
+-   Read in the data from the following Box file path:
+    `External-MEF_DATA/EDI/precipitation_15min/edi.849.2/data_objects/`
 
--   Clean the data
+-   Clean the data into a tidy format
 
-    -   Extract year to subset all precipitation data to 2017 - present
+    -   Subset precipitation data to 2017 - present
 
 -   Plot
 
-```{r}
+```{r precip_15}
 #set file path to read in data from Box 
 filepath = "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/EDI/precipitation_15min/edi.849.2/data_objects/"
 
@@ -445,15 +447,24 @@ p_15 <- ggplot(data = precip_15_clean) +
   geom_line(aes(x = timestamp, y = precip_in, color = precip_type)) + 
   theme_classic() + 
   labs(x = "Time", 
-       y = "South Precipitation (cm)", 
+       y = "Precipitation (cm)", 
        title = "2017 - 2019 Precipitation Sum Every 15 Min")
 
-ggplotly(p_15)
+#ggplotly(p_15)
 ```
 
 ## Precipitation Daily
 
-```{r}
+-   Read in the data from the following Box file path:
+    `External-MEF_DATA/EDI/precipitation_daily/edi.563.3/data_objects/`
+
+-   Clean the data into a tidy format
+
+    -   Subset precipitation data to 2017 - present
+
+-   Plot
+
+```{r precip_daily}
 #set file path to read in data from Box 
 filepath = "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/EDI/precipitation_daily/edi.563.3/data_objects/"
 
@@ -485,10 +496,19 @@ p_daily <- ggplot(data = precip_daily_clean) +
        y = "South Precipitation (in)", 
        title = "2017 - 2019 Precipitation Daily Sum")
 
-ggplotly(p_daily)
+#ggplotly(p_daily)
 ```
 
-## Air Temperature Every 30 Min (2017 - 2022)
+## Air Temperature Every 30 Min
+
+-   Read in the data from the following Box file path:
+    `External-MEF_DATA/EDI/airT_RH_BP_30min/edi.990.1/data_objects/`
+
+-   Clean the data into a tidy format
+
+    -   Subset precipitation data to 2017 - present
+
+-   Plot
 
 ```{r}
 #set file path to read in data from Box 
@@ -524,10 +544,19 @@ p_air_30 <- ggplot(data = air_temp_30_clean) +
        y = "Air Temperature (ºC)", 
        title = "2017 - 2022 Daily Air Temperatures")
 
-ggplotly(p_air_30)
+#ggplotly(p_air_30)
 ```
 
 ## Peatland Daily Water Table
+
+-   Read in the data from the following Box file path:
+    `External-MEF_DATA/EDI/peatland_water_table_daily/edi.562.2/data_objects/`
+
+-   Clean the data into a tidy format
+
+    -   Subset precipitation data to 2017 - present
+
+-   Plot
 
 ```{r}
 #set file path to read in data from Box 
@@ -554,16 +583,15 @@ p_bogwell <- ggplot(data = bogwell_clean) +
        y = "Water Table Elevation (m above sea level)",
        title = "S2 Daily Peatland Water Table Elevation")
 
-ggplotly(p_bogwell)
+#ggplotly(p_bogwell)
 ```
 
-# Compare streamflow and climate data
+# Comparisons
 
-## Combine streamflow and precipitation data
-
--   Precipitation data is every 15 min
+## Combine streamflow and precipitation (every 15min) data
 
 ```{r}
+#format precipitation data for a smooth joining process
 precip_join <- precip_15_clean %>% 
   rename(datetime = timestamp) %>% 
   pivot_wider(
@@ -571,10 +599,12 @@ precip_join <- precip_15_clean %>%
     values_from = "precip_in"
   )
 
+#join streamflow and precipitation data 
 streamflow_precip <- full_join(x = all_streamflow, y = precip_join, by = "datetime") %>% 
   rename(precip_10_in = precip_10) %>% 
   select(-precip_in) 
 
+#plot 
 p_sp <- ggplot() + 
   #precipitation data 
   geom_line(data = streamflow_precip, 
@@ -598,6 +628,7 @@ p_sp <- ggplot() +
     sec.axis = sec_axis(trans = ~.*0.698509267, name = "Precipitation Sum Scaled by 10 (in)")
   ) 
 
+#save the plot in the figures folder 
 ggsave(filename = "streamflow_and_scaled_precip.png",
        plot = p_sp,
        path = "figures/",
@@ -606,18 +637,20 @@ ggsave(filename = "streamflow_and_scaled_precip.png",
        units = c("in"),
        dpi = 300)
 
-ggplotly(p_sp)
+#ggplotly(p_sp)
 ```
 
-## Combine streamflow, precipitation, and air temp
+## Combine streamflow, precipitation (every 15min), and air temperature data (every 30min)
 
 ```{r}
+#format air temperature data 
 airtemp_join <- air_temp_30_clean %>% 
   pivot_wider(
     names_from = "airtemp_type",
     values_from = "airtempC"
   )
 
+#plot 
 p_spa <- ggplot() + 
   #precipitation data 
   geom_line(data = streamflow_precip, 
@@ -642,6 +675,7 @@ p_spa <- ggplot() +
   labs(x = "Time", 
        title = "2017 - 2019 S2 Bog Streamflow, Precipitation, and Air Temperature")
 
+#save the plot in the figures folder 
 ggsave(filename = "streamflow_precip_airtemp.png",
        plot = p_spa,
        path = "figures/",
@@ -650,7 +684,7 @@ ggsave(filename = "streamflow_precip_airtemp.png",
        units = c("in"),
        dpi = 300)
 
-ggplotly(p_spa)
+#ggplotly(p_spa)
 ```
 
 ## Combine streamflow, daily precipitation, and bogwell data
@@ -700,6 +734,7 @@ p_spb <- ggplot() +
   labs(x = "Time", 
        title = "2017 - 2019 S2 Bog Streamflow, Precipitation, and Daily Peatland Water Table Elevation") 
 
+#save the plot in the figures folder 
 ggsave(filename = "streamflow_precip_bogwell.png",
        plot = p_spb,
        path = "figures/",
@@ -708,5 +743,5 @@ ggsave(filename = "streamflow_precip_bogwell.png",
        units = c("in"),
        dpi = 300)
 
-ggplotly(p_spb)
+#ggplotly(p_spb)
 ```
