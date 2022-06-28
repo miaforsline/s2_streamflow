@@ -21,7 +21,7 @@ editor_options:
 -   Set working directory if necessary (or create a file path to use
     throughout the RMD to call the data from Box)
 
-```{r setup, include=TRUE}
+```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,
                       message = FALSE, 
                       warning = FALSE)
@@ -102,7 +102,7 @@ p_2017 <- ggplot(data = wy2017_clean) +
        title = "WY 2017 S2 Bog Stream Height")
 
 #interactive plot 
-#ggplotly(p_2017)
+ggplotly(p_2017)
 ```
 
 ## Water Year 2018
@@ -194,7 +194,7 @@ p_2018 <- ggplot(data = wy2018_altered) +
        y = "Stream Height (Ft)", 
        title = "WY 2018 S2 Bog Stream Height")
 
-#ggplotly(p_2018)
+ggplotly(p_2018)
 ```
 
 ### Altered Oct 31 - Nov 1, 2018 date value
@@ -214,7 +214,7 @@ subset_2018<- wy2018_clean %>%
 p_subset <- ggplot(data = subset_2018) + 
   geom_line(aes(x = datetime, y = stream_height_ft))
 
-#ggplotly(p_subset)
+ggplotly(p_subset)
 
 #remove unusual values below 0.10 
 subset_2018_altered <- wy2018_clean %>% 
@@ -225,7 +225,7 @@ subset_2018_altered <- wy2018_clean %>%
 p_subset_altered <- ggplot(data = subset_2018_altered) + 
   geom_line(aes(x = datetime, y = stream_height_ft))
 
-#ggplotly(p_subset_altered)
+ggplotly(p_subset_altered)
 ```
 
 ## Water Year 2019
@@ -318,7 +318,7 @@ p_2019 <- ggplot(data = wy2019_clean) +
        y = "Stream Height (Ft)",
        title = "WY 2019 S2 Bog Stream Height")
 
-#ggplotly(p_2019)
+ggplotly(p_2019)
 
 ```
 
@@ -399,7 +399,7 @@ ggsave(filename = "streamflow_with_manual_checks.png",
        units = c("in"),
        dpi = 300)
 
-#ggplotly(p_all)
+ggplotly(p_all)
 ```
 
 ## Water Year 2020
@@ -450,7 +450,7 @@ p_15 <- ggplot(data = precip_15_clean) +
        y = "Precipitation (cm)", 
        title = "2017 - 2019 Precipitation Sum Every 15 Min")
 
-#ggplotly(p_15)
+ggplotly(p_15)
 ```
 
 ## Precipitation Daily
@@ -496,7 +496,7 @@ p_daily <- ggplot(data = precip_daily_clean) +
        y = "South Precipitation (in)", 
        title = "2017 - 2019 Precipitation Daily Sum")
 
-#ggplotly(p_daily)
+ggplotly(p_daily)
 ```
 
 ## Air Temperature Every 30 Min
@@ -544,7 +544,7 @@ p_air_30 <- ggplot(data = air_temp_30_clean) +
        y = "Air Temperature (ºC)", 
        title = "2017 - 2022 Daily Air Temperatures")
 
-#ggplotly(p_air_30)
+ggplotly(p_air_30)
 ```
 
 ## Peatland Daily Water Table
@@ -583,7 +583,7 @@ p_bogwell <- ggplot(data = bogwell_clean) +
        y = "Water Table Elevation (m above sea level)",
        title = "S2 Daily Peatland Water Table Elevation")
 
-#ggplotly(p_bogwell)
+ggplotly(p_bogwell)
 ```
 
 # Comparisons
@@ -637,7 +637,7 @@ ggsave(filename = "streamflow_and_scaled_precip.png",
        units = c("in"),
        dpi = 300)
 
-#ggplotly(p_sp)
+ggplotly(p_sp)
 ```
 
 ## Combine streamflow, precipitation (every 15min), and air temperature data (every 30min)
@@ -684,7 +684,7 @@ ggsave(filename = "streamflow_precip_airtemp.png",
        units = c("in"),
        dpi = 300)
 
-#ggplotly(p_spa)
+ggplotly(p_spa)
 ```
 
 ## Combine streamflow, daily precipitation, and bogwell data
@@ -743,5 +743,5 @@ ggsave(filename = "streamflow_precip_bogwell.png",
        units = c("in"),
        dpi = 300)
 
-#ggplotly(p_spb)
+ggplotly(p_spb)
 ```
