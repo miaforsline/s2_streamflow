@@ -21,7 +21,7 @@ editor_options:
 -   Set working directory if necessary (or create a file path to use
     throughout the RMD to call the data from Box)
 
-```{r setup, include=FALSE}
+```{r setup, include=TRUE}
 knitr::opts_chunk$set(echo = TRUE,
                       message = FALSE, 
                       warning = FALSE)
@@ -33,22 +33,16 @@ if (!require(librarian)){
 }
 
 librarian::shelf(
-  gapminder,
   here,
   janitor,
-  naniar,
-  patchwork,
   plotly,
-  #lubridate,
   readxl,
-  tidyverse,
-  #writexl,
-  #zoo
+  tidyverse
   )
 
 # Set working directory path
 ## Mia's working directory path
-setwd("/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/Hydro/Streamflow/L0_subdaily/StripCharts/AnnualBreakPoint/S2")
+#setwd("/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/Hydro/Streamflow/L0_subdaily/StripCharts/AnnualBreakPoint/S2")
 ## Nina's working directory path 
 #setwd("~/../../Box/External-MEF_DATA/Hydro/Streamflow/L0_subdaily/StripCharts")
 ```
@@ -58,19 +52,21 @@ setwd("/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/Hydro/S
 ## Water Year 2017
 
 -   Read in the WY 2017 data from the External-MEF_DATA Box folder
--   Specifically, raw data is found at the following file path:
+-   Specifically, raw data for the S2 Bog site is found at the following
+    file path:
     `External-MEF_DATA/Hydro/Streamflow/L0_subdaily/StripCharts/AnnualBreakPoint/S2`
 -   Clean and manipulate the WY 2017 data into a tidy format
-    -   Renaming columns to use lower_snake_case and avoid special
+    -   Rename columns to use lower_snake_case and avoid special
         characters
-    -   create a new `date` column that follows the format YYYY-MM-DD
-        (and does not include a timestamp)
+    -   Create a new `date` column that follows the format YYYY-MM-DD
+        (and does not include a timestamp) for ease of
+        sorting/manipulating dates
 -   Test that the manipulated data frame has the same number of rows as
     the original data frame (we do not want to accidentally lose data,
     so the code will throw an error is the two data frames do not match)
--   Graph the WY 2017 data
+-   Create an interactive plot of the WY 2017 data
 
-```{r}
+```{r wy2017}
 #create file path to call the data from Box 
 ## Mia's file path 
 filepath <- "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/Hydro/Streamflow/L0_subdaily/StripCharts/AnnualBreakPoint/S2"
@@ -81,10 +77,14 @@ wy2017 <- read_excel(path = here(filepath, "WY2017.S2_Breakpoint.xlsx"),
 
 #clean the 2017 data
 wy2017_clean <- wy2017 %>% 
+  #change column names
   rename(datetime = "Date/time",
          stream_height_ft = "Stage.ft") %>% 
+  #remove unnecessary columns 
   select(c("datetime", "stream_height_ft")) %>% 
+  #format column names 
   clean_names() %>% 
+  #create a date column 
   mutate(date = format(as.POSIXct(datetime, format = '%m/%d/%Y %H:%M:%S', 
                                   tz = "GMT"), 
                        format = '%Y-%m-%d'),
@@ -102,17 +102,16 @@ p_2017 <- ggplot(data = wy2017_clean) +
        title = "WY 2017 S2 Bog Stream Height")
 
 #interactive plot 
-ggplotly(p_2017)
+#ggplotly(p_2017)
 ```
 
 ## Water Year 2018
 
 -   Read in the WY 2018 data from the External-MEF_DATA Box folder
 -   Clean and manipulate the WY 2018 data into a tidy format
-    -   Renaming columns to use lower_snake_case and avoid special
+    -   Rename columns to use lower_snake_case and avoid special
         characters
-    -   create a new `date` column that follows the format YYYY-MM-DD
-        (and does not include a timestamp)
+    -   Create a new `date` column that follows the format YYYY-MM-DD
 -   Change values of 0 to missing NA values during the following time
     periods:
     -   December 1-3 clock stopped, no record
@@ -131,11 +130,18 @@ ggplotly(p_2017)
 
     -   Oct 11-15 clock was stuck and the pin did not move forward in
         time
+-   Note that the NA values are derived from notes found at the
+    following Box filepath:
+    `External-MEF_DATA/Hydro/Streamflow/L0_daily/StripCharts/DailyBreakpoint/`
 -   Test that the manipulated data frame has the same number of rows as
     the original data frame
--   Graph the WY 2018 data
+-   Create an interactive graph of the WY 2018 data
 
-```{r}
+```{r wy2018}
+#create file path to call the data from Box 
+## Mia's file path 
+filepath <- "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/Hydro/Streamflow/L0_subdaily/StripCharts/AnnualBreakPoint/S2"
+
 #create a function to specify custom time intervals 
 `%between%` <- function(x, interval) x >= interval[1] & x <= interval[2]
 
@@ -172,14 +178,15 @@ if(nrow(wy2018) != nrow(wy2018_clean)) stop("Check clean dataframe dimensions")
 
 #we need to remove wonky values from Oct 31 - Nov 1, 2018 (for more details see the code chunk below)
 wy2018_altered <- wy2018_clean
-#remove values < 0.10 during the time period of interest 
+#for now, remove erroneous values < 0.10 during the time period of interest 
 wy2018_altered$stream_height_ft[wy2018_altered$date %between% as.Date(c('2018-10-31', '2018-11-01')) & wy2018_altered$stream_height_ft < 0.10] <- NA
 #remove NA values to plot a continous line 
 wy2018_altered <- wy2018_altered[!is.na(wy2018_altered$stream_height_ft),]
 
-#test the 2018 altered data
+#test the 2018 altered data - there should be fewer rows in the altered dataframe than the original/cleaned dataframe 
 if(nrow(wy2018_altered) == nrow(wy2018_clean)) stop("Check altered dataframe dimensions")
 
+#plot
 p_2018 <- ggplot(data = wy2018_altered) + 
   geom_line(aes(x = datetime, y = stream_height_ft)) + 
   theme_classic() + 
@@ -187,7 +194,7 @@ p_2018 <- ggplot(data = wy2018_altered) +
        y = "Stream Height (Ft)", 
        title = "WY 2018 S2 Bog Stream Height")
 
-ggplotly(p_2018)
+#ggplotly(p_2018)
 ```
 
 ### Altered Oct 31 - Nov 1, 2018 date value
@@ -195,9 +202,10 @@ ggplotly(p_2018)
 During this time, it is most likely that the dates were read/input
 incorrectly, resulting in an unnatural oscillation of streamflow values
 on Oct 31 and Nov 1 of 2018. Therefore, we removed values \< 0.10 during
-this time period to smooth out the overall curve of streamflow.
+this time period to smooth out the overall curve of stream height
+values.
 
-```{r}
+```{r wy2018_altered}
 #subset the time period of interest
 subset_2018<- wy2018_clean %>% 
   subset(date %between% as.Date(c('2018-10-30', '2018-11-02'))) 
@@ -206,7 +214,7 @@ subset_2018<- wy2018_clean %>%
 p_subset <- ggplot(data = subset_2018) + 
   geom_line(aes(x = datetime, y = stream_height_ft))
 
-ggplotly(p_subset)
+#ggplotly(p_subset)
 
 #remove unusual values below 0.10 
 subset_2018_altered <- wy2018_clean %>% 
@@ -217,17 +225,13 @@ subset_2018_altered <- wy2018_clean %>%
 p_subset_altered <- ggplot(data = subset_2018_altered) + 
   geom_line(aes(x = datetime, y = stream_height_ft))
 
-ggplotly(p_subset_altered)
+#ggplotly(p_subset_altered)
 ```
 
 ## Water Year 2019
 
 -   Read in the WY 2019 data from the External-MEF_DATA Box folder
 -   Clean and manipulate the WY 2019 data into a tidy format
-    -   Rename columns to use lower_snake_case and avoid special
-        characters
-    -   Create a new `date` column that follows the format YYYY-MM-DD
-        (and does not include a timestamp)
 -   Change values of 0 to missing NA values during the following time
     periods:
     -   April 1-2, Line and time is off
@@ -261,11 +265,17 @@ ggplotly(p_subset_altered)
         was reversed)
 
     -   September: Chart did not run from 9/3-9/10
--   Test that the manipulated data frame has the same number of rows as
-    the original data frame
--   Graph the WY 2019 data
+-   Note that the NA values are derived from notes found at the
+    following Box filepath:
+    `External-MEF_DATA/Hydro/Streamflow/L0_daily/StripCharts/DailyBreakpoint/`
+-   Test the data
+-   Create an interactive graph of the WY 2019 data
 
-```{r}
+```{r wy2019}
+#create file path to call the data from Box 
+## Mia's file path 
+filepath <- "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/Hydro/Streamflow/L0_subdaily/StripCharts/AnnualBreakPoint/S2"
+
 #read in the 2019 data 
 wy2019 <- read_excel(path = here(filepath, "WY2019.S2_Breakpoint.xlsx"), 
                      skip =3)
@@ -289,7 +299,6 @@ wy2019_clean$stream_height_ft[wy2019_clean$date == as.Date('2019-03-14')] <- NA
 wy2019_clean$stream_height_ft[wy2019_clean$date == as.Date('2019-03-18')] <- NA
 wy2019_clean$stream_height_ft[wy2019_clean$date %between% as.Date(c('2019-03-30', '2019-03-31'))] <- NA
 
-
 #April NA values 
 wy2019_clean$stream_height_ft[wy2019_clean$date %between% as.Date(c('2019-04-01', '2019-04-02'))] <- NA
 wy2019_clean$stream_height_ft[wy2019_clean$date %between% as.Date(c('2019-04-08', '2019-04-17'))] <- NA
@@ -309,33 +318,36 @@ p_2019 <- ggplot(data = wy2019_clean) +
        y = "Stream Height (Ft)",
        title = "WY 2019 S2 Bog Stream Height")
 
-ggplotly(p_2019)
+#ggplotly(p_2019)
 
 ```
 
 ## Manual Streamflow Checks (2017 - 2019)
 
 -   Read in the manual checks data from the External-MEF_DATA Box folder
--   Specifically, raw data is found at the following file path:
-    `External-MEF_DATA/Hydro/Streamflow/L0_subdaily/ManualChecks`
+    -   Specifically, raw data is found at the following file path:
+        `External-MEF_DATA/Hydro/Streamflow/L0_subdaily/ManualChecks`
 -   Clean and manipulate the data into a tidy format
     -   Renaming columns to use lower_snake_case and avoid special
         characters via `clean_names()`
     -   Convert the `collected` column from a character into a POSIXct
         date format
--   Subset the data to include only the data of interest (S2 weir data) and the time period of interest (2017 - 2019)
+-   Subset the data to include only the data of interest (S2 weir data)
+    and the time period of interest (2017 - 2019)
 -   Plot the manual checks data
 
-```{r}
+```{r manual_checks}
 #create file path to call the data from Box 
 ## Mia's file path 
 filepath <- "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/Hydro/Streamflow/L0_subdaily/ManualChecks"
 
-#read in the 2017 data 
+#read in the manual checks data 
 mc <- read_csv(here(filepath, "2017-2021_S2Stage.csv"))
 
+#clean the data
 mc_clean <- mc %>% 
   clean_names() %>% 
+  #remove S2 lagging pool data and keep only the S2 weir data
   subset(name == "S2 WEIR") %>%
   mutate(collected = as.POSIXct(collected, format = '%m/%d/%Y %H:%M', 
                                 tz = "GMT"),
@@ -345,8 +357,13 @@ mc_clean <- mc %>%
          ) %>% 
   subset(year >= 2017 & year <= 2019)
 
+#plot 
 ggplot(data = mc_clean) + 
-  geom_point(aes(x = collected, y = stripchart_stage))
+  geom_point(aes(x = collected, y = stripchart_stage)) + 
+  theme_classic() + 
+  labs(y = "Stream Height (ft)", 
+       x = "Time", 
+       title = "S2 Weir Manual Streamflow Checks")
 ```
 
 ## 2017 - 2019 Water Years Combined
@@ -592,7 +609,7 @@ ggsave(filename = "streamflow_and_scaled_precip.png",
 ggplotly(p_sp)
 ```
 
-## Combine streamflow, precipitation, and air temp 
+## Combine streamflow, precipitation, and air temp
 
 ```{r}
 airtemp_join <- air_temp_30_clean %>% 
@@ -635,7 +652,6 @@ ggsave(filename = "streamflow_precip_airtemp.png",
 
 ggplotly(p_spa)
 ```
-
 
 ## Combine streamflow, daily precipitation, and bogwell data
 
