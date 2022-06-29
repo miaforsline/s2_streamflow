@@ -179,6 +179,7 @@ wy2018_clean$stream_height_ft[wy2018_clean$date %between% as.Date(c('2018-12-11'
 #test the 2018 data
 if(nrow(wy2018) != nrow(wy2018_clean)) stop("Check clean dataframe dimensions")
 
+#plot
 p_2018_clean <- ggplot(data = wy2018_clean) + 
   geom_line(aes(x = datetime, y = stream_height_ft)) + 
   theme_classic() + 
@@ -187,7 +188,10 @@ p_2018_clean <- ggplot(data = wy2018_clean) +
        title = "WY 2018 S2 Bog Stream Height") + 
   theme(plot.title = element_text(hjust = 0.5))
 
+#note the weird oscillating values from Oct 31 - Nov 1 
 p_2018_clean
+
+#ggplotly(p_2018_clean)
 
 #we need to remove wonky values from Oct 31 - Nov 1, 2018 (for more details see the code chunk below)
 wy2018_altered <- wy2018_clean
@@ -207,9 +211,10 @@ p_2018_altered <- ggplot(data = wy2018_altered) +
        title = "WY 2018 S2 Bog Stream Height") + 
   theme(plot.title = element_text(hjust = 0.5))
 
+#note that the wonky values have been removed and smoothed out 
 p_2018_altered
 
-#ggplotly(p_2018)
+#ggplotly(p_2018_altered)
 ```
 
 ### Altered Oct 31 - Nov 1, 2018 date value
@@ -227,7 +232,8 @@ subset_2018 <- wy2018_clean %>%
 
 #plot the data 
 p_subset <- ggplot(data = subset_2018) + 
-  geom_line(aes(x = datetime, y = stream_height_ft))
+  geom_line(aes(x = datetime, y = stream_height_ft)) + 
+  labs(title = "Wonky Oct 31 - Nov 1 Streamflow Values")
 
 p_subset
 
@@ -240,7 +246,8 @@ subset_2018_altered <- wy2018_clean %>%
 
 #plot the altered data
 p_subset_altered <- ggplot(data = subset_2018_altered) + 
-  geom_line(aes(x = datetime, y = stream_height_ft))
+  geom_line(aes(x = datetime, y = stream_height_ft)) + 
+  labs(title = "Fixed Oct 31 - Nov 1 Streamflow Values")
 
 p_subset_altered
 
@@ -335,7 +342,10 @@ p_2019 <- ggplot(data = wy2019_clean) +
   theme_classic() + 
   labs(x = "Time", 
        y = "Stream Height (Ft)",
-       title = "WY 2019 S2 Bog Stream Height")
+       title = "WY 2019 S2 Bog Stream Height") + 
+  theme(plot.title = element_text(hjust = 0.5))
+
+p_2019
 
 #ggplotly(p_2019)
 ```
@@ -381,10 +391,11 @@ ggplot(data = mc_clean) +
   theme_classic() + 
   labs(y = "Stream Height (ft)", 
        x = "Time", 
-       title = "S2 Weir Manual Streamflow Checks")
+       title = "S2 Weir Manual Streamflow Checks (2017 - 2019)") + 
+  theme(plot.title = element_text(hjust = 0.5))
 ```
 
-## 2017 - 2019 Water Years Combined
+## Streamflow + Manual Checks (2017 - 2019)
 
 -   Combine all 3 water years using `rbind()`
 
@@ -407,8 +418,14 @@ p_all <- ggplot(data = all_streamflow) +
   labs(x = "Time", 
        y = "Stream Height (ft)",
        title = "WY 2017 - 2019 S2 Bog Stream Height",
-       subtitle = "Stripchart data are plotted as black lines. Manual checks are plotted as red dots.")
+       subtitle = "Stripchart data are plotted as black lines. Manual checks are plotted as red dots.") + 
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5))
 
+#static plot
+#p_all
+
+#save PNG file
 ggsave(filename = "streamflow_with_manual_checks.png",
        plot = p_all,
        path = "figures/",
@@ -417,7 +434,8 @@ ggsave(filename = "streamflow_with_manual_checks.png",
        units = c("in"),
        dpi = 300)
 
-#ggplotly(p_all)
+#interactive plot 
+ggplotly(p_all)
 ```
 
 ## Water Year 2020
@@ -425,6 +443,20 @@ ggsave(filename = "streamflow_with_manual_checks.png",
 ## Water Year 2021
 
 # Old Shaft Encoder Data (2017 - 2019)
+
+-   Read in the manual checks data from the External-MEF_DATA Box folder
+
+    -   Specifically, raw data is found at the following file path:
+        `External-MEF_DATA/Hydro/Streamflow/L1_subdaily`
+
+-   Clean and manipulate the data into a tidy format
+
+    -   Renaming columns to use lower_snake_case and avoid special
+        characters via `clean_names()`
+    -   Remove extraneous columns
+    -   Rename columns to join the data later
+
+-   Plot the old shaft encoder data
 
 ```{r}
 #create file path to call the data from Box 
@@ -434,11 +466,13 @@ filepath <- "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/H
 #read in the 2019 data 
 se_data <- read_csv(here(filepath, "S2_5min_2017-2019.csv"))
 
+#clean the data 
 se_clean <- se_data %>% 
   clean_names() %>% 
   select(-x1, -record, -cond, -ct, -streamflow_cfs, -streamflow_lps, -temp_c) %>% 
   rename(datetime = timestamp)
 
+#plot 
 ggplot() + 
   geom_line(data = se_clean, aes(x = datetime, y = stage)) + 
   theme_classic() + 
@@ -448,7 +482,6 @@ ggplot() +
   theme(plot.title = element_text(hjust = 0.5))
   
 ```
-
 
 # Climate and Bogwell data
 
@@ -588,6 +621,10 @@ p_air_30 <- ggplot(data = air_temp_30_clean) +
        y = "Air Temperature (ºC)", 
        title = "2017 - 2022 Daily Air Temperatures")
 
+#static plot
+p_air_30
+
+#interactive plot
 #ggplotly(p_air_30)
 ```
 
@@ -632,7 +669,7 @@ p_bogwell <- ggplot(data = bogwell_clean) +
 
 # Comparisons
 
-## Combine streamflow and precipitation (every 15min) data
+## Streamflow + precipitation (every 15min) 
 
 ```{r}
 #format precipitation data for a smooth joining process
@@ -664,13 +701,20 @@ p_sp <- ggplot() +
             size = 0.25) + 
   theme_classic() + 
   labs(x = "Time", 
-       title = "2017 - 2019 S2 Bog Streamflow and Scaled Precipitation") + 
+       title = "2017 - 2019 S2 Bog Streamflow and Scaled Precipitation",
+       subtitle = "Streamflow is plotted in blue. Precipitation is plotted in black.") + 
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5, 
+                                     size = 7)) + 
   scale_y_continuous(
     # Features of the first axis
     name = "Stream Height (ft)",
     # Add a second axis and specify its features
     sec.axis = sec_axis(trans = ~.*0.698509267, name = "Precipitation Sum Scaled by 10 (in)")
   ) 
+
+#static plot
+#p_sp
 
 #save the plot in the figures folder 
 ggsave(filename = "streamflow_and_scaled_precip.png",
@@ -681,10 +725,10 @@ ggsave(filename = "streamflow_and_scaled_precip.png",
        units = c("in"),
        dpi = 300)
 
-#ggplotly(p_sp)
+ggplotly(p_sp)
 ```
 
-## Combine streamflow, precipitation (every 15min), and air temperature data (every 30min)
+## Streamflow + air temperature data (every 30min)
 
 ```{r}
 #format air temperature data 
@@ -692,16 +736,17 @@ airtemp_join <- air_temp_30_clean %>%
   pivot_wider(
     names_from = "airtemp_type",
     values_from = "airtempC"
-  )
+  ) %>% 
+  subset(year >= 2017 & year <= 2019)
 
 #plot 
-p_spa <- ggplot() + 
-  #precipitation data 
-  geom_line(data = streamflow_precip, 
-            aes(x = datetime, 
-                y = precip_10_in,
-                colour = I("grey")),
-            size = 0.25) + 
+p_sa <- ggplot() + 
+  # #precipitation data 
+  # geom_line(data = streamflow_precip, 
+  #           aes(x = datetime, 
+  #               y = precip_10_in,
+  #               colour = I("grey")),
+  #           size = 0.25) + 
   #airtemp data
   geom_line(data = airtemp_join, 
             aes(x = datetime, 
@@ -717,21 +762,35 @@ p_spa <- ggplot() +
             size = 0.25) + 
   theme_classic() + 
   labs(x = "Time", 
-       title = "2017 - 2019 S2 Bog Streamflow, Precipitation, and Air Temperature")
+       title = "S2 Bog Streamflow and Air Temperature (2017 - 2019)",
+       subtitle = "Air temperature is plotted in pink. Streamflow is plotted in blue.") + 
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5, 
+                                     size = 7)) + 
+  scale_y_continuous(
+    # Features of the first axis
+    name = "Air Temperature / 100 (ºC)",
+    # Add a second axis and specify its features
+    sec.axis = sec_axis(trans = ~.*1, name = "Stream Height (ft)")
+  ) 
+
+#static plot
+#p_sa
 
 #save the plot in the figures folder 
-ggsave(filename = "streamflow_precip_airtemp.png",
-       plot = p_spa,
+ggsave(filename = "streamflow_airtemp.png",
+       plot = p_sa,
        path = "figures/",
        width = 6,
        height = 3,
        units = c("in"),
        dpi = 300)
 
-#ggplotly(p_spa)
+#interactive plot
+ggplotly(p_sa)
 ```
 
-## Combine streamflow, daily precipitation, and bogwell data
+## Streamflow + bogwell data
 
 ```{r}
 #sum streamflow by day 
@@ -746,22 +805,25 @@ streamflow_precip_daily <- full_join(x = precip_daily_clean,
   pivot_wider(names_from = "precip_type",
               values_from = "precip_in") %>% 
   select(-south_flag,
-         -"NA")
+         -"NA") %>% 
+  subset(year <= 2019)
 
 #combine daily precipitation, daily streamflow, and daily bogwell data 
 streamflow_precip_bogwell <- full_join(x = streamflow_precip_daily, y = bogwell_clean, by = c("date", "year")) %>% 
   select(-flag,
          -peatland) %>% 
-  mutate(wte_100 = (wte / 100))
+  mutate(wte_100 = (wte / 100)) %>% 
+  subset(year <= 2019)
+
 
 #plot 
-p_spb <- ggplot() + 
- #precipitation data 
-  geom_line(data = streamflow_precip_bogwell, 
-            aes(x = date, 
-                y = precip_10,
-                colour = I("grey")),
-            size = 0.25) + 
+p_sb <- ggplot() + 
+ # #precipitation data 
+ #  geom_line(data = streamflow_precip_bogwell, 
+ #            aes(x = date, 
+ #                y = precip_10,
+ #                colour = I("grey")),
+ #            size = 0.25) + 
   #streamflow data 
   geom_line(data = streamflow_precip_bogwell,
              aes(x = date, 
@@ -771,26 +833,40 @@ p_spb <- ggplot() +
   #bogwell data
   geom_line(data = streamflow_precip_bogwell,
             aes(x = date,
-                y = wte_100),
-            color = "red",
+                y = wte_100), 
+            color = "green",
             size = 0.25) +
   theme_classic() + 
   labs(x = "Time", 
-       title = "2017 - 2019 S2 Bog Streamflow, Precipitation, and Daily Peatland Water Table Elevation") 
+       title = "S2 Bog Streamflow and Daily Peatland Water Table Elevation",
+       subtitle = "Streamflow is plotted in blue. Bogwell data is plotted in green") + 
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5, 
+                                     size = 7)) + 
+  scale_y_continuous(
+    # Features of the first axis
+    name = "Peatland WTE / 100 (m above sea level)",
+    # Add a second axis and specify its features
+    sec.axis = sec_axis(trans = ~.*1, name = "Stream Height (ft)")
+  ) 
+
+#static plot
+p_sb
 
 #save the plot in the figures folder 
-ggsave(filename = "streamflow_precip_bogwell.png",
-       plot = p_spb,
+ggsave(filename = "streamflow_bogwell.png",
+       plot = p_sb,
        path = "figures/",
        width = 6,
        height = 3,
        units = c("in"),
        dpi = 300)
 
-#ggplotly(p_spb)
+#interactive plot 
+#ggplotly(p_sb)
 ```
 
-## Stripchart vs old shaft encoder data 
+## Stripchart + old shaft encoder data
 
 ```{r}
 stripchart_se <- full_join(x = all_streamflow, y = se_clean, by = "datetime")
@@ -814,6 +890,9 @@ p_stripchart_se <- ggplot() +
         plot.subtitle = element_text(hjust = 0.5, 
                                      size = 7))
 
+#static plot
+#p_stripchart_se
+
 ggsave(filename = "stripchart_shaft_encoder.png",
        plot = p_stripchart_se,
        path = "figures/",
@@ -821,6 +900,6 @@ ggsave(filename = "stripchart_shaft_encoder.png",
        height = 3,
        units = c("in"),
        dpi = 300)
+
+ggplotly(p_stripchart_se)
 ```
-
-
