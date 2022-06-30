@@ -8,12 +8,5 @@ The Marcell Experimental Forest (MEF) in northern Minnesota is operated by the U
 
 This project is part of the [Environmental Data Initiative's](https://environmentaldatainitiative.org/) [2022 Data Data Management Fellowship Program](https://environmentaldatainitiative.org/2022-dm-fellowship-program/). 
 
-## Motivation and project goal
-
-## Intended purpose and important concepts
-
-## Future research
-
-## Installation
-
 ## Data
+Data used in this project is proprietary to the USDA Forest Service and stored in a private, online Box server used by the Marcell Experimental Forest team. For data access, please contact Dr. Nina Lany. 
