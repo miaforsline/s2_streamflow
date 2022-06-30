@@ -8,5 +8,16 @@ The Marcell Experimental Forest (MEF) in northern Minnesota is operated by the U
 
 This project is part of the [Environmental Data Initiative's](https://environmentaldatainitiative.org/) [2022 Data Data Management Fellowship Program](https://environmentaldatainitiative.org/2022-dm-fellowship-program/). 
 
+## Project motivation and goals: 
+The overall goals of this project include: 
+- Combining, cleaning, and visualizing multiple water years worth of streamflow data (specifically, stream height) from the MEF S2 bog site 
+- Incorporating climate data (such as air temperature and precipitation), bogwell data (AKA peatland water table elevation), and old sensor data to cross-validate the streamflow data's accuracy 
+- Publishing the cleaned streamflow data in the [EDI Data Portal](https://portal.edirepository.org/nis/home.jsp)
+
+Ultimately, this project is motivated by the hope of transitioning away from older analogue data collection techniques such as paper stripcharts that must be digitized by hand towards newer data collection techniques such as shaft encoder sensors. 
+
 ## Data
-Data used in this project is proprietary to the USDA Forest Service and stored in a private, online Box server used by the Marcell Experimental Forest team. For data access, please contact Dr. Nina Lany. 
+Data used in this project are proprietary to the USDA Forest Service and stored in a private, online Box server used by the Marcell Experimental Forest team. For data access, please contact Dr. Nina Lany. 
+
+## Tools
+This project primarily uses R and RStudio. 
