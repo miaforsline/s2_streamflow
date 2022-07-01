@@ -1,5 +1,5 @@
 # Marcell Experimental Forest S2 Bog Site Streamflow Analysis 
-### Author: [Mia Forsline](https://miaforsline.github.io/)
+### Project intern: [Mia Forsline](https://miaforsline.github.io/)
 ### Project mentor: [Dr. Nina Lany](https://www.nrs.fs.fed.us/people/nina.lany)
 ### Project collaborators: [Jacob Burdick](https://www.nrs.fs.fed.us/people/jburdick) & [Daniel 'Tyler' Roman](https://www.fs.usda.gov/research/about/people/danielroman#research-tab)
 ### Project dates: June 21 - August 19, 2022 
