@@ -354,7 +354,7 @@ p_2019
 ggplotly(p_2019)
 ```
 
-## Manual Streamflow Checks (2017 - 2019)
+# Manual Streamflow Checks (2017 - 2019)
 
 -   Read in the manual checks data from the External-MEF_DATA Box folder
     -   Specifically, raw data is found at the following file path:
@@ -500,9 +500,6 @@ ggplot() +
   theme_classic()
 ```
 
-## Water Year 2020
-
-## Water Year 2021
 
 # Old Shaft Encoder Data (2017 - 2019)
 
@@ -790,6 +787,8 @@ ggsave(filename = "streamflow_and_scaled_precip.png",
 ggplotly(p_sp)
 ```
 
+## Streamflow + precipitation (daily cumulative)
+
 ## Streamflow + air temperature data (every 30min)
 
 ```{r}
@@ -822,10 +821,14 @@ p_sa <- ggplot() +
                  y = stream_height_ft),
             color = "blue",
             size = 0.25) + 
+  #manual check points
+  geom_point(data = mc_clean, 
+             aes(x = collected, y = stripchart_stage),
+             size = 0.5) + 
   theme_classic() + 
   labs(x = "Time", 
        title = "S2 Bog Streamflow and Air Temperature (2017 - 2019)",
-       subtitle = "Air temperature is plotted in pink. Streamflow is plotted in blue.") + 
+       subtitle = "Air temperature is plotted in pink. \n Streamflow is plotted in blue. \n Manual streamflow checkpoints are plotted as black dots.") + 
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5, 
                                      size = 7)) + 
@@ -840,11 +843,11 @@ p_sa <- ggplot() +
 #p_sa
 
 #save the plot in the figures folder 
-ggsave(filename = "streamflow_airtemp.png",
+ggsave(filename = "streamflow_airtemp_manual_checks.png",
        plot = p_sa,
        path = "figures/",
        width = 6,
-       height = 3,
+       height = 4,
        units = c("in"),
        dpi = 300)
 
