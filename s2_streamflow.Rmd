@@ -37,7 +37,8 @@ librarian::shelf(
   janitor,
   plotly,
   readxl,
-  tidyverse
+  tidyverse,
+  zoo
   )
 
 # Set working directory path
@@ -453,7 +454,7 @@ mc_sub <- mc_clean %>%
                        format = '%Y-%m-%d'),
          date = as.POSIXct(date, tz = "GMT")) %>% 
   rename(datetime = collected) %>% 
-  select(-site, -lab_id, -name, -point_gage, -logger_stage)
+  select(-site, -lab_id, -name, -point_gage, -logger_stage) 
 
 #identify date ranges: 2017-04-04 to 2019-12-31 
 max_date <- max(mc_sub$date)
@@ -461,19 +462,37 @@ min_date <- min(mc_sub$date)
 
 #subset streamflow data to fit within the time range of the manual checks 
 streamflow_sub <- all_streamflow %>% 
-  subset(date <= max_date & date >= min_date)
+  subset(date <= max_date & date >= min_date) 
+
+test_fj <- full_join(x = mc_sub, 
+                  y = streamflow_sub, 
+                  by = c("datetime", "date")) %>% 
+  pivot_longer(cols = c("stripchart_stage", "stream_height_ft"),
+               names_to = "types",
+               values_to = "stream_height_ft") %>% 
+  mutate(approx = na.approx(stream_height_ft))
+
+test_lj <- left_join(x = mc_sub, 
+                     y = test_fj,
+                     by = c("datetime", "year", "date"))
 
 ggplot() + 
-  geom_point(data = streamflow_sub, 
-             aes(x = datetime, y = stream_height_ft),
-             color = "blue",
-             alpha = 0.1) + 
+  # geom_point(data = streamflow_sub, 
+  #            aes(x = datetime, y = stream_height_ft),
+  #            color = "blue",
+  #            alpha = 0.1) + 
   geom_point(data = mc_sub, 
              aes(x = datetime, y = stripchart_stage),
              color = "red") + 
   theme_classic() + 
   labs(x = "Time", 
        y = "Stream Height (ft)")
+
+ggplot() + 
+  geom_point(data = test_lj,
+             aes(x = datetime, y = approx, color = types),
+             alpha = 0.75) + 
+  theme_classic()
 ```
 
 ## Water Year 2020
