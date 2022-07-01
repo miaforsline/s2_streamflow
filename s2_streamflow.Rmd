@@ -718,21 +718,15 @@ bogwell_clean <- bogwell %>%
          year = as.numeric(year)) %>% 
   subset(year >= 2017 & year <= 2019)
 
-median_bog <- median(bogwell_clean$wte)
-min_bog <- min(bogwell_clean$wte)
-
-bogwell_clean <- bogwell_clean %>% 
-  mutate(diff_from_med = bogwell_clean$wte - median_bog,
-         diff_from_min = bogwell_clean$wte - min_bog)
-
 #plot
-##raw water table elevation (wte) values
 p_bogwell <- ggplot(data = bogwell_clean) + 
   geom_line(aes(x = date, y = wte)) + 
   theme_classic() + 
   labs(x = "Time", 
        y = "Water Table Elevation (m above sea level)",
        title = "S2 Daily Peatland Water Table Elevation")
+
+#static plot 
 p_bogwell
 
 #interactive plot
@@ -940,6 +934,15 @@ ggplotly(p_samc)
 ## Streamflow + bogwell data
 
 ```{r}
+#calculate median + min bogwell water table elevation (wte) values 
+median_bog <- median(bogwell_clean$wte)
+min_bog <- min(bogwell_clean$wte)
+
+#calculate the difference of wte values from the median and min 
+bogwell_diff <- bogwell_clean %>% 
+  mutate(diff_from_med = bogwell_clean$wte - median_bog,
+         diff_from_min = bogwell_clean$wte - min_bog)
+
 #sum streamflow by day 
 streamflow_daily <- all_streamflow %>% 
   group_by(date) %>% 
@@ -955,8 +958,8 @@ streamflow_precip_daily <- full_join(x = precip_daily_clean,
          -"NA") %>% 
   subset(year <= 2019)
 
-#combine daily precipitation, daily streamflow, and daily bogwell data 
-streamflow_precip_bogwell <- full_join(x = streamflow_precip_daily, y = bogwell_clean, by = c("date", "year")) %>% 
+#combine daily precipitation/streamflow with bogwell data 
+streamflow_precip_bogwell <- full_join(x = streamflow_precip_daily, y = bogwell_diff, by = c("date", "year")) %>% 
   select(-flag,
          -peatland) %>% 
   mutate(wte_100 = (wte / 100)) %>% 
@@ -980,7 +983,7 @@ p_sb <- ggplot() +
   #bogwell data
   geom_line(data = streamflow_precip_bogwell,
             aes(x = date,
-                y = wte_100), 
+                y = diff_from_min), 
             color = "green",
             size = 0.25) +
   theme_classic() + 
