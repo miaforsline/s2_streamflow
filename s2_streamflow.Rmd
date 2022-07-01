@@ -447,7 +447,7 @@ ggplotly(p_all)
 ## Stripchart vs manual checks (2017 - 2019)
 
 ```{r}
-#extract date column
+#extract date (AKA remove time stamp)
 mc_sub <- mc_clean %>% 
   mutate(date = format(as.POSIXct(collected, format = '%m/%d/%Y %H:%M:%S', 
                                   tz = "GMT"), 
@@ -456,37 +456,42 @@ mc_sub <- mc_clean %>%
   rename(datetime = collected) %>% 
   select(-site, -lab_id, -name, -point_gage, -logger_stage) 
 
-#identify date ranges: 2017-04-04 to 2019-12-31 
+#identify date ranges of interest: 2017-04-04 to 2019-12-31 
 max_date <- max(mc_sub$date)
 min_date <- min(mc_sub$date)
 
-#subset streamflow data to fit within the time range of the manual checks 
+#subset stripchart data to fit within the time range of the manual checks 
 streamflow_sub <- all_streamflow %>% 
   subset(date <= max_date & date >= min_date) 
 
+#join the stripchart data and manual checks data 
 test_fj <- full_join(x = mc_sub, 
                   y = streamflow_sub, 
                   by = c("datetime", "date")) %>% 
+  #rearrange dataframe into a long format 
   pivot_longer(cols = c("stripchart_stage", "stream_height_ft"),
                names_to = "types",
                values_to = "stream_height_ft") %>% 
+  #interpolate stripchart values to fill in NA values for timestamps of interest
   mutate(approx = na.approx(stream_height_ft))
 
+#left join the joined data and manual checks data to keep only the timestamps of interest 
 test_lj <- left_join(x = mc_sub, 
                      y = test_fj,
                      by = c("datetime", "year", "date"))
 
-ggplot() + 
-  # geom_point(data = streamflow_sub, 
-  #            aes(x = datetime, y = stream_height_ft),
-  #            color = "blue",
-  #            alpha = 0.1) + 
-  geom_point(data = mc_sub, 
-             aes(x = datetime, y = stripchart_stage),
-             color = "red") + 
-  theme_classic() + 
-  labs(x = "Time", 
-       y = "Stream Height (ft)")
+#plot 
+# ggplot() + 
+#   # geom_point(data = streamflow_sub, 
+#   #            aes(x = datetime, y = stream_height_ft),
+#   #            color = "blue",
+#   #            alpha = 0.1) + 
+#   geom_point(data = mc_sub, 
+#              aes(x = datetime, y = stripchart_stage),
+#              color = "red") + 
+#   theme_classic() + 
+#   labs(x = "Time", 
+#        y = "Stream Height (ft)")
 
 ggplot() + 
   geom_point(data = test_lj,
