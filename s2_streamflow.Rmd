@@ -735,24 +735,6 @@ p_bogwell <- ggplot(data = bogwell_clean) +
        title = "S2 Daily Peatland Water Table Elevation")
 p_bogwell
 
-##difference from the median 
-p_bogwell_med <- ggplot(data = bogwell_clean) + 
-  geom_line(aes(x = date, y = diff_from_med)) + 
-  theme_classic() + 
-  labs(x = "Time", 
-       y = "Water Table Elevation (m above sea level)",
-       title = "WTE Difference from Median")
-p_bogwell_med
-
-##difference from the min
-p_bogwell_min <- ggplot(data = bogwell_clean) + 
-  geom_line(aes(x = date, y = diff_from_min)) + 
-  theme_classic() + 
-  labs(x = "Time", 
-       y = "Water Table Elevation (m above sea level)",
-       title = "WTE Difference from Min")
-p_bogwell_min
-
 #interactive plot
 #ggplotly(p_bogwell)
 ```
