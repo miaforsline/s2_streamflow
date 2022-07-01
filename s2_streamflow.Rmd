@@ -102,7 +102,8 @@ p_2017 <- ggplot(data = wy2017_clean) +
        title = "WY 2017 S2 Bog Stream Height") + 
   theme(plot.title = element_text(hjust = 0.5))
 
-#p_2017
+#static plot 
+p_2017
 
 #interactive plot 
 #ggplotly(p_2017)
@@ -345,9 +346,11 @@ p_2019 <- ggplot(data = wy2019_clean) +
        title = "WY 2019 S2 Bog Stream Height") + 
   theme(plot.title = element_text(hjust = 0.5))
 
+#static plot
 p_2019
 
-#ggplotly(p_2019)
+#interactive plot
+ggplotly(p_2019)
 ```
 
 ## Manual Streamflow Checks (2017 - 2019)
@@ -437,6 +440,37 @@ ggsave(filename = "streamflow_with_manual_checks.png",
 #interactive plot 
 ggplotly(p_all)
 ```
+
+## Stripchart vs manual checks (2017 - 2019)
+
+```{r}
+#extract date column
+mc_sub <- mc_clean %>% 
+  mutate(date = format(as.POSIXct(collected, format = '%m/%d/%Y %H:%M:%S', 
+                                  tz = "GMT"), 
+                       format = '%Y-%m-%d'),
+         date = as.POSIXct(date, tz = "GMT")) %>% 
+  rename(datetime = collected) %>% 
+  select(-site, -lab_id, -name, -point_gage, -logger_stage)
+
+#identify date ranges: 2017-04-04 to 2019-12-31 
+max_date <- max(mc_sub$date)
+min_date <- min(mc_sub$date)
+
+#subset streamflow data to fit within the time range of the manual checks 
+streamflow_sub <- all_streamflow %>% 
+  subset(date <= max_date & date >= min_date)
+
+ggplot() + 
+  geom_point(data = streamflow_sub, 
+             aes(x = datetime, y = stream_height_ft),
+             color = "blue",
+             alpha = 0.1) + 
+  geom_point(data = mc_sub, 
+             aes(x = datetime, y = stripchart_stage),
+             color = "red")
+```
+
 
 ## Water Year 2020
 
