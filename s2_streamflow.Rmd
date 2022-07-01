@@ -363,6 +363,7 @@ ggplotly(p_2019)
         characters via `clean_names()`
     -   Convert the `collected` column from a character into a POSIXct
         date format
+    -   Remove rows with NA values in the `stripchart_stage` column
 -   Subset the data to include only the data of interest (S2 weir data)
     and the time period of interest (2017 - 2019)
 -   Plot the manual checks data
@@ -386,7 +387,8 @@ mc_clean <- mc %>%
                                   tz = "GMT"), 
                        format = '%Y')
          ) %>% 
-  subset(year >= 2017 & year <= 2019)
+  subset(year >= 2017 & year <= 2019) %>% 
+  subset(!is.na(stripchart_stage))
 
 #plot 
 ggplot(data = mc_clean) + 
@@ -468,9 +470,11 @@ ggplot() +
              alpha = 0.1) + 
   geom_point(data = mc_sub, 
              aes(x = datetime, y = stripchart_stage),
-             color = "red")
+             color = "red") + 
+  theme_classic() + 
+  labs(x = "Time", 
+       y = "Stream Height (ft)")
 ```
-
 
 ## Water Year 2020
 
@@ -703,7 +707,7 @@ p_bogwell <- ggplot(data = bogwell_clean) +
 
 # Comparisons
 
-## Streamflow + precipitation (every 15min) 
+## Streamflow + precipitation (every 15min)
 
 ```{r}
 #format precipitation data for a smooth joining process
