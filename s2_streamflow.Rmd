@@ -536,8 +536,9 @@ streamflow_mc_diff <- streamflow_mc_lj %>%
   drop_na(diff)
 
 #plot the difference in values (stripchart - manual checks)
-ggplot(data = streamflow_mc_diff) + 
-  geom_point(aes(x = datetime, y = diff)) + 
+p_diff <- ggplot(data = streamflow_mc_diff) + 
+  geom_point(aes(x = datetime, y = diff), 
+             size = 0.5) + 
   geom_line(aes(x = datetime, y = diff)) + 
   theme_classic() + 
   labs(x = "Time",
@@ -546,6 +547,18 @@ ggplot(data = streamflow_mc_diff) +
        subtitle = "Differences were calculated as stripchart value - manual checks value.") + 
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5))
+
+#static plot
+p_diff 
+
+#save the figure 
+ggsave(filename = "streamflow_mc_diff.png",
+       plot = p_diff,
+       path = "figures/",
+       width = 6,
+       height = 3,
+       units = c("in"),
+       dpi = 300)
 ```
 
 # Old Shaft Encoder Data (2017 - 2019)
