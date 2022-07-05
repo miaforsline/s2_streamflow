@@ -41,6 +41,14 @@ librarian::shelf(
   zoo #for interpolating missing data points 
   )
 
+#read in necessary CSV files from 1_water_years.Rmd
+wy2017_clean <- read_csv(here("intermediate_data", "wy2017_clean.csv")) %>% 
+  select(-...1)
+wy2018_altered <- read_csv(here("intermediate_data", "wy2018_altered.csv")) %>% 
+  select(-...1)
+wy2019_clean <- read_csv(here("intermediate_data", "wy2019_clean.csv")) %>% 
+  select(-...1)
+
 # Set working directory path
 ## Mia's working directory path
 #setwd("/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/Hydro/Streamflow/L0_subdaily/StripCharts/AnnualBreakPoint/S2")
@@ -105,7 +113,7 @@ ggplot(data = mc_clean) +
 
 ```{r wy2017-2019}
 #combine 2017 - 2019 data
-all_streamflow <- rbind(wy2017_clean, wy2018_clean, wy2019_clean)
+all_streamflow <- rbind(wy2017_clean, wy2018_altered, wy2019_clean)
 
 #plot
 p_all <- ggplot(data = all_streamflow) + 
