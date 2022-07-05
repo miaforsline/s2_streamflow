@@ -506,7 +506,7 @@ streamflow_mc_lj <- left_join(x = mc_sub,
   #calculate the difference between the stripchart - interpolated value
   mutate(diff = lag(x = stream_height_ft, n = 1) - approx)
 
-#plot
+#plot interpolated values 
 p_1to1 <- ggplot() + 
   geom_point(data = streamflow_mc_lj,
              aes(x = datetime, y = approx, color = types),
@@ -522,6 +522,7 @@ p_1to1 <- ggplot() +
 #static plot
 p_1to1
 
+#save the figure 
 ggsave(filename = "streamflow_mc_comparison.png",
        plot = p_1to1,
        path = "figures/",
@@ -530,8 +531,21 @@ ggsave(filename = "streamflow_mc_comparison.png",
        units = c("in"),
        dpi = 300)
   
-ggplot(data = streamflow_mc_lj) + 
-  geom_point(aes(x = datetime, y = diff))
+#drop NA values from the difference column to plot better
+streamflow_mc_diff <- streamflow_mc_lj %>% 
+  drop_na(diff)
+
+#plot the difference in values (stripchart - manual checks)
+ggplot(data = streamflow_mc_diff) + 
+  geom_point(aes(x = datetime, y = diff)) + 
+  geom_line(aes(x = datetime, y = diff)) + 
+  theme_classic() + 
+  labs(x = "Time",
+       y = "Difference in Stream Height (ft)",
+       title = "Difference Between Stripcharts and Manual Checks",
+       subtitle = "Differences were calculated as stripchart value - manual checks value.") + 
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5))
 ```
 
 # Old Shaft Encoder Data (2017 - 2019)
