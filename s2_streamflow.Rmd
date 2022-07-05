@@ -41,6 +41,16 @@ librarian::shelf(
   zoo #for interpolating missing data points 
   )
 
+#read in necessary CSV files from prior RMDs
+wy2017_clean <- read_csv(here("intermediate_data", "wy2017_clean.csv"))
+wy2018_altered <- read_csv(here("intermediate_data", "wy2018_altered.csv"))
+wy2019_clean <- read_csv(here("intermediate_data", "wy2019_clean.csv")) 
+
+precip_15_clean <- 
+all_streamflow
+precip_daily_clean 
+
+
 # Set working directory path
 ## Mia's working directory path
 #setwd("/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/Hydro/Streamflow/L0_subdaily/StripCharts/AnnualBreakPoint/S2")
@@ -162,7 +172,6 @@ p_spmc <- ggplot() +
     ###for example, max value of precipitation / max value of streamflow = 0.533... 
     sec.axis = sec_axis(trans = ~.*0.53326422081, name = "Cumulative Daily Precipitation / 10 (in)")
   ) 
-
 
 #static plot
 p_spmc
