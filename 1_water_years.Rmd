@@ -95,7 +95,8 @@ wy2017_clean <- wy2017 %>%
 
 #save clean data CSV to use in future RMD files
 write.csv(x = wy2017_clean, 
-          file = file.path(here("intermediate_data", "wy2017_clean.csv")))
+          file = file.path(here("intermediate_data", "wy2017_clean.csv")),
+          row.names = FALSE)
 
 #test the 2017 data
 if(nrow(wy2017) != nrow(wy2017_clean)) stop("Check clean dataframe dimensions")
@@ -228,7 +229,8 @@ p_2018_altered <- ggplot(data = wy2018_altered) +
 
 #save clean data CSV to use in future RMD files
 write.csv(x = wy2018_altered, 
-          file = file.path(here("intermediate_data", "wy2018_altered.csv")))
+          file = file.path(here("intermediate_data", "wy2018_altered.csv")),
+          row.names = FALSE)
 
 #note that the wonky values have been removed and the graphis now smoothed out 
 #static plot
@@ -362,7 +364,8 @@ wy2019_clean$stream_height_ft[wy2019_clean$date %between% as.Date(c('2019-09-03'
 
 #save clean data CSV to use in future RMD files
 write.csv(x = wy2019_clean, 
-          file = file.path(here("intermediate_data", "wy2019_clean.csv")))
+          file = file.path(here("intermediate_data", "wy2019_clean.csv")),
+          row.names = FALSE)
 
 #test the 2019 data 
 if(nrow(wy2019) != nrow(wy2019_clean)) stop("Check clean dataframe dimensions")

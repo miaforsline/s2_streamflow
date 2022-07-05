@@ -50,7 +50,7 @@ librarian::shelf(
 
 # Climate and Bogwell data
 
-## Precipitation Every 15min
+# Precipitation Every 15min
 
 -   Read in the data from the following Box file path:
     `External-MEF_DATA/EDI/precipitation_15min/edi.849.2/data_objects/`
@@ -84,6 +84,11 @@ precip_15_clean <- precip_15 %>%
     values_to = "precip_in"
   )
 
+#save clean data CSV to use in future RMD files
+write.csv(x = precip_15_clean, 
+          file = file.path(here("intermediate_data", "precip_15_clean.csv")),
+          row.names = FALSE)
+
 #plot 
 p_15 <- ggplot(data = precip_15_clean) + 
   geom_line(aes(x = timestamp, y = precip_in, color = precip_type)) + 
@@ -92,10 +97,14 @@ p_15 <- ggplot(data = precip_15_clean) +
        y = "Precipitation (cm)", 
        title = "2017 - 2019 Precipitation Sum Every 15 Min")
 
+#static plot
+p_15
+
+#interactive plot 
 #ggplotly(p_15)
 ```
 
-## Precipitation Daily
+# Precipitation Daily
 
 -   Read in the data from the following Box file path:
     `External-MEF_DATA/EDI/precipitation_daily/edi.563.3/data_objects/`
@@ -139,12 +148,12 @@ p_daily <- ggplot(data = precip_daily_clean) +
        title = "2017 - 2019 Precipitation Daily Sum")
 
 #static plot
-#p_daily
+p_daily
 
 #ggplotly(p_daily)
 ```
 
-## Air Temperature Every 30 Min
+# Air Temperature Every 30 Min
 
 -   Read in the data from the following Box file path:
     `External-MEF_DATA/EDI/airT_RH_BP_30min/edi.990.1/data_objects/`
@@ -196,7 +205,7 @@ p_air_30
 #ggplotly(p_air_30)
 ```
 
-## Peatland Daily Water Table
+# Peatland Daily Water Table
 
 -   Read in the data from the following Box file path:
     `External-MEF_DATA/EDI/peatland_water_table_daily/edi.562.2/data_objects/`

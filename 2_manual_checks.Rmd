@@ -42,12 +42,9 @@ librarian::shelf(
   )
 
 #read in necessary CSV files from 1_water_years.Rmd
-wy2017_clean <- read_csv(here("intermediate_data", "wy2017_clean.csv")) %>% 
-  select(-...1)
-wy2018_altered <- read_csv(here("intermediate_data", "wy2018_altered.csv")) %>% 
-  select(-...1)
-wy2019_clean <- read_csv(here("intermediate_data", "wy2019_clean.csv")) %>% 
-  select(-...1)
+wy2017_clean <- read_csv(here("intermediate_data", "wy2017_clean.csv"))
+wy2018_altered <- read_csv(here("intermediate_data", "wy2018_altered.csv"))
+wy2019_clean <- read_csv(here("intermediate_data", "wy2019_clean.csv")) 
 
 # Set working directory path
 ## Mia's working directory path
