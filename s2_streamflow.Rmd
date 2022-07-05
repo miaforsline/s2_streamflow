@@ -502,14 +502,36 @@ streamflow_mc_fj <- full_join(x = mc_sub,
 #left join the joined data and manual checks data to keep only the timestamps of interest 
 streamflow_mc_lj <- left_join(x = mc_sub, 
                      y = streamflow_mc_fj,
-                     by = c("datetime", "year", "date"))
+                     by = c("datetime", "year", "date")) %>% 
+  #calculate the difference between the stripchart - interpolated value
+  mutate(diff = lag(x = stream_height_ft, n = 1) - approx)
 
 #plot
-ggplot() + 
+p_1to1 <- ggplot() + 
   geom_point(data = streamflow_mc_lj,
              aes(x = datetime, y = approx, color = types),
-             alpha = 0.75) + 
-  theme_classic()
+             alpha = 0.5) + 
+  theme_classic() + 
+  labs(x = "Time",
+       y = "Stream Height (ft)",
+       title = "S2 Manual Checks vs Interpolated Stripchart Values",
+       color = "Data Collection Type") +
+  scale_color_discrete(labels = c("Stripchart", "Manual Check")) + 
+    theme(plot.title = element_text(hjust = 0.5))
+
+#static plot
+p_1to1
+
+ggsave(filename = "streamflow_mc_comparison.png",
+       plot = p_1to1,
+       path = "figures/",
+       width = 6,
+       height = 3,
+       units = c("in"),
+       dpi = 300)
+  
+ggplot(data = streamflow_mc_lj) + 
+  geom_point(aes(x = datetime, y = diff))
 ```
 
 # Old Shaft Encoder Data (2017 - 2019)
