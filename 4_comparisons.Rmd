@@ -42,14 +42,13 @@ librarian::shelf(
   )
 
 #read in necessary CSV files from prior RMDs
-wy2017_clean <- read_csv(here("intermediate_data", "wy2017_clean.csv"))
-wy2018_altered <- read_csv(here("intermediate_data", "wy2018_altered.csv"))
-wy2019_clean <- read_csv(here("intermediate_data", "wy2019_clean.csv")) 
-
-precip_15_clean <- 
-all_streamflow
-precip_daily_clean 
-
+all_streamflow <- read_csv(here("intermediate_data", "all_streamflow.csv"))
+air_temp_30_clean <- read_csv(here("intermediate_data", "air_temp_30_clean.csv"))
+bogwell_clean <- read_csv(here("intermediate_data", "bogwell_clean.csv")) 
+mc_clean <- read_csv(here("intermediate_data", "mc_clean.csv"))
+precip_15_clean <- read_csv(here("intermediate_data", "precip_15_clean.csv")) 
+precip_daily_clean <- read_csv(here("intermediate_data", "precip_daily_clean.csv")) 
+se_clean <- read_csv(here("intermediate_data", "se_clean.csv")) 
 
 # Set working directory path
 ## Mia's working directory path
@@ -134,7 +133,7 @@ precip_daily_join <- precip_daily_clean %>%
   subset(year <= 2019 & year >= 2017)
 
 #join streamflow and daily precipitation data 
-streamflow_precip_daily <- full_join(x = all_streamflow, y = precip_join, by = "datetime") %>% 
+streamflow_precip_daily <- full_join(x = all_streamflow, y = precip_daily_join, by = "date") %>% 
   rename(precip_10_in = precip_10) %>% 
   select(-precip_in) %>% 
   subset(year <= 2019 & year >= 2017)
@@ -143,19 +142,19 @@ streamflow_precip_daily <- full_join(x = all_streamflow, y = precip_join, by = "
 p_spmc <- ggplot() + 
   #precipitation data 
   geom_line(data = streamflow_precip_daily, 
-            aes(x = datetime, 
+            aes(x = date, 
                 y = precip_10_in,
                 colour = I("grey")),
             size = 0.25) + 
   #streamflow data 
   geom_line(data = all_streamflow,
-             aes(x = datetime, 
+             aes(x = date, 
                  y = stream_height_ft),
             color = "blue",
             size = 0.25) + 
   #manual check points
   geom_point(data = mc_clean, 
-             aes(x = collected, y = stripchart_stage),
+             aes(x = date, y = stripchart_stage),
              size = 0.5) + 
   theme_classic() + 
   labs(x = "Time", 
@@ -163,15 +162,15 @@ p_spmc <- ggplot() +
        subtitle = "Streamflow is plotted in blue. \n Precipitation is plotted in grey. \n Manual streamflow checks are plotted as black points.") + 
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5, 
-                                     size = 7)) + 
+                                     size = 7)) +
   scale_y_continuous(
     #features of the first axis
     name = "Stream Height (ft)",
     #add a second axis and specify its features
     ##determine the ratio between the max value of Axis 1 vs the max value of Axis 2 to decide what number to put in the trans argument
-    ###for example, max value of precipitation / max value of streamflow = 0.533... 
+    ###for example, max value of precipitation / max value of streamflow = 0.533...
     sec.axis = sec_axis(trans = ~.*0.53326422081, name = "Cumulative Daily Precipitation / 10 (in)")
-  ) 
+  )
 
 #static plot
 p_spmc
@@ -180,8 +179,8 @@ p_spmc
 ggsave(filename = "streamflow_precip_manual_checks.png",
        plot = p_spmc,
        path = "figures/",
-       width = 6,
-       height = 3,
+       width = 8,
+       height = 4,
        units = c("in"),
        dpi = 300)
 
@@ -278,8 +277,7 @@ streamflow_precip_daily <- full_join(x = precip_daily_clean,
                                      by = "date") %>% 
   pivot_wider(names_from = "precip_type",
               values_from = "precip_in") %>% 
-  select(-south_flag,
-         -"NA") %>% 
+  select(-south_flag) %>% 
   subset(year <= 2019)
 
 #combine daily precipitation/streamflow with bogwell data 
