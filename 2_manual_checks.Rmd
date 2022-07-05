@@ -20,6 +20,8 @@ editor_options:
 -   Install/load necessary R packages
 -   Set working directory if necessary (or create a file path to use
     throughout the RMD to call the data from Box)
+-   Read in water year data from CSVs in the `intermediate_data`
+    directory
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,
@@ -218,7 +220,6 @@ ggsave(filename = "streamflow_mc_comparison.png",
        dpi = 300)
 ```
 
-
 ```{r diff}
 streamflow_mc_diff <- streamflow_mc_lj %>% 
   #calculate the difference between the stripchart - interpolated value
@@ -292,4 +293,3 @@ ggplot() +
   theme(plot.title = element_text(hjust = 0.5))
   
 ```
-
