@@ -219,20 +219,6 @@ write.csv(x = streamflow_mc_lj,
           file = file.path(here("intermediate_data", "streamflow_mc_lj.csv")),
           row.names = FALSE)
 
-#plot interpolated values 
-# p_1to1 <- ggplot() + 
-#   geom_point(data = streamflow_mc_lj,
-#              aes(x = datetime, y = approx, color = types),
-#              alpha = 0.5) + 
-#   theme_classic() + 
-#   labs(x = "Time",
-#        y = "Stream Height (ft)",
-#        title = "S2 Manual Checks vs Interpolated Stripchart Values",
-#        color = "Data Collection Type") +
-#   scale_color_discrete(labels = c("Stripchart", "Manual Check")) + 
-#     theme(plot.title = element_text(hjust = 0.5)) 
-  
-
 p_1to1 <- ggplot() + 
   geom_point(data = streamflow_mc_lj, 
              aes(x = manual_check, y = stripchart),
