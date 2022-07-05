@@ -1668,6 +1668,11 @@ precip_15_clean &lt;- precip_15 %&gt;%
     values_to = &quot;precip_in&quot;
   )
 
+#save clean data CSV to use in future RMD files
+write.csv(x = precip_15_clean, 
+          file = file.path(here(&quot;intermediate_data&quot;, &quot;precip_15_clean.csv&quot;)),
+          row.names = FALSE)
+
 #plot 
 p_15 &lt;- ggplot(data = precip_15_clean) + 
   geom_line(aes(x = timestamp, y = precip_in, color = precip_type)) + 
@@ -1715,6 +1720,11 @@ precip_daily_clean &lt;- precip_daily %&gt;%
     names_to = &quot;precip_type&quot;,
     values_to = &quot;precip_in&quot;
   )
+
+#save clean data CSV to use in future RMD files
+write.csv(x = precip_daily_clean, 
+          file = file.path(here(&quot;intermediate_data&quot;, &quot;precip_daily_clean.csv&quot;)),
+          row.names = FALSE)
 
 #plot 
 p_daily &lt;- ggplot(data = precip_daily_clean) + 
@@ -1765,6 +1775,11 @@ air_temp_30_clean &lt;- air_temp_30 %&gt;%
     values_to = &quot;airtempC&quot;
   )
 
+#save clean data CSV to use in future RMD files
+write.csv(x = air_temp_30_clean, 
+          file = file.path(here(&quot;intermediate_data&quot;, &quot;air_temp_30_clean.csv&quot;)),
+          row.names = FALSE)
+
 #plot 
 p_air_30 &lt;- ggplot(data = air_temp_30_clean) + 
   geom_line(aes(x = datetime, y = airtempC, color = airtemp_type)) + 
@@ -1805,6 +1820,11 @@ bogwell_clean &lt;- bogwell %&gt;%
                        format = &#39;%Y&#39;),
          year = as.numeric(year)) %&gt;% 
   subset(year &gt;= 2017 &amp; year &lt;= 2019)
+
+#save clean data CSV to use in future RMD files
+write.csv(x = bogwell_clean, 
+          file = file.path(here(&quot;intermediate_data&quot;, &quot;bogwell_clean.csv&quot;)),
+          row.names = FALSE)
 
 #plot
 p_bogwell &lt;- ggplot(data = bogwell_clean) + 

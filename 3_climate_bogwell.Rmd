@@ -139,6 +139,11 @@ precip_daily_clean <- precip_daily %>%
     values_to = "precip_in"
   )
 
+#save clean data CSV to use in future RMD files
+write.csv(x = precip_daily_clean, 
+          file = file.path(here("intermediate_data", "precip_daily_clean.csv")),
+          row.names = FALSE)
+
 #plot 
 p_daily <- ggplot(data = precip_daily_clean) + 
   geom_line(aes(x = date, y = precip_in, color = precip_type)) + 
@@ -190,6 +195,11 @@ air_temp_30_clean <- air_temp_30 %>%
     values_to = "airtempC"
   )
 
+#save clean data CSV to use in future RMD files
+write.csv(x = air_temp_30_clean, 
+          file = file.path(here("intermediate_data", "air_temp_30_clean.csv")),
+          row.names = FALSE)
+
 #plot 
 p_air_30 <- ggplot(data = air_temp_30_clean) + 
   geom_line(aes(x = datetime, y = airtempC, color = airtemp_type)) + 
@@ -232,6 +242,11 @@ bogwell_clean <- bogwell %>%
                        format = '%Y'),
          year = as.numeric(year)) %>% 
   subset(year >= 2017 & year <= 2019)
+
+#save clean data CSV to use in future RMD files
+write.csv(x = bogwell_clean, 
+          file = file.path(here("intermediate_data", "bogwell_clean.csv")),
+          row.names = FALSE)
 
 #plot
 p_bogwell <- ggplot(data = bogwell_clean) + 
