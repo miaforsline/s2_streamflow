@@ -96,7 +96,7 @@ ggplot(data = mc_clean) +
   theme(plot.title = element_text(hjust = 0.5))
 ```
 
-## Streamflow + Manual Checks (2017 - 2019)
+# Streamflow + Manual Checks (2017 - 2019)
 
 -   Combine all 3 water years using `rbind()`
 
@@ -185,9 +185,7 @@ streamflow_mc_fj <- full_join(x = mc_sub,
 #left join the joined data and manual checks data to keep only the timestamps of interest 
 streamflow_mc_lj <- left_join(x = mc_sub, 
                      y = streamflow_mc_fj,
-                     by = c("datetime", "year", "date")) %>% 
-  #calculate the difference between the stripchart - interpolated value
-  mutate(diff = lag(x = stream_height_ft, n = 1) - approx)
+                     by = c("datetime", "year", "date")) 
 
 #plot interpolated values 
 p_1to1 <- ggplot() + 
@@ -213,9 +211,14 @@ ggsave(filename = "streamflow_mc_comparison.png",
        height = 3,
        units = c("in"),
        dpi = 300)
-  
-#drop NA values from the difference column to plot better
+```
+
+
+```{r diff}
 streamflow_mc_diff <- streamflow_mc_lj %>% 
+  #calculate the difference between the stripchart - interpolated value
+  mutate(diff = lag(x = stream_height_ft, n = 1) - approx) %>% 
+  #drop NA values from the difference column to plot better
   drop_na(diff)
 
 #plot the difference in values (stripchart - manual checks)

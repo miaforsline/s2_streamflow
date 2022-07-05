@@ -48,7 +48,9 @@ librarian::shelf(
 #setwd("~/../../Box/External-MEF_DATA/Hydro/Streamflow/L0_subdaily/StripCharts")
 ```
 
-# Streamflow data
+# Stripchart Streamflow data
+
+This RMD is the first in the workflow and reads in, cleans, and visualizes the stripchart stream height data for the 2017 - 2019 water years.
 
 ## Water Year 2017
 
@@ -91,6 +93,10 @@ wy2017_clean <- wy2017 %>%
                        format = '%Y-%m-%d'),
          date = as.POSIXct(date, tz = "GMT")) 
 
+#save clean data CSV to use in future RMD files
+write.csv(x = wy2017_clean, 
+          file = file.path(here("intermediate_data", "wy2017_clean.csv")))
+
 #test the 2017 data
 if(nrow(wy2017) != nrow(wy2017_clean)) stop("Check clean dataframe dimensions")
 
@@ -104,10 +110,10 @@ p_2017 <- ggplot(data = wy2017_clean) +
   theme(plot.title = element_text(hjust = 0.5))
 
 #static plot 
-p_2017
+#p_2017
 
 #interactive plot 
-#ggplotly(p_2017)
+ggplotly(p_2017)
 ```
 
 ## Water Year 2018
@@ -188,10 +194,12 @@ p_2018_clean <- ggplot(data = wy2018_clean) +
        title = "WY 2018 S2 Bog Weir Stream Height") + 
   theme(plot.title = element_text(hjust = 0.5))
 
-#note the weird oscillating values from Oct 31 - Nov 1 
-p_2018_clean
+#note the weird oscillating values from Oct 31 - Nov 1
+#static plot
+#p_2018_clean
 
-#ggplotly(p_2018_clean)
+#interactive plot 
+ggplotly(p_2018_clean)
 ```
 
 Next, we need to remove unusual stream height values from Oct 31 - Nov
@@ -218,10 +226,16 @@ p_2018_altered <- ggplot(data = wy2018_altered) +
        title = "WY 2018 S2 Bog Stream Height") + 
   theme(plot.title = element_text(hjust = 0.5))
 
-#note that the wonky values have been removed and the graphis now smoothed out 
-p_2018_altered
+#save clean data CSV to use in future RMD files
+write.csv(x = wy2018_altered, 
+          file = file.path(here("intermediate_data", "wy2018_altered.csv")))
 
-#ggplotly(p_2018_altered)
+#note that the wonky values have been removed and the graphis now smoothed out 
+#static plot
+#p_2018_altered
+
+#interactive plot 
+ggplotly(p_2018_altered)
 ```
 
 ### Altered Oct 31 - Nov 1, 2018 streamflow values 
@@ -346,6 +360,10 @@ wy2019_clean$stream_height_ft[wy2019_clean$date %between% as.Date(c('2019-04-17'
 #assign September NA values 
 wy2019_clean$stream_height_ft[wy2019_clean$date %between% as.Date(c('2019-09-03', '2019-09-10'))] <- NA
 
+#save clean data CSV to use in future RMD files
+write.csv(x = wy2019_clean, 
+          file = file.path(here("intermediate_data", "wy2019_clean.csv")))
+
 #test the 2019 data 
 if(nrow(wy2019) != nrow(wy2019_clean)) stop("Check clean dataframe dimensions")
 
@@ -359,10 +377,10 @@ p_2019 <- ggplot(data = wy2019_clean) +
   theme(plot.title = element_text(hjust = 0.5))
 
 #static plot
-p_2019
+#p_2019
 
 #interactive plot
-#ggplotly(p_2019)
+ggplotly(p_2019)
 ```
 
 
