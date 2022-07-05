@@ -15,26 +15,273 @@ editor_options:
     wrap: 72
 ---
 
+# Set Up
+
+-   Install/load necessary R packages
+-   Set working directory if necessary (or create a file path to use
+    throughout the RMD to call the data from Box)
+
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE, 
+                      warning = FALSE)
+
+#install packages if necessary, then load libraries
+if (!require(librarian)){
+  install.packages("librarian")
+  library(librarian)
+}
+
+librarian::shelf(
+  here, #for file paths 
+  janitor, 
+  plotly, #for creating interactive plots 
+  readxl, 
+  tidyverse,
+  zoo #for interpolating missing data points 
+  )
+
+# Set working directory path
+## Mia's working directory path
+#setwd("/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/Hydro/Streamflow/L0_subdaily/StripCharts/AnnualBreakPoint/S2")
+## Nina's working directory path 
+#setwd("~/../../Box/External-MEF_DATA/Hydro/Streamflow/L0_subdaily/StripCharts")
 ```
 
-## R Markdown
+# Manual Streamflow Checks (2017 - 2019)
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+-   Read in the manual streamflow checkpoints from the External-MEF_DATA
+    Box folder
+    -   The raw data is found at the following file path:
+        `External-MEF_DATA/Hydro/Streamflow/L0_subdaily/ManualChecks`
+-   Clean and manipulate the data into a tidy format
+    -   Renaming columns to use lower_snake_case and avoid special
+        characters via `clean_names()`
+    -   Convert the `collected` column from a character into a POSIXct
+        date format
+    -   Remove rows with NA values in the `stripchart_stage` column
+-   Subset the data to include only the data of interest (S2 weir data)
+    and the time period of interest (2017 - 2019)
+-   Plot the manual checks data
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+```{r manual_checks}
+#create file path to call the data from Box 
+## Mia's file path 
+filepath <- "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/Hydro/Streamflow/L0_subdaily/ManualChecks"
 
-```{r cars}
-summary(cars)
+#read in the manual checks data 
+mc <- read_csv(here(filepath, "2017-2021_S2Stage.csv"))
+
+#clean the data
+mc_clean <- mc %>% 
+  clean_names() %>% 
+  #remove S2 lagging pool data and keep only the S2 weir data
+  subset(name == "S2 WEIR") %>%
+  mutate(collected = as.POSIXct(collected, format = '%m/%d/%Y %H:%M', 
+                                tz = "GMT"),
+         year = format(as.POSIXct(collected, format = '%Y-%m-%d %H:%M:%S', 
+                                  tz = "GMT"), 
+                       format = '%Y')
+         ) %>% 
+  subset(year >= 2017 & year <= 2019) %>% 
+  subset(!is.na(stripchart_stage))
+
+#plot 
+ggplot(data = mc_clean) + 
+  geom_point(aes(x = collected, y = stripchart_stage)) + 
+  theme_classic() + 
+  labs(y = "Stream Height (ft)", 
+       x = "Time", 
+       title = "S2 Weir Manual Streamflow Checks (2017 - 2019)") + 
+  theme(plot.title = element_text(hjust = 0.5))
 ```
 
-## Including Plots
+## Streamflow + Manual Checks (2017 - 2019)
 
-You can also embed plots, for example:
+-   Combine all 3 water years using `rbind()`
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+-   Plot stripchart data (as lines) then add the manual checks (as
+    points) on top
+
+```{r wy2017-2019}
+#combine 2017 - 2019 data
+all_streamflow <- rbind(wy2017_clean, wy2018_clean, wy2019_clean)
+
+#plot
+p_all <- ggplot(data = all_streamflow) + 
+  geom_line(aes(x = datetime, y = stream_height_ft),
+            size = 0.25) + 
+  geom_point(data = mc_clean, 
+             aes(x = collected, 
+                 y = stripchart_stage), 
+             color = "red",
+             size = 0.5) + 
+  theme_classic() + 
+  labs(x = "Time", 
+       y = "Stream Height (ft)",
+       title = "WY 2017 - 2019 S2 Bog Stream Height",
+       subtitle = "Stripchart data are plotted as black lines. Manual checks are plotted as red dots.") + 
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5))
+
+#static plot
+#p_all
+
+#save PNG file
+ggsave(filename = "streamflow_with_manual_checks.png",
+       plot = p_all,
+       path = "figures/",
+       width = 6,
+       height = 3,
+       units = c("in"),
+       dpi = 300)
+
+#interactive plot 
+ggplotly(p_all)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+## 1:1 Stripchart vs Manual Checkpoints (2017 - 2019)
+
+Next, we are interested in a 1:1 comparison of stripchart data vs manual
+checkpoints data at the exact same timestamp. Since the stripchart data
+and manual checkpoints do not align perfectly, we will interpolate the
+stripchart stream flow values using the `zoo` package to estimate
+stripchart values at the time of the manual checks.
+
+```{r 1_to_1}
+#clean the data 
+mc_sub <- mc_clean %>% 
+  #extract the data (without the timestamp)
+  mutate(date = format(as.POSIXct(collected, format = '%m/%d/%Y %H:%M:%S', 
+                                  tz = "GMT"), 
+                       format = '%Y-%m-%d'),
+         date = as.POSIXct(date, tz = "GMT")) %>% 
+  #rename column
+  rename(datetime = collected) %>% 
+  #remove unnecessary columns 
+  select(-site, -lab_id, -name, -point_gage, -logger_stage) 
+
+#identify date ranges of interest: 2017-04-04 to 2019-12-31
+##aka the range of the manual checkpoint data
+max_date <- max(mc_sub$date)
+min_date <- min(mc_sub$date)
+
+#subset stripchart data to fit within the time range of the manual checkpoints
+streamflow_sub <- all_streamflow %>% 
+  subset(date <= max_date & date >= min_date) 
+
+#join the stripchart data and manual checks data 
+streamflow_mc_fj <- full_join(x = mc_sub, 
+                  y = streamflow_sub, 
+                  by = c("datetime", "date")) %>% 
+  #rearrange dataframe into a long format 
+  pivot_longer(cols = c("stripchart_stage", "stream_height_ft"),
+               names_to = "types",
+               values_to = "stream_height_ft") %>% 
+  #interpolate stripchart values to fill in NA values for timestamps of interest
+  mutate(approx = na.approx(stream_height_ft, 
+                            method = "linear"))
+
+#left join the joined data and manual checks data to keep only the timestamps of interest 
+streamflow_mc_lj <- left_join(x = mc_sub, 
+                     y = streamflow_mc_fj,
+                     by = c("datetime", "year", "date")) %>% 
+  #calculate the difference between the stripchart - interpolated value
+  mutate(diff = lag(x = stream_height_ft, n = 1) - approx)
+
+#plot interpolated values 
+p_1to1 <- ggplot() + 
+  geom_point(data = streamflow_mc_lj,
+             aes(x = datetime, y = approx, color = types),
+             alpha = 0.5) + 
+  theme_classic() + 
+  labs(x = "Time",
+       y = "Stream Height (ft)",
+       title = "S2 Manual Checks vs Interpolated Stripchart Values",
+       color = "Data Collection Type") +
+  scale_color_discrete(labels = c("Stripchart", "Manual Check")) + 
+    theme(plot.title = element_text(hjust = 0.5))
+
+#static plot
+p_1to1
+
+#save the figure 
+ggsave(filename = "streamflow_mc_comparison.png",
+       plot = p_1to1,
+       path = "figures/",
+       width = 6,
+       height = 3,
+       units = c("in"),
+       dpi = 300)
+  
+#drop NA values from the difference column to plot better
+streamflow_mc_diff <- streamflow_mc_lj %>% 
+  drop_na(diff)
+
+#plot the difference in values (stripchart - manual checks)
+p_diff <- ggplot(data = streamflow_mc_diff) + 
+  geom_point(aes(x = datetime, y = diff), 
+             size = 0.5) + 
+  geom_line(aes(x = datetime, y = diff)) + 
+  theme_classic() + 
+  labs(x = "Time",
+       y = "Difference in Stream Height (ft)",
+       title = "Difference Between Stripcharts and Manual Checks",
+       subtitle = "Differences were calculated as stripchart value - manual checks value.") + 
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5))
+
+#static plot
+p_diff 
+
+#save the figure 
+ggsave(filename = "streamflow_mc_diff.png",
+       plot = p_diff,
+       path = "figures/",
+       width = 6,
+       height = 3,
+       units = c("in"),
+       dpi = 300)
+```
+
+# Old Shaft Encoder Data (2017 - 2019)
+
+-   Read in the manual checks data from the External-MEF_DATA Box folder
+
+    -   Specifically, raw data is found at the following file path:
+        `External-MEF_DATA/Hydro/Streamflow/L1_subdaily`
+
+-   Clean and manipulate the data into a tidy format
+
+    -   Renaming columns to use lower_snake_case and avoid special
+        characters via `clean_names()`
+    -   Remove extraneous columns
+    -   Rename columns to join the data later
+
+-   Plot the old shaft encoder data
+
+```{r}
+#create file path to call the data from Box 
+## Mia's file path 
+filepath <- "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/Hydro/Streamflow/L1_subdaily/"
+
+#read in the 2019 data 
+se_data <- read_csv(here(filepath, "S2_5min_2017-2019.csv"))
+
+#clean the data 
+se_clean <- se_data %>% 
+  clean_names() %>% 
+  select(-x1, -record, -cond, -ct, -streamflow_cfs, -streamflow_lps, -temp_c) %>% 
+  rename(datetime = timestamp)
+
+#plot 
+ggplot() + 
+  geom_line(data = se_clean, aes(x = datetime, y = stage)) + 
+  theme_classic() + 
+  labs(x = "Time", 
+       y = "Stream Height (ft)",
+       title = "Shaft Encoder S2 Bog (2017 - 2019)") + 
+  theme(plot.title = element_text(hjust = 0.5))
+  
+```
+
