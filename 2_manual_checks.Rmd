@@ -88,7 +88,10 @@ mc_clean <- mc %>%
                                 tz = "GMT"),
          year = format(as.POSIXct(collected, format = '%Y-%m-%d %H:%M:%S', 
                                   tz = "GMT"), 
-                       format = '%Y')
+                       format = '%Y'),
+         date = format(as.POSIXct(collected, format = '%Y-%m-%d %H:%M:%S', 
+                                  tz = "GMT"), 
+                       format = '%Y-%m-%d')
          ) %>% 
   subset(year >= 2017 & year <= 2019) %>% 
   subset(!is.na(stripchart_stage))
@@ -302,6 +305,11 @@ se_clean <- se_data %>%
   clean_names() %>% 
   select(-x1, -record, -cond, -ct, -streamflow_cfs, -streamflow_lps, -temp_c) %>% 
   rename(datetime = timestamp)
+
+#save clean data CSV to use in future RMD files
+write.csv(x = se_clean, 
+          file = file.path(here("intermediate_data", "se_clean.csv")),
+          row.names = FALSE)
 
 #plot 
 ggplot() + 
