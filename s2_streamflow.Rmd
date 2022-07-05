@@ -367,8 +367,9 @@ p_2019
 
 # Manual Streamflow Checks (2017 - 2019)
 
--   Read in the manual checks data from the External-MEF_DATA Box folder
-    -   Specifically, raw data is found at the following file path:
+-   Read in the manual streamflow checkpoints from the External-MEF_DATA
+    Box folder
+    -   The raw data is found at the following file path:
         `External-MEF_DATA/Hydro/Streamflow/L0_subdaily/ManualChecks`
 -   Clean and manipulate the data into a tidy format
     -   Renaming columns to use lower_snake_case and avoid special
@@ -416,7 +417,8 @@ ggplot(data = mc_clean) +
 
 -   Combine all 3 water years using `rbind()`
 
--   Plot stripchart data (as lines) and manual checks (as points)
+-   Plot stripchart data (as lines) then add the manual checks (as
+    points) on top
 
 ```{r wy2017-2019}
 #combine 2017 - 2019 data
@@ -455,19 +457,29 @@ ggsave(filename = "streamflow_with_manual_checks.png",
 ggplotly(p_all)
 ```
 
-## Stripchart vs manual checks (2017 - 2019)
+## 1:1 Stripchart vs Manual Checkpoints (2017 - 2019)
 
-```{r}
-#extract date (AKA remove time stamp)
+Next, we are interested in a 1:1 comparison of stripchart data vs manual
+checkpoints data at the exact same timestamp. Since the stripchart data
+and manual checkpoints do not align perfectly, we will interpolate the
+stripchart stream flow values using the `zoo` package to estimate
+stripchart values at the time of the manual checks.
+
+```{r 1_to_1}
+#clean the data 
 mc_sub <- mc_clean %>% 
+  #extract the data (without the timestamp)
   mutate(date = format(as.POSIXct(collected, format = '%m/%d/%Y %H:%M:%S', 
                                   tz = "GMT"), 
                        format = '%Y-%m-%d'),
          date = as.POSIXct(date, tz = "GMT")) %>% 
+  #rename column
   rename(datetime = collected) %>% 
+  #remove unnecessary columns 
   select(-site, -lab_id, -name, -point_gage, -logger_stage) 
 
-#identify date ranges of interest: 2017-04-04 to 2019-12-31 
+#identify date ranges of interest: 2017-04-04 to 2019-12-31
+##aka the range of the manual checkpoint data
 max_date <- max(mc_sub$date)
 min_date <- min(mc_sub$date)
 
