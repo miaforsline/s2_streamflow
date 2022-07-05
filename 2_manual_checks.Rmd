@@ -235,7 +235,7 @@ p_1to1 <- ggplot() +
   ylim(0, 0.4)
 
 #static plot
-p_1to1
+#p_1to1
 
 #save the figure 
 ggsave(filename = "streamflow_mc_comparison.png",
@@ -245,6 +245,9 @@ ggsave(filename = "streamflow_mc_comparison.png",
        height = 5,
        units = c("in"),
        dpi = 300)
+
+#interactive plot 
+ggplotly(p_1to1)
 ```
 
 
@@ -253,9 +256,7 @@ ggsave(filename = "streamflow_mc_comparison.png",
 ```{r diff}
 streamflow_mc_diff <- streamflow_mc_lj %>% 
   #calculate the difference between the stripchart - interpolated value
-  mutate(diff = lag(x = stream_height_ft, n = 1) - approx) %>% 
-  #drop NA values from the difference column to plot better
-  drop_na(diff)
+  mutate(diff = stripchart - manual_check)
 
 #save clean data CSV to use in future RMD files
 write.csv(x = streamflow_mc_diff, 
