@@ -93,6 +93,11 @@ mc_clean <- mc %>%
   subset(year >= 2017 & year <= 2019) %>% 
   subset(!is.na(stripchart_stage))
 
+#save clean data CSV to use in future RMD files
+write.csv(x = mc_clean, 
+          file = file.path(here("intermediate_data", "mc_clean.csv")),
+          row.names = FALSE)
+
 #plot 
 ggplot(data = mc_clean) + 
   geom_point(aes(x = collected, y = stripchart_stage)) + 
@@ -113,6 +118,11 @@ ggplot(data = mc_clean) +
 ```{r wy2017-2019}
 #combine 2017 - 2019 data
 all_streamflow <- rbind(wy2017_clean, wy2018_altered, wy2019_clean)
+
+#save clean data CSV to use in future RMD files
+write.csv(x = all_streamflow, 
+          file = file.path(here("intermediate_data", "all_streamflow.csv")),
+          row.names = FALSE)
 
 #plot
 p_all <- ggplot(data = all_streamflow) + 
@@ -194,6 +204,11 @@ streamflow_mc_lj <- left_join(x = mc_sub,
                      y = streamflow_mc_fj,
                      by = c("datetime", "year", "date")) 
 
+#save clean data CSV to use in future RMD files
+write.csv(x = streamflow_mc_lj, 
+          file = file.path(here("intermediate_data", "streamflow_mc_lj.csv")),
+          row.names = FALSE)
+
 #plot interpolated values 
 p_1to1 <- ggplot() + 
   geom_point(data = streamflow_mc_lj,
@@ -226,6 +241,11 @@ streamflow_mc_diff <- streamflow_mc_lj %>%
   mutate(diff = lag(x = stream_height_ft, n = 1) - approx) %>% 
   #drop NA values from the difference column to plot better
   drop_na(diff)
+
+#save clean data CSV to use in future RMD files
+write.csv(x = streamflow_mc_diff, 
+          file = file.path(here("intermediate_data", "streamflow_mc_diff.csv")),
+          row.names = FALSE)
 
 #plot the difference in values (stripchart - manual checks)
 p_diff <- ggplot(data = streamflow_mc_diff) + 
