@@ -273,12 +273,70 @@ ggsave(filename = "streamflow_bogwell.png",
 #ggplotly(p_sb)
 ```
 
+## Precip (15min) + air temp (30min)
+
+```{r}
+precip_15_join <- precip_15_clean %>% 
+  pivot_wider(
+    names_from = "precip_type",
+    values_from = "precip_in"
+  ) %>% 
+  subset(year <= 2019 & year >= 2017)
+
+precip_air <- full_join(x = precip_15_join, 
+                        y = airtemp_join, 
+                        by = c("datetime", "year")) %>% 
+  subset(year <= 2019 & year >= 2017)
+
+p_pa <- ggplot() + 
+  #airtemp data
+  geom_line(data = airtemp_join, 
+            aes(x = datetime, 
+                y = airtempc_100),
+            color = "pink",
+            alpha = 0.5,
+            size = 0.25) + 
+  #precipitation data 
+  geom_line(data = precip_15_join, 
+            aes(x = datetime, 
+                y = precip_10,
+                colour = I("grey")),
+            size = 0.25) +
+  theme_classic() + 
+  labs(x = "Time", 
+       title = "S2 Precipitation Every 15min and Air Temperature Every 30min",
+       subtitle = "Cumulative precipitation is plotted in grey. \n Air temperature is plotted in pink.") + 
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5, 
+                                     size = 7)) + 
+  scale_y_continuous(
+    # Features of the first axis
+    name = "Air Temperature (ºC) / 100",
+    # Add a second axis and specify its features
+    sec.axis = sec_axis(trans = ~., name = "Cumulative Precipitation (in) / 10")
+  ) 
+
+#static plot
+p_pa
+
+ggsave(filename = "precip_15_airtemp_30.png",
+       plot = p_pa,
+       path = "figures/",
+       width = 10,
+       height = 5,
+       units = c("in"),
+       dpi = 300)
+
+#interactive plot
+#ggplotly(p_pa)
+```
+
+
 ### Streamflow + precipitation (every 15min)
 
 ```{r}
 #format precipitation data for a smooth joining process
 precip_15_join <- precip_15_clean %>% 
-  rename(datetime = timestamp) %>% 
   pivot_wider(
     names_from = "precip_type",
     values_from = "precip_in"
