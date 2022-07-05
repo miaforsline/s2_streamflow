@@ -251,7 +251,7 @@ ggplotly(p_samc)
 ## Streamflow + bogwell data
 
 ```{r}
-#calculate median + min bogwell water table elevation (wte) values 
+#calculate median + minimum bogwell water table elevation (wte) values 
 median_bog <- median(bogwell_clean$wte)
 min_bog <- min(bogwell_clean$wte)
 
@@ -260,7 +260,7 @@ bogwell_diff <- bogwell_clean %>%
   mutate(diff_from_med = bogwell_clean$wte - median_bog,
          diff_from_min = bogwell_clean$wte - min_bog)
 
-#sum streamflow by day 
+#sum up streamflow by day 
 streamflow_daily <- all_streamflow %>% 
   group_by(date) %>% 
   summarise(sum_stream_height_ft = sum(stream_height_ft, na.rm = TRUE))

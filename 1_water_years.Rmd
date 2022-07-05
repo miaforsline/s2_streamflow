@@ -50,7 +50,9 @@ librarian::shelf(
 
 # Stripchart Streamflow data
 
-This RMD is the first in the workflow and reads in, cleans, and visualizes the stripchart stream height data for the 2017 - 2019 water years.
+This RMD is the first in the workflow and reads in, cleans, and
+visualizes the stripchart stream height data for the 2017 - 2019 water
+years.
 
 ## Water Year 2017
 
@@ -240,7 +242,7 @@ write.csv(x = wy2018_altered,
 ggplotly(p_2018_altered)
 ```
 
-### Altered Oct 31 - Nov 1, 2018 streamflow values 
+### Altered Oct 31 - Nov 1, 2018 streamflow values
 
 During this time, it is most likely that the dates were read/input
 incorrectly, resulting in an unnatural oscillation of stream flow values
@@ -301,9 +303,9 @@ p_subset_altered
     -   *April 17-22 discounted because pen level is off with no way to
         account for it*
 
-    -   *F*ebruary: *Clock errors, record compromised. Flow is below
-        zero for month Clock restarted 2/21/2019. Measurements still
-        below zero.*
+    -   February: *Clock errors, record compromised. Flow is below zero
+        for month Clock restarted 2/21/2019. Measurements still below
+        zero.*
 
     -   January: *Clock errors meant that time could not be used to
         record accurate measurements. Measurements tend to be around
@@ -385,5 +387,3 @@ p_2019 <- ggplot(data = wy2019_clean) +
 #interactive plot
 ggplotly(p_2019)
 ```
-
-

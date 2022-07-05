@@ -194,18 +194,25 @@ streamflow_sub <- all_streamflow %>%
 streamflow_mc_fj <- full_join(x = mc_sub, 
                   y = streamflow_sub, 
                   by = c("datetime", "date")) %>% 
+  rename(manual_check = stripchart_stage,
+         stripchart = stream_height_ft) %>% 
   #rearrange dataframe into a long format 
-  pivot_longer(cols = c("stripchart_stage", "stream_height_ft"),
+  pivot_longer(cols = c("manual_check", "stripchart"),
                names_to = "types",
                values_to = "stream_height_ft") %>% 
   #interpolate stripchart values to fill in NA values for timestamps of interest
   mutate(approx = na.approx(stream_height_ft, 
-                            method = "linear"))
+                            method = "linear")) %>% 
+  select(-stream_height_ft) %>% 
+  pivot_wider(names_from = "types",
+              values_from = "approx")
 
 #left join the joined data and manual checks data to keep only the timestamps of interest 
 streamflow_mc_lj <- left_join(x = mc_sub, 
                      y = streamflow_mc_fj,
-                     by = c("datetime", "year", "date")) 
+                     by = c("datetime", "year", "date")) %>% 
+  mutate(manual_check = as.numeric(manual_check),
+         stripchart = as.numeric(stripchart))
 
 #save clean data CSV to use in future RMD files
 write.csv(x = streamflow_mc_lj, 
@@ -213,17 +220,33 @@ write.csv(x = streamflow_mc_lj,
           row.names = FALSE)
 
 #plot interpolated values 
+# p_1to1 <- ggplot() + 
+#   geom_point(data = streamflow_mc_lj,
+#              aes(x = datetime, y = approx, color = types),
+#              alpha = 0.5) + 
+#   theme_classic() + 
+#   labs(x = "Time",
+#        y = "Stream Height (ft)",
+#        title = "S2 Manual Checks vs Interpolated Stripchart Values",
+#        color = "Data Collection Type") +
+#   scale_color_discrete(labels = c("Stripchart", "Manual Check")) + 
+#     theme(plot.title = element_text(hjust = 0.5)) 
+  
+
 p_1to1 <- ggplot() + 
-  geom_point(data = streamflow_mc_lj,
-             aes(x = datetime, y = approx, color = types),
-             alpha = 0.5) + 
-  theme_classic() + 
-  labs(x = "Time",
-       y = "Stream Height (ft)",
-       title = "S2 Manual Checks vs Interpolated Stripchart Values",
-       color = "Data Collection Type") +
-  scale_color_discrete(labels = c("Stripchart", "Manual Check")) + 
-    theme(plot.title = element_text(hjust = 0.5))
+  geom_point(data = streamflow_mc_lj, 
+             aes(x = manual_check, y = stripchart),
+             alpha = 0.75) + 
+  theme_classic() +
+  labs(x = "Manual Checkpoints",
+       y = "Stripchart Data",
+       title = "S2 Manual Checks vs Interpolated Stripchart Values (2017 - 2019)",
+       subtitle = "The line y = x is plotted for reference.") +
+    theme(plot.title = element_text(hjust = 0.5),
+          plot.subtitle = element_text(hjust = 0.5)) + 
+  geom_abline(slope = 1, intercept = 0) + 
+  xlim(0, 0.4) + 
+  ylim(0, 0.4)
 
 #static plot
 p_1to1
@@ -233,10 +256,13 @@ ggsave(filename = "streamflow_mc_comparison.png",
        plot = p_1to1,
        path = "figures/",
        width = 6,
-       height = 3,
+       height = 5,
        units = c("in"),
        dpi = 300)
 ```
+
+
+
 
 ```{r diff}
 streamflow_mc_diff <- streamflow_mc_lj %>% 
