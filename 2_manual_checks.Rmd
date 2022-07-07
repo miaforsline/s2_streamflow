@@ -168,7 +168,7 @@ and manual checkpoints do not align perfectly, we will interpolate the
 stripchart stream flow values using the `zoo` package to estimate
 stripchart values at the time of the manual checks.
 
-```{r 1_to_1}
+```{r interpolate}
 #clean the data 
 mc_sub <- mc_clean %>% 
   #extract the data (without the timestamp)
@@ -189,40 +189,75 @@ min_date <- min(mc_sub$date)
 #subset stripchart data to fit within the time range of the manual checkpoints
 streamflow_sub <- all_streamflow %>% 
   #interpolate stripchart values to fill in NA values
-  mutate(approx = na.approx(stream_height_ft, 
-                            method = "linear")) %>% 
+  mutate(
+    # approx = na.approx(stream_height_ft, 
+    #                         method = "linear"),
+         year = format(as.POSIXct(datetime, format = '%m/%d/%Y %H:%M:%S', 
+                                  tz = "GMT"), 
+                       format = '%Y'),
+         year = as.numeric(year)
+         ) %>% 
   subset(date <= max_date & date >= min_date) 
 
-#plot the stripchart values vs interpolated 
-ggplot() + 
-  geom_line(data = streamflow_sub, 
-            aes(x = datetime, y = stream_height_ft),
-            color = "red") + 
-  geom_line(data = streamflow_sub,
-            aes(x = datetime, y = approx),
-            color = "blue",
-            alpha = 0.5) + 
-  theme_classic() + 
-  labs(x = "Time",
-       y = "Stream Height (ft)")
+# #plot the stripchart values vs interpolated 
+# p_interpolate <- ggplot() + 
+#   geom_line(data = streamflow_sub, 
+#             aes(x = datetime, y = stream_height_ft),
+#             color = "red") + 
+#   geom_line(data = streamflow_sub,
+#             aes(x = datetime, y = approx),
+#             color = "blue",
+#             alpha = 0.3) + 
+#   geom_point(data = mc_sub, 
+#              aes(x = datetime, y = stripchart_stage),
+#              size = 0.75) + 
+#   theme_classic() + 
+#   labs(x = "Time",
+#        y = "Stream Height (ft)",
+#        title = "S2 Streamflow, Interpolated Streamflow, and Manual Checks",
+#        subtitle = "Streamflow is red. \n Interpolated streaflow is blue. \n Manual checks are black points. ") + 
+#   theme(plot.title = element_text(hjust = 0.5),
+#         plot.subtitle = element_text(hjust = 0.5))
+# 
+# #static plot
+# p_interpolate
+# 
+# #interactive plot
+# ggplotly(p_interpolate)
+```
+
+
+```{r join}
+#join the stripchart data and manual checks data 
+streamflow_mc_fj <- full_join(x = mc_sub, 
+                  y = streamflow_sub, 
+                  by = c("datetime", "date", "year")) %>% 
+  rename(manual_check = stripchart_stage,
+         stripchart = stream_height_ft) 
+# %>%
+#   #rearrange dataframe into a long format
+#   pivot_longer(cols = c("manual_check", "stripchart"),
+#                names_to = "types",
+#                values_to = "stream_height_ft") %>%
+#   #interpolate to fill in missing NA values 
+#   mutate(approx = na.approx(stream_height_ft, 
+#                             method = "linear")) 
+# %>% 
+#   pivot_wider(
+#     names_from = "types", 
+#     values_from = "approx"
+#   )
+
+# ggplot(data = streamflow_mc_fj) + 
+#   geom_line(aes(x = datetime, y = stream_height_ft, color = types))
 ```
 
 
 ```{r 1_to_1}
-#join the stripchart data and manual checks data 
-streamflow_mc_fj <- full_join(x = mc_sub, 
-                  y = streamflow_sub, 
-                  by = c("datetime", "date")) %>% 
-  rename(manual_check = stripchart_stage,
-         stripchart = stream_height_ft) 
-# %>% 
-#   #rearrange dataframe into a long format 
-#   pivot_longer(cols = c("manual_check", "stripchart"),
-#                names_to = "types",
-#                values_to = "stream_height_ft") %>% 
-#   select(-stream_height_ft) %>% 
+# %>%
+#   select(-stream_height_ft) %>%
 #   pivot_wider(names_from = "types",
-#               values_from = "approx")
+#               values_from = "approx2")
 
 #left join the joined data and manual checks data to keep only the timestamps of interest 
 streamflow_mc_lj <- left_join(x = mc_sub, 
@@ -238,7 +273,7 @@ write.csv(x = streamflow_mc_lj,
 
 p_1to1 <- ggplot() + 
   geom_point(data = streamflow_mc_lj, 
-             aes(x = manual_check, y = stripchart),
+             aes(x = manual_check, y = approx),
              alpha = 0.75) + 
   theme_classic() +
   labs(x = "Manual Checkpoints",
@@ -247,9 +282,10 @@ p_1to1 <- ggplot() +
        subtitle = "The line y = x is plotted for reference.") +
     theme(plot.title = element_text(hjust = 0.5),
           plot.subtitle = element_text(hjust = 0.5)) + 
-  geom_abline(slope = 1, intercept = 0) + 
-  xlim(0, 0.4) + 
-  ylim(0, 0.4)
+  geom_abline(slope = 1, intercept = 0) 
+# + 
+#   xlim(0, 0.4) + 
+#   ylim(0, 0.4)
 
 #static plot
 p_1to1
