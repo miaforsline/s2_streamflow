@@ -108,30 +108,35 @@ p_15
 ## Precipitation Every 6 Hours
 
 ```{r}
-precip_6 <- precip_15
+#read in 15min precip data 
+precip_6h <- precip_15 
 
-precip_6_clean <- precip_6 %>% 
+#clean and sum precip by 6 hours 
+precip_6h_clean <- precip_6h %>% 
   clean_names() %>% 
-  #creat year, day, and hour columns 
-  mutate(year = format(as.POSIXct(timestamp, format = '%Y-%m-%d %H:%M:%S', 
+  mutate(timestamp = lubridate::floor_date(timestamp, unit = "6 hours")) %>%
+    group_by(timestamp) %>%
+    dplyr::summarize(south_pcp = sum(south_pcp)) %>%
+    ungroup() %>% 
+  rename(datetime = timestamp,
+         precip_in = south_pcp) %>% 
+  mutate(
+    year = format(as.POSIXct(datetime, format = '%Y-%m-%d %H:%M:%S', 
                                   tz = "GMT"), 
                        format = '%Y'),
-         day = format(as.POSIXct(timestamp, format = '%Y-%m-%d %H:%M:%S', 
-                                  tz = "GMT"), 
-                       format = '%d'),
-         hour = format(as.POSIXct(timestamp, format = '%Y-%m-%d %H:%M:%S', 
-                                  tz = "GMT"), 
-                       format = '%H'),
-         #convert column formats 
-         year = as.numeric(year),
-         day = as.numeric(day),
-         hour = as.numeric(hour)
-         ) %>% 
-  subset(year >= 2017) %>% 
-  rename(precip_in = south_pcp) %>% 
-  select(-south_flag)
+         year = as.numeric(year)
+  ) %>% 
+  subset(year >= 2017 & year <= 2019)
 
-
+#plot
+ggplot(data = precip_6h_clean) + 
+  geom_col(aes(x = datetime, y = precip_in)) + 
+  theme_classic() + 
+  labs(x = "Time",
+       y = "Cumulative Precipitation (in)", 
+       title = "S2 Cumulative Precipitation Every 6 Hours (2017 - 2019)") + 
+  theme(plot.title = element_text(hjust = 0.5),
+          plot.subtitle = element_text(hjust = 0.5))
 ```
 
 
@@ -189,6 +194,13 @@ p_daily <- ggplot(data = precip_daily_clean) +
 p_daily
 
 #ggplotly(p_daily)
+
+#Nina's code for calculating daily precip sums 
+# precipDaily <- precip15 %>%
+#   mutate(DATE = lubridate::floor_date(TIMESTAMP, unit = "day")) %>%
+#   group_by(DATE) %>%
+#   dplyr::summarize(South = sum(South)) %>%
+#   ungroup()
 ```
 
 # Air Temperature Every 30 Min
