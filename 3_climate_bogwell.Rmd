@@ -112,6 +112,7 @@ precip_6 <- precip_15
 
 precip_6_clean <- precip_6 %>% 
   clean_names() %>% 
+  #creat year, day, and hour columns 
   mutate(year = format(as.POSIXct(timestamp, format = '%Y-%m-%d %H:%M:%S', 
                                   tz = "GMT"), 
                        format = '%Y'),
@@ -121,9 +122,11 @@ precip_6_clean <- precip_6 %>%
          hour = format(as.POSIXct(timestamp, format = '%Y-%m-%d %H:%M:%S', 
                                   tz = "GMT"), 
                        format = '%H'),
+         #convert column formats 
          year = as.numeric(year),
          day = as.numeric(day),
-         hour = as.numeric(hour)) %>% 
+         hour = as.numeric(hour)
+         ) %>% 
   subset(year >= 2017) %>% 
   rename(precip_in = south_pcp) %>% 
   select(-south_flag)
