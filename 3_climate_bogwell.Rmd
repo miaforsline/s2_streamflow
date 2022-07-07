@@ -281,13 +281,18 @@ air_temp_30_clean <- air_temp_30 %>%
                        format = '%Y'),
          year = as.numeric(year),
          airtempc_10 = (airtempc / 10),
-         airtempc_100 = (airtempc / 100)
+         airtempc_100 = (airtempc / 100),
+         #create a variable that indicates if the airtemp is above or below freezing
+         freezing = 0
          ) %>% 
   pivot_longer(
     cols = c("airtempc", "airtempc_10", "airtempc_100"),
     names_to = "airtemp_type",
     values_to = "airtempC"
   )
+
+#assign a value of 1 to the variable if airtemp is above freezing 
+air_temp_30_clean$freezing[air_temp_30_clean$airtempC > 0] <- 1
 
 #save clean data CSV to use in future RMD files
 write.csv(x = air_temp_30_clean, 
@@ -300,7 +305,9 @@ p_air_30 <- ggplot(data = air_temp_30_clean) +
   theme_classic() + 
   labs(x = "Time", 
        y = "Air Temperature (ºC)", 
-       title = "2017 - 2022 Daily Air Temperatures")
+       title = "Air Temperature Every 30 Min (2017 - 2019)") + 
+  theme(plot.title = element_text(hjust = 0.5),
+          plot.subtitle = element_text(hjust = 0.5))
 
 #static plot
 p_air_30
