@@ -193,19 +193,36 @@ streamflow_sub <- all_streamflow %>%
                             method = "linear")) %>% 
   subset(date <= max_date & date >= min_date) 
 
+#plot the stripchart values vs interpolated 
+ggplot() + 
+  geom_line(data = streamflow_sub, 
+            aes(x = datetime, y = stream_height_ft),
+            color = "red") + 
+  geom_line(data = streamflow_sub,
+            aes(x = datetime, y = approx),
+            color = "blue",
+            alpha = 0.5) + 
+  theme_classic() + 
+  labs(x = "Time",
+       y = "Stream Height (ft)")
+```
+
+
+```{r 1_to_1}
 #join the stripchart data and manual checks data 
 streamflow_mc_fj <- full_join(x = mc_sub, 
                   y = streamflow_sub, 
                   by = c("datetime", "date")) %>% 
   rename(manual_check = stripchart_stage,
-         stripchart = stream_height_ft) %>% 
-  #rearrange dataframe into a long format 
-  pivot_longer(cols = c("manual_check", "stripchart"),
-               names_to = "types",
-               values_to = "stream_height_ft") %>% 
-  select(-stream_height_ft) %>% 
-  pivot_wider(names_from = "types",
-              values_from = "approx")
+         stripchart = stream_height_ft) 
+# %>% 
+#   #rearrange dataframe into a long format 
+#   pivot_longer(cols = c("manual_check", "stripchart"),
+#                names_to = "types",
+#                values_to = "stream_height_ft") %>% 
+#   select(-stream_height_ft) %>% 
+#   pivot_wider(names_from = "types",
+#               values_from = "approx")
 
 #left join the joined data and manual checks data to keep only the timestamps of interest 
 streamflow_mc_lj <- left_join(x = mc_sub, 
@@ -235,7 +252,7 @@ p_1to1 <- ggplot() +
   ylim(0, 0.4)
 
 #static plot
-#p_1to1
+p_1to1
 
 #save the figure 
 ggsave(filename = "streamflow_mc_comparison.png",
