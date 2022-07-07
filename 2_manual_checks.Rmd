@@ -188,6 +188,9 @@ min_date <- min(mc_sub$date)
 
 #subset stripchart data to fit within the time range of the manual checkpoints
 streamflow_sub <- all_streamflow %>% 
+  #interpolate stripchart values to fill in NA values
+  mutate(approx = na.approx(stream_height_ft, 
+                            method = "linear")) %>% 
   subset(date <= max_date & date >= min_date) 
 
 #join the stripchart data and manual checks data 
@@ -200,9 +203,6 @@ streamflow_mc_fj <- full_join(x = mc_sub,
   pivot_longer(cols = c("manual_check", "stripchart"),
                names_to = "types",
                values_to = "stream_height_ft") %>% 
-  #interpolate stripchart values to fill in NA values for timestamps of interest
-  mutate(approx = na.approx(stream_height_ft, 
-                            method = "linear")) %>% 
   select(-stream_height_ft) %>% 
   pivot_wider(names_from = "types",
               values_from = "approx")
