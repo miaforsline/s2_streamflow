@@ -17,6 +17,8 @@ The overall goals of this project include:
 
 Ultimately, this project aims to facilitate the transition away from older analogue data collection techniques such as paper stripcharts that must be digitized by hand towards newer data collection techniques such as shaft encoder sensors. 
 
+## Workflow 
+
 ## Data
 Data used in this project are proprietary to the USDA Forest Service and stored in a private, online Box server used by the Marcell Experimental Forest team. For data access, please contact Dr. Nina Lany. 
 
