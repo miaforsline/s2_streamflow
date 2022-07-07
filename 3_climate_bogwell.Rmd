@@ -82,7 +82,8 @@ precip_15_clean <- precip_15 %>%
     cols = c("precip_in", "precip_10"),
     names_to = "precip_type",
     values_to = "precip_in"
-  )
+  ) %>% 
+  rename(datetime = timestamp)
 
 #save clean data CSV to use in future RMD files
 write.csv(x = precip_15_clean, 
@@ -91,7 +92,7 @@ write.csv(x = precip_15_clean,
 
 #plot 
 p_15 <- ggplot(data = precip_15_clean) + 
-  geom_line(aes(x = timestamp, y = precip_in, color = precip_type)) + 
+  geom_line(aes(x = datetime, y = precip_in, color = precip_type)) + 
   theme_classic() + 
   labs(x = "Time", 
        y = "Precipitation (cm)", 
@@ -103,6 +104,35 @@ p_15
 #interactive plot 
 #ggplotly(p_15)
 ```
+
+## Precipitation Every 6 Hours
+
+```{r}
+precip_6 <- precip_15
+
+precip_6_clean <- precip_6 %>% 
+  clean_names() %>% 
+  mutate(year = format(as.POSIXct(timestamp, format = '%Y-%m-%d %H:%M:%S', 
+                                  tz = "GMT"), 
+                       format = '%Y'),
+         day = format(as.POSIXct(timestamp, format = '%Y-%m-%d %H:%M:%S', 
+                                  tz = "GMT"), 
+                       format = '%d'),
+         hour = format(as.POSIXct(timestamp, format = '%Y-%m-%d %H:%M:%S', 
+                                  tz = "GMT"), 
+                       format = '%H'),
+         year = as.numeric(year),
+         day = as.numeric(day),
+         hour = as.numeric(hour)) %>% 
+  subset(year >= 2017) %>% 
+  rename(precip_in = south_pcp) %>% 
+  select(-south_flag)
+
+
+```
+
+
+## Precipitation Every 12 Hours
 
 # Precipitation Daily
 
