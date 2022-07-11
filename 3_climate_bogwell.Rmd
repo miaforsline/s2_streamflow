@@ -127,6 +127,9 @@ precip_6h_clean <- precip_6h %>%
                                   tz = "GMT"), 
                        format = '%Y'),
          year = as.numeric(year),
+     date = format(as.POSIXct(datetime, format = '%Y-%m-%d %H:%M:%S', 
+                                  tz = "GMT"), 
+                       format = '%Y-%m-%d'),
     precip_10_in = precip_in / 10
   ) %>% 
   subset(year >= 2017 & year <= 2019)
@@ -176,6 +179,9 @@ precip_12h_clean <- precip_12h %>%
                                   tz = "GMT"), 
                        format = '%Y'),
          year = as.numeric(year),
+    date = format(as.POSIXct(datetime, format = '%Y-%m-%d %H:%M:%S', 
+                                  tz = "GMT"), 
+                       format = '%Y-%m-%d'),
     precip_10_in = precip_in / 10
   ) %>% 
   subset(year >= 2017 & year <= 2019)
