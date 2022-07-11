@@ -126,9 +126,15 @@ precip_6h_clean <- precip_6h %>%
     year = format(as.POSIXct(datetime, format = '%Y-%m-%d %H:%M:%S', 
                                   tz = "GMT"), 
                        format = '%Y'),
-         year = as.numeric(year)
+         year = as.numeric(year),
+    precip_10_in = precip_in / 10
   ) %>% 
   subset(year >= 2017 & year <= 2019)
+
+#save clean data CSV to use in future RMD files
+write.csv(x = precip_6h_clean, 
+          file = file.path(here("intermediate_data", "precip_6h_clean.csv")),
+          row.names = FALSE)
 
 #plot
 p_precip_6h <- ggplot(data = precip_6h_clean) + 
@@ -169,9 +175,15 @@ precip_12h_clean <- precip_12h %>%
     year = format(as.POSIXct(datetime, format = '%Y-%m-%d %H:%M:%S', 
                                   tz = "GMT"), 
                        format = '%Y'),
-         year = as.numeric(year)
+         year = as.numeric(year),
+    precip_10_in = precip_in / 10
   ) %>% 
   subset(year >= 2017 & year <= 2019)
+
+#save clean data CSV to use in future RMD files
+write.csv(x = precip_12h_clean, 
+          file = file.path(here("intermediate_data", "precip_12h_clean.csv")),
+          row.names = FALSE)
 
 #plot
 p_precip_12h <- ggplot(data = precip_12h_clean) + 
