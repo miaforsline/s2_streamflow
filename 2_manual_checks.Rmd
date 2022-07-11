@@ -191,49 +191,15 @@ nrows <- nrow(mc_sub)
 
 #subset stripchart data to fit within the time range of the manual checkpoints
 streamflow_sub <- all_streamflow %>% 
-  #interpolate stripchart values to fill in NA values
   mutate(
-    approx = na.approx(stream_height_ft,
-                            method = "linear"),
-         year = format(as.POSIXct(datetime, format = '%m/%d/%Y %H:%M:%S', 
-                                  tz = "GMT"), 
-                       format = '%Y'),
-         year = as.numeric(year)
-         ) %>% 
+    year = format(as.POSIXct(datetime, format = '%m/%d/%Y %H:%M:%S', 
+                             tz = "GMT"),
+                  format = '%Y'), 
+    year = as.numeric(year)
+    ) %>% 
   subset(date <= max_date & date >= min_date) 
 ```
 
-
-```{r plot_interpolated_values}
-#plot the stripchart values vs interpolated
-p_interpolate <- ggplot() +
-  #plot recorded streamflow
-  geom_line(data = streamflow_sub,
-            aes(x = datetime, y = stream_height_ft),
-            color = "red") +
-  #plot interpolated streamflow
-  geom_line(data = streamflow_sub,
-            aes(x = datetime, y = approx),
-            color = "blue",
-            alpha = 0.3) +
-  #plot manual checks
-  geom_point(data = mc_sub,
-             aes(x = datetime, y = stripchart_stage),
-             size = 0.75) +
-  theme_classic() +
-  labs(x = "Time",
-       y = "Stream Height (ft)",
-       title = "S2 Streamflow, Interpolated Streamflow, and Manual Checks",
-       subtitle = "Streamflow is red. \n Interpolated streaflow is blue. \n Manual checks are black points. ") +
-  theme(plot.title = element_text(hjust = 0.5),
-        plot.subtitle = element_text(hjust = 0.5))
-
-#static plot
-p_interpolate
-
-#interactive plot
-ggplotly(p_interpolate)
-```
 
 
 ```{r join}
@@ -245,26 +211,51 @@ fj <- full_join(x = mc_sub,
   rename(manual_check = stripchart_stage,
          stripchart = stream_height_ft) %>% 
   #rearrange dataframe into a long format
-  pivot_longer(cols = c("manual_check", "approx"),
+  pivot_longer(cols = c("manual_check", "stripchart"),
                names_to = "types",
                values_to = "stream_height_ft") %>%
   #interpolate to fill in missing NA values
-  mutate(approx2 = na.approx(stream_height_ft,
-                            method = "linear")) %>%
+  mutate(approx = na.approx(object = stream_height_ft,
+                             x = datetime,
+                            method = "linear",
+                            maxgap = 6),
+         #calculate the difference between approximated values and real values
+         diff = approx - stream_height_ft) 
+
+#visually examine the approximated values 
+# ggplot(data = fj) + 
+#   geom_line(aes(x = datetime, y = approx))
+#
+# ggplot(data = fj) + 
+#   geom_point(aes(x = datetime, 
+#                 y = stream_height_ft,
+#                 color = types))
+# 
+# ggplot(data = fj) + 
+#   geom_point(aes(x = datetime, 
+#                 y = stream_height_ft,
+#                 color = types)) + 
+#   geom_point(aes(x = datetime, 
+#                 y = approx),
+#              alpha = 0.05)
+
+
+fj <- fj %>%
   #remove extraneous columns 
-  select(-stream_height_ft) %>% 
+  select(-stream_height_ft, -diff) %>% 
   #return to wide format to create scatterplot
   pivot_wider(
     names_from = "types",
-    values_from = "approx2"
+    values_from = "approx"
   ) %>% 
   #unlist the columns created by pivot_wider() 
   unnest
 
-#plot all data 
-ggplot(data = fj) + 
-  geom_point(aes(x = manual_check, 
-                 y = approx))
+
+#visually examine all data 
+# ggplot(data = fj) + 
+#   geom_point(aes(x = manual_check, 
+#                  y = stripchart))
 ```
 
 
@@ -275,10 +266,14 @@ lj <- left_join(x = mc_sub,
                 by = c("datetime", "year", "date")) %>% 
   #ensure the correct column types
   mutate(manual_check = as.numeric(manual_check),
-         stripchart = as.numeric(stripchart))
+         stripchart = as.numeric(stripchart),
+         diff = manual_check - stripchart)
 
 #test if the subsetted data has the same number of observations as the manual checks dataframe
 if(nrow(lj) != (nrow(mc_sub))) stop("Check lj dataframe dimensions")
+
+#test if the approximated data differs greatly from the stripchart/manual checks data 
+if(abs(lj$diff) > 0.01 ) stop("Check differences")
 
 #save clean data CSV to use in future RMD files
 write.csv(x = lj, 
@@ -287,7 +282,7 @@ write.csv(x = lj,
 
 p_1to1 <- ggplot() + 
   geom_point(data = lj, 
-             aes(x = manual_check, y = approx),
+             aes(x = manual_check, y = stripchart),
              alpha = 0.75) + 
   theme_classic() +
   labs(x = "Manual Checkpoints",
