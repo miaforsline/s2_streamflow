@@ -558,7 +558,7 @@ p_2021 <- ggplot(data = wy2021_clean) +
   theme(plot.title = element_text(hjust = 0.5))
 
 #static plot
-p_2021
+#p_2021
 
 #interactive plot
 ggplotly(p_2021)
