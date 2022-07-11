@@ -319,7 +319,7 @@ ggplotly(p_1to1)
 
 
 
-```{r diff}
+```{r diff, eval=FALSE}
 streamflow_mc_diff <- streamflow_mc_lj %>% 
   #calculate the difference between the stripchart - interpolated value
   mutate(diff = stripchart - manual_check)
@@ -371,7 +371,7 @@ ggsave(filename = "streamflow_mc_diff.png",
 
 -   Plot the old shaft encoder data
 
-```{r}
+```{r eval=FALSE}
 #create file path to call the data from Box 
 ## Mia's file path 
 filepath <- "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/Hydro/Streamflow/L1_subdaily/"
