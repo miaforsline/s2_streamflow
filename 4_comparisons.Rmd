@@ -80,9 +80,9 @@ streamflow_precip_daily <- full_join(x = all_streamflow, y = precip_daily_join, 
 #plot 
 p_spmc <- ggplot() + 
   #precipitation data 
-  geom_line(data = streamflow_precip_daily, 
+  geom_col(data = streamflow_precip_daily, 
             aes(x = date, 
-                y = precip_10_in,
+                y = precip_10,
                 colour = I("grey")),
             size = 0.25) + 
   #streamflow data 
@@ -260,16 +260,16 @@ p_sb <- ggplot() +
 #can scale the y-axis so cut off the top of the precip 
 
 #static plot
-p_sb
+#p_sb
 
 #save the plot in the figures folder 
-ggsave(filename = "streamflow_bogwell.png",
-       plot = p_sb,
-       path = "figures/",
-       width = 6,
-       height = 3,
-       units = c("in"),
-       dpi = 300)
+# ggsave(filename = "streamflow_bogwell.png",
+#        plot = p_sb,
+#        path = "figures/",
+#        width = 6,
+#        height = 3,
+#        units = c("in"),
+#        dpi = 300)
 
 #interactive plot 
 #ggplotly(p_sb)
