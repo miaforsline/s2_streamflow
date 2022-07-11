@@ -314,41 +314,6 @@ ggplotly(p_1to1)
 
 
 
-```{r diff, eval=FALSE}
-streamflow_mc_diff <- streamflow_mc_lj %>% 
-  #calculate the difference between the stripchart - interpolated value
-  mutate(diff = stripchart - manual_check)
-
-#save clean data CSV to use in future RMD files
-write.csv(x = streamflow_mc_diff, 
-          file = file.path(here("intermediate_data", "streamflow_mc_diff.csv")),
-          row.names = FALSE)
-
-#plot the difference in values (stripchart - manual checks)
-p_diff <- ggplot(data = streamflow_mc_diff) + 
-  geom_point(aes(x = datetime, y = diff), 
-             size = 0.5) + 
-  geom_line(aes(x = datetime, y = diff)) + 
-  theme_classic() + 
-  labs(x = "Time",
-       y = "Difference in Stream Height (ft)",
-       title = "Difference Between Stripcharts and Manual Checks",
-       subtitle = "Differences were calculated as stripchart value - manual checks value.") + 
-  theme(plot.title = element_text(hjust = 0.5),
-        plot.subtitle = element_text(hjust = 0.5))
-
-#static plot
-p_diff 
-
-#save the figure 
-ggsave(filename = "streamflow_mc_diff.png",
-       plot = p_diff,
-       path = "figures/",
-       width = 6,
-       height = 3,
-       units = c("in"),
-       dpi = 300)
-```
 
 # Old Shaft Encoder Data (2017 - 2019)
 
