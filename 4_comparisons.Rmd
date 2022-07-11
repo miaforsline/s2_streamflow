@@ -127,6 +127,7 @@ ggsave(filename = "streamflow_precip_manual_checks.png",
 ggplotly(p_spmc)
 ```
 
+## Streamflow + 6hr precip + manual checks 
 
 ## Streamflow + air temperature data (every 30min) + manual checks 
 
@@ -137,26 +138,29 @@ airtemp_join <- air_temp_30_clean %>%
     names_from = "airtemp_type",
     values_from = "airtempC"
   ) %>% 
-  subset(year >= 2017 & year <= 2019)
+  subset(year >= 2017 & year <= 2019) %>% 
+  mutate(freezing = as.factor(freezing))
+
+h = max(all_streamflow$stream_height_ft)
 
 #plot 
 p_samc <- ggplot() + 
   #airtemp data
   geom_line(data = airtemp_join, 
-            aes(x = datetime, 
+            aes(x = datetime,
                 y = airtempc_100),
-            color = "pink",
-            alpha = 0.5,
-            size = 0.25) + 
+            color = "pink", 
+            alpha = 0.5) +
   #streamflow data 
   geom_line(data = all_streamflow,
              aes(x = datetime, 
                  y = stream_height_ft),
             color = "blue",
-            size = 0.25) + 
+            size = 0.75) + 
   #manual check points
   geom_point(data = mc_clean, 
-             aes(x = collected, y = stripchart_stage),
+             aes(x = collected, 
+                 y = stripchart_stage),
              size = 0.5) + 
   theme_classic() + 
   labs(x = "Time", 
@@ -173,19 +177,19 @@ p_samc <- ggplot() +
   ) 
 
 #static plot
-#p_samc
+p_samc
 
 #save the plot in the figures folder 
 ggsave(filename = "streamflow_airtemp_manual_checks.png",
        plot = p_samc,
        path = "figures/",
-       width = 6,
+       width = 8,
        height = 4,
        units = c("in"),
        dpi = 300)
 
 #interactive plot
-ggplotly(p_samc)
+#ggplotly(p_samc)
 ```
 
 
