@@ -41,7 +41,11 @@ librarian::shelf(
   tidyverse,
   zoo #for interpolating missing data points 
   )
+```
 
+Read in water year data from CSVs in the intermediate_data directory
+
+```{r setup, include=FALSE}
 #read in necessary CSV files from prior RMDs
 all_streamflow <- read_csv(here("intermediate_data", "all_streamflow.csv"))
 air_temp_30_clean <- read_csv(here("intermediate_data", "air_temp_30_clean.csv"))
@@ -52,14 +56,12 @@ precip_15_clean <- read_csv(here("intermediate_data", "precip_15_clean.csv"))
 precip_6h_clean <- read_csv(here("intermediate_data", "precip_6h_clean.csv")) 
 precip_12h_clean <- read_csv(here("intermediate_data", "precip_12h_clean.csv")) 
 precip_daily_clean <- read_csv(here("intermediate_data", "precip_daily_clean.csv")) 
-se_clean <- read_csv(here("intermediate_data", "se_clean.csv")) 
+se_clean <- read_csv(here("intermediate_data", "se_clean.csv"))
+```
 
-# Set working directory path
-## Mia's working directory path
-#setwd("/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/Hydro/Streamflow/L0_subdaily/StripCharts/AnnualBreakPoint/S2")
-## Nina's working directory path 
-#setwd("~/../../Box/External-MEF_DATA/Hydro/Streamflow/L0_subdaily/StripCharts")
+Set constant values
 
+```{r setup, include=FALSE}
 #set constants 
 min_year = 2017
 max_year = 2019

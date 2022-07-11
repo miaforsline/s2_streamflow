@@ -17,11 +17,7 @@ editor_options:
 
 # Set Up
 
--   Install/load necessary R packages
--   Set working directory if necessary (or create a file path to use
-    throughout the RMD to call the data from Box)
--   Read in water year data from CSVs in the `intermediate_data`
-    directory
+Install/load necessary R packages
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,
@@ -42,17 +38,23 @@ librarian::shelf(
   tidyverse,
   zoo #for interpolating missing data points 
   )
+```
 
+Read in water year data from CSVs in the `intermediate_data` directory
+
+```{r csv}
 #read in necessary CSV files from 1_water_years.Rmd
 wy2017_clean <- read_csv(here("intermediate_data", "wy2017_clean.csv"))
 wy2018_altered <- read_csv(here("intermediate_data", "wy2018_altered.csv"))
 wy2019_clean <- read_csv(here("intermediate_data", "wy2019_clean.csv")) 
+all_streamflow <- read_csv(here("intermediate_data", "all_streamflow.csv"))
+```
 
-# Set working directory path
-## Mia's working directory path
-#setwd("/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/Hydro/Streamflow/L0_subdaily/StripCharts/AnnualBreakPoint/S2")
-## Nina's working directory path 
-#setwd("~/../../Box/External-MEF_DATA/Hydro/Streamflow/L0_subdaily/StripCharts")
+Set constant values
+
+```{r}
+min_year = 2017
+max_year = 2019
 ```
 
 # Manual Streamflow Checks (2017 - 2019)
@@ -93,7 +95,7 @@ mc_clean <- mc %>%
                                   tz = "GMT"), 
                        format = '%Y-%m-%d')
          ) %>% 
-  subset(year >= 2017 & year <= 2019) %>% 
+  subset(year >= min_year & year <= max_year) %>% 
   subset(!is.na(stripchart_stage))
 
 #save clean data CSV to use in future RMD files
@@ -119,13 +121,6 @@ ggplot(data = mc_clean) +
     points) on top
 
 ```{r wy2017-2019}
-#combine 2017 - 2019 data
-all_streamflow <- rbind(wy2017_clean, wy2018_altered, wy2019_clean)
-
-#save clean data CSV to use in future RMD files
-write.csv(x = all_streamflow, 
-          file = file.path(here("intermediate_data", "all_streamflow.csv")),
-          row.names = FALSE)
 
 #plot
 p_all <- ggplot(data = all_streamflow) + 
@@ -200,8 +195,6 @@ streamflow_sub <- all_streamflow %>%
   subset(date <= max_date & date >= min_date) 
 ```
 
-
-
 ```{r join}
 #join the stripchart data and manual checks data 
 fj <- full_join(x = mc_sub, 
@@ -258,7 +251,6 @@ fj <- fj %>%
 #                  y = stripchart))
 ```
 
-
 ```{r 1_to_1}
 #left join the joined data and manual checks data to keep only the timestamps of interest 
 lj <- left_join(x = mc_sub, 
@@ -310,10 +302,6 @@ ggsave(filename = "streamflow_mc_comparison.png",
 #interactive plot 
 ggplotly(p_1to1)
 ```
-
-
-
-
 
 # Old Shaft Encoder Data (2017 - 2019)
 
