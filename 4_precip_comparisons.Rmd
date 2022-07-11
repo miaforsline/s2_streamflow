@@ -5,7 +5,7 @@ date: '`r format(Sys.time(), "%B %d, %Y")`'
 output:
   html_document:
     theme: flatly
-    code_folding: show
+    code_folding: hide
     toc: yes
     toc_float: yes
   pdf_document:
@@ -65,9 +65,7 @@ min_year = 2017
 max_year = 2019
 ```
 
-# Comparisons
-
-## Streamflow + Cumulative Precipitation + Manual Checkpoints
+# Streamflow compared to cumulative precipitation and manual checkpoints 
 
 ### Cumulative Precipitation Every 6 Hours
 
@@ -95,7 +93,7 @@ p_6h <- ggplot() +
              size = 0.5) + 
   theme_classic() + 
   labs(x = "Time", 
-       title = "2017 - 2019 S2 Bog Streamflow and Cumulative Precipitation Every 6 Hours",
+       title = "S2 Bog Streamflow and Cumulative Precipitation Every 6 Hours",
        subtitle = "Streamflow is plotted in blue. \n Precipitation is plotted in grey. \n Manual streamflow checks are plotted as black points.") + 
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5, 
@@ -109,7 +107,7 @@ p_6h <- ggplot() +
   )
 
 #static plot
-p_6h
+#p_6h
 
 #save the plot in the figures folder 
 ggsave(filename = "streamflow_precip_6h_mc.png",
@@ -151,7 +149,7 @@ p_12h <- ggplot() +
              size = 0.5) + 
   theme_classic() + 
   labs(x = "Time", 
-       title = "2017 - 2019 S2 Bog Streamflow and Cumulative Precipitation Every 12 Hours",
+       title = "S2 Bog Streamflow and Cumulative Precipitation Every 12 Hours",
        subtitle = "Streamflow is plotted in blue. \n Precipitation is plotted in grey. \n Manual streamflow checks are plotted as black points.") + 
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5, 
@@ -166,7 +164,7 @@ p_12h <- ggplot() +
   )
 
 #static plot
-p_12h
+#p_12h
 
 #save the plot in the figures folder 
 ggsave(filename = "streamflow_precip_12h_mc.png",
@@ -228,7 +226,7 @@ p_daily <- ggplot() +
              size = 0.5) + 
   theme_classic() + 
   labs(x = "Time", 
-       title = "2017 - 2019 S2 Bog Streamflow and Daily Cumulative Precipitation",
+       title = "S2 Bog Streamflow and Daily Cumulative Precipitation",
        subtitle = "Streamflow is plotted in blue. \n Precipitation is plotted in grey. \n Manual streamflow checks are plotted as black points.") + 
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5, 
@@ -243,7 +241,7 @@ p_daily <- ggplot() +
   )
 
 #static plot
-p_daily
+#p_daily
 
 #save the plot in the figures folder 
 ggsave(filename = "streamflow_precip_daily_mc.png",
@@ -307,7 +305,7 @@ p_air <- ggplot() +
   ) 
 
 #static plot
-p_air
+#p_air
 
 #save the plot in the figures folder 
 ggsave(filename = "streamflow_airtemp_mc.png",
