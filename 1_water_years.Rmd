@@ -387,3 +387,72 @@ p_2019 <- ggplot(data = wy2019_clean) +
 #interactive plot
 ggplotly(p_2019)
 ```
+
+## Water Year 2020
+
+These gaps are not 0 flow (including the begin and end dates given), and should be replaced with NA unless Jake can digitize them:
+7/28/2020  13:40:00 through 8/11/2020 00:00:00 (chart needs correction)
+
+```{r wy2020}
+#create file path to call the data from Box 
+## Mia's file path 
+filepath <- "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/Hydro/Streamflow/L0_subdaily/StripCharts/AnnualBreakPoint/S2"
+
+#read in the 2020 data 
+wy2020 <- read_excel(path = here(filepath, "WY2020.S2_Breakpoint.xlsx"), 
+                     skip =3)
+
+#clean the 2020 data
+wy2020_clean <- wy2020 %>% 
+  rename(datetime = "Date/time",
+         stream_height_ft = "Stage.ft") %>% 
+  select(c("datetime", "stream_height_ft")) %>% 
+  clean_names() %>% 
+  mutate(date = format(as.POSIXct(datetime, format = '%m/%d/%Y %H:%M:%S', 
+                                  tz = "GMT"), 
+                       format = '%Y-%m-%d'),
+         date = as.POSIXct(date, tz = "GMT")) 
+
+#create date range to fill in with NA values 
+start_date <- as.POSIXct("7/28/2020 13:40:00", 
+                         format = '%m/%d/%Y %H:%M:%S',
+                         tz = "GMT")
+end_date <- as.POSIXct("8/11/2020 00:00:00", 
+                         format = '%m/%d/%Y %H:%M:%S',
+                         tz = "GMT")
+
+#create a function to specify custom time intervals 
+`%between%` <- function(x, interval) x >= interval[1] & x <= interval[2]
+
+#assign February NA values 
+wy2020_clean$stream_height_ft[wy2020_clean$datetime %between% c(start_date, end_date)] <- NA
+
+#save clean data CSV to use in future RMD files
+write.csv(x = wy2020_clean, 
+          file = file.path(here("intermediate_data", "wy2020_clean.csv")),
+          row.names = FALSE)
+
+#test the 2020 data 
+if(nrow(wy2020) != nrow(wy2020_clean)) stop("Check clean dataframe dimensions")
+
+#plot 
+p_2020 <- ggplot(data = wy2020_clean) + 
+  geom_line(aes(x = datetime, y = stream_height_ft)) + 
+  theme_classic() + 
+  labs(x = "Time", 
+       y = "Stream Height (Ft)",
+       title = "WY 2020 S2 Bog Stream Height") + 
+  theme(plot.title = element_text(hjust = 0.5))
+
+#static plot
+#p_2020
+
+#interactive plot
+ggplotly(p_2020)
+```
+
+## Water Year 2021
+
+```{r wy2021}
+
+```

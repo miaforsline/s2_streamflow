@@ -283,7 +283,7 @@ write.csv(x = lj,
 p_1to1 <- ggplot() + 
   geom_point(data = lj, 
              aes(x = manual_check, y = stripchart),
-             alpha = 0.75) + 
+             alpha = 0.5) + 
   theme_classic() +
   labs(x = "Manual Checkpoints",
        y = "Stripchart Data",
