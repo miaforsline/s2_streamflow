@@ -1,5 +1,5 @@
 ---
-title: 'Marcell Experimental Forest: S2 Streamflow Manual Checks (2017 - 2019)'
+title: 'Marcell Experimental Forest: S2 Streamflow Manual Checks'
 author: "Mia Forsline"
 date: '`r format(Sys.time(), "%B %d, %Y")`'
 output:
