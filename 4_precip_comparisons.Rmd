@@ -46,7 +46,7 @@ librarian::shelf(
 
 Read in water year data from CSVs in the `intermediate_data` directory
 
-```{r csv}
+```{r csv, message=FALSE, warning=FALSE}
 #read in necessary CSV files from prior RMDs
 all_streamflow <- read_csv(here("intermediate_data", "all_streamflow.csv"))
 air_temp_30_clean <- read_csv(here("intermediate_data", "air_temp_30_clean.csv"))
@@ -68,7 +68,7 @@ min_year = 2017
 max_year = 2021
 ```
 
-# Streamflow compared to cumulative precipitation and manual checkpoints 
+# Streamflow compared to cumulative precipitation and manual checkpoints
 
 ### Cumulative Precipitation Every 6 Hours
 
@@ -96,7 +96,7 @@ p_6h <- ggplot() +
              size = 0.5) + 
   theme_classic() + 
   labs(x = "Time", 
-       title = paste0("S2 Bog Streamflow and Cumulative Precipitation Every 6 Hours (", min_year, "-", max_year, ")"),
+       title = paste0("S2 Bog Streamflow and Cumulative \n Precipitation Every 6 Hours (", min_year, "-", max_year, ")"),
        subtitle = "Streamflow is plotted in blue. \n Precipitation is plotted in grey. \n Manual streamflow checks are plotted as black points.") + 
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5, 
@@ -152,7 +152,7 @@ p_12h <- ggplot() +
              size = 0.5) + 
   theme_classic() + 
   labs(x = "Time", 
-       title = "S2 Bog Streamflow and Cumulative Precipitation Every 12 Hours",
+       title = paste0("S2 Bog Streamflow and Cumulative \n Precipitation Every 12 Hours (", min_year, "-", max_year, ")"),
        subtitle = "Streamflow is plotted in blue. \n Precipitation is plotted in grey. \n Manual streamflow checks are plotted as black points.") + 
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5, 
@@ -229,7 +229,7 @@ p_daily <- ggplot() +
              size = 0.5) + 
   theme_classic() + 
   labs(x = "Time", 
-       title = "S2 Bog Streamflow and Daily Cumulative Precipitation",
+       title = paste0("S2 Bog Streamflow and Cumulative \n Daily Precipitation (", min_year, "-", max_year, ")"),
        subtitle = "Streamflow is plotted in blue. \n Precipitation is plotted in grey. \n Manual streamflow checks are plotted as black points.") + 
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5, 
@@ -295,7 +295,7 @@ p_air <- ggplot() +
              size = 0.5) + 
   theme_classic() + 
   labs(x = "Time", 
-       title = "S2 Bog Streamflow and Air Temperature (2017 - 2019)",
+       title = paste0("S2 Bog Streamflow and Air Temperature (", min_year, "-", max_year, ")"),
        subtitle = "Air temperature is plotted in pink. \n Streamflow is plotted in blue. \n Manual streamflow checkpoints are plotted as black dots.") + 
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5, 
@@ -322,4 +322,3 @@ ggsave(filename = "streamflow_airtemp_mc.png",
 #interactive plot
 ggplotly(p_air)
 ```
-
