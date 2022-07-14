@@ -5,7 +5,7 @@ date: '`r format(Sys.time(), "%B %d, %Y")`'
 output:
   html_document:
     theme: flatly
-    code_folding: show
+    code_folding: hide
     toc: yes
     toc_float: yes
   pdf_document:
@@ -40,24 +40,23 @@ librarian::shelf(
   )
 ```
 
-Read in water year data from CSVs in the `intermediate_data` directory
+Read in water year data from CSV files created in `1_water_years.Rmd` and stored in the `intermediate_data` directory
 
 ```{r csv}
-#read in necessary CSV files from 1_water_years.Rmd
 wy2017_clean <- read_csv(here("intermediate_data", "wy2017_clean.csv"))
 wy2018_altered <- read_csv(here("intermediate_data", "wy2018_altered.csv"))
 wy2019_clean <- read_csv(here("intermediate_data", "wy2019_clean.csv")) 
 all_streamflow <- read_csv(here("intermediate_data", "all_streamflow.csv"))
 ```
 
-Set constant values
+Set date range 
 
 ```{r}
 min_year = 2017
-max_year = 2019
+max_year = 2021
 ```
 
-# Manual Streamflow Checks (2017 - 2019)
+# Manual Streamflow Checks (2017 - 2021)
 
 -   Read in the manual streamflow checkpoints from the External-MEF_DATA
     Box folder
@@ -109,11 +108,12 @@ ggplot(data = mc_clean) +
   theme_classic() + 
   labs(y = "Stream Height (ft)", 
        x = "Time", 
-       title = "S2 Weir Manual Streamflow Checks (2017 - 2019)") + 
+       title = paste0("S2 Weir Manual Streamflow Checks (", min_year, "-", max_year, ")")
+       ) + 
   theme(plot.title = element_text(hjust = 0.5))
 ```
 
-# Streamflow + Manual Checks (2017 - 2019)
+# Streamflow + Manual Checks (2017 - 2021)
 
 -   Combine all 3 water years using `rbind()`
 
@@ -134,7 +134,8 @@ p_all <- ggplot(data = all_streamflow) +
   theme_classic() + 
   labs(x = "Time", 
        y = "Stream Height (ft)",
-       title = "WY 2017 - 2019 S2 Bog Stream Height",
+       title = paste0("S2 Bog Stream Height (", min_year, "-", max_year, ")"
+       ),
        subtitle = "Stripchart data are plotted as black lines. Manual checks are plotted as red dots.") + 
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5))
@@ -155,7 +156,7 @@ ggsave(filename = "streamflow_with_manual_checks.png",
 ggplotly(p_all)
 ```
 
-## 1:1 Stripchart vs Manual Checkpoints (2017 - 2019)
+## 1:1 Stripchart vs Manual Checkpoints (2017 - 2021)
 
 Next, we are interested in a 1:1 comparison of stripchart data vs manual
 checkpoints data at the exact same timestamp. Since the stripchart data
@@ -279,7 +280,7 @@ p_1to1 <- ggplot() +
   theme_classic() +
   labs(x = "Manual Checkpoints",
        y = "Stripchart Data",
-       title = "S2 Manual Checks vs Interpolated Stripchart Values (2017 - 2019)",
+       title = paste0("S2 Manual Checks vs Interpolated Stripchart Values (", min_year, "-", max_year, ")"),
        subtitle = "The line y = x is plotted for reference.") +
     theme(plot.title = element_text(hjust = 0.5),
           plot.subtitle = element_text(hjust = 0.5)) + 
@@ -344,7 +345,7 @@ ggplot() +
   theme_classic() + 
   labs(x = "Time", 
        y = "Stream Height (ft)",
-       title = "Shaft Encoder S2 Bog (2017 - 2019)") + 
+       title = paste0("Shaft Encoder S2 Bog (", min_year, "-", max_year, ")")) + 
   theme(plot.title = element_text(hjust = 0.5))
   
 ```
