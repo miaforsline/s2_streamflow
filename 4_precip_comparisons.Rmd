@@ -70,7 +70,7 @@ max_year = 2021
 
 # Streamflow compared to cumulative precipitation and manual checkpoints
 
-### Cumulative Precipitation Every 6 Hours
+# Cumulative Precipitation Every 6 Hours
 
 ```{r p_6h}
 #calculate the ratio of the 2 y-axes to plot the variables together
@@ -126,7 +126,7 @@ ggplotly(p_6h)
 
 ```
 
-### Cumulative Precipitation Every 12 Hours
+# Cumulative Precipitation Every 12 Hours
 
 ```{r p_12h}
 #calculate the ratio of the 2 y-axes to plot the variables together
@@ -183,7 +183,7 @@ ggplotly(p_12h)
 
 ```
 
-### Cumulative Daily Precipitation
+# Cumulative Daily Precipitation
 
 ```{r p_daily}
 #format precipitation data for a smooth joining process
@@ -259,7 +259,7 @@ ggsave(filename = "streamflow_precip_daily_mc.png",
 ggplotly(p_daily)
 ```
 
-## Streamflow + air temperature data (every 30min) + manual checks
+# Streamflow + air temperature data (every 30min) + manual checks
 
 ```{r p_air}
 #format air temperature data for plotting 
