@@ -51,7 +51,7 @@ all_streamflow <- read_csv(here("intermediate_data", "all_streamflow.csv"))
 
 Set date range 
 
-```{r}
+```{r min_max_year}
 min_year = 2017
 max_year = 2021
 ```
@@ -304,48 +304,4 @@ ggsave(filename = "streamflow_mc_comparison.png",
 ggplotly(p_1to1)
 ```
 
-# Old Shaft Encoder Data (2017 - 2019)
 
--   Read in the manual checks data from the External-MEF_DATA Box folder
-
-    -   Specifically, raw data is found at the following file path:
-        `External-MEF_DATA/Hydro/Streamflow/L1_subdaily`
-
--   Clean and manipulate the data into a tidy format
-
-    -   Renaming columns to use lower_snake_case and avoid special
-        characters via `clean_names()`
-    -   Remove extraneous columns
-    -   Rename columns to join the data later
-
--   Plot the old shaft encoder data
-
-```{r eval=FALSE}
-#create file path to call the data from Box 
-## Mia's file path 
-filepath <- "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/Hydro/Streamflow/L1_subdaily/"
-
-#read in the 2019 data 
-se_data <- read_csv(here(filepath, "S2_5min_2017-2019.csv"))
-
-#clean the data 
-se_clean <- se_data %>% 
-  clean_names() %>% 
-  select(-x1, -record, -cond, -ct, -streamflow_cfs, -streamflow_lps, -temp_c) %>% 
-  rename(datetime = timestamp)
-
-#save clean data CSV to use in future RMD files
-write.csv(x = se_clean, 
-          file = file.path(here("intermediate_data", "se_clean.csv")),
-          row.names = FALSE)
-
-#plot 
-ggplot() + 
-  geom_line(data = se_clean, aes(x = datetime, y = stage)) + 
-  theme_classic() + 
-  labs(x = "Time", 
-       y = "Stream Height (ft)",
-       title = paste0("Shaft Encoder S2 Bog (", min_year, "-", max_year, ")")) + 
-  theme(plot.title = element_text(hjust = 0.5))
-  
-```
