@@ -40,9 +40,9 @@ librarian::shelf(
   )
 ```
 
-Set constant values
+Set date range
 
-```{r}
+```{r min_max_year}
 min_year = 2017
 max_year = 2019
 ```
@@ -97,7 +97,7 @@ p_15 <- ggplot(data = precip_15_clean) +
   theme_classic() + 
   labs(x = "Time", 
        y = "Precipitation (cm)", 
-       title = "2017 - 2019 Precipitation Sum Every 15 Min")
+       title = paste0("Precipitation Sum Every 15 Min (", min_year, "-", max_year, ")"))
 
 #static plot
 p_15
@@ -144,7 +144,7 @@ p_precip_6h <- ggplot(data = precip_6h_clean) +
   theme_classic() + 
   labs(x = "Time",
        y = "Cumulative Precipitation (in)", 
-       title = "S2 Cumulative Precipitation Every 6 Hours (2017 - 2019)") + 
+       title = paste0("Precipitation Sum Every 6 Hours (", min_year, "-", max_year, ")")) + 
   theme(plot.title = element_text(hjust = 0.5),
           plot.subtitle = element_text(hjust = 0.5))
 
@@ -196,7 +196,7 @@ p_precip_12h <- ggplot(data = precip_12h_clean) +
   theme_classic() + 
   labs(x = "Time",
        y = "Cumulative Precipitation (in)", 
-       title = "S2 Cumulative Precipitation Every 12 Hours (2017 - 2019)") + 
+       title = paste0("Precipitation Sum Every 12 Hours (", min_year, "-", max_year, ")")) + 
   theme(plot.title = element_text(hjust = 0.5),
           plot.subtitle = element_text(hjust = 0.5))
 
@@ -254,7 +254,8 @@ p_daily <- ggplot(data = precip_daily_clean) +
   theme_classic() + 
   labs(x = "Time", 
        y = "South Precipitation (in)", 
-       title = "2017 - 2019 Precipitation Daily Sum")
+       title = paste0("Daily Cumulative Precipitation (", min_year, "-", max_year, ")")
+       )
 
 #static plot
 p_daily
@@ -322,7 +323,8 @@ p_air_30 <- ggplot(data = air_temp_30_clean) +
   theme_classic() + 
   labs(x = "Time", 
        y = "Air Temperature (ºC)", 
-       title = "Air Temperature Every 30 Min (2017 - 2019)") + 
+       title = paste0("Air Temperature Every 30 Min (", min_year, "-", max_year, ")") 
+       ) + 
   theme(plot.title = element_text(hjust = 0.5),
           plot.subtitle = element_text(hjust = 0.5))
 
@@ -372,7 +374,8 @@ p_bogwell <- ggplot(data = bogwell_clean) +
   theme_classic() + 
   labs(x = "Time", 
        y = "Water Table Elevation (m above sea level)",
-       title = "S2 Daily Peatland Water Table Elevation")
+       title = paste0("S2 Daily Peatland Water Table Elevation (", min_year, "-", max_year, ")") 
+       )
 
 #static plot 
 p_bogwell
