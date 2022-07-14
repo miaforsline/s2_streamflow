@@ -1,5 +1,5 @@
 ---
-title: 'Marcell Experimental Forest: S2 Stream Height (Water Years 2017 - 2019)'
+title: 'Marcell Experimental Forest: S2 Stream Height (Water Years 2017 - 2021)'
 author: "Mia Forsline"
 date: '`r format(Sys.time(), "%B %d, %Y")`'
 output:
@@ -52,9 +52,9 @@ librarian::shelf(
 
 This RMD is the first in the workflow and reads in, cleans, and
 visualizes the stripchart stream height data for the 2017 - 2021 water
-years at the S2 bog site.
+years at the S2 bog site of the [Marcell Experimental Forest, Northern Research Station](https://www.nrs.fs.fed.us/ef/marcell/). 
 
-## Water Year 2017
+# Water Year 2017
 
 -   Read in the WY 2017 data from the External-MEF_DATA Box folder
     -   Specifically, raw data for the S2 Bog site is found at the
@@ -119,7 +119,8 @@ p_2017 <- ggplot(data = wy2017_clean) +
 ggplotly(p_2017)
 ```
 
-## Water Year 2018
+
+# Water Year 2018
 
 -   Read in the WY 2018 data from the External-MEF_DATA Box folder
     -   Raw data for the S2 Bog site is found at the following file
@@ -244,7 +245,7 @@ write.csv(x = wy2018_altered,
 ggplotly(p_2018_altered)
 ```
 
-### Altered Oct 31 - Nov 1, 2018 Streamflow Data
+## Altered Oct 31 - Nov 1, 2018 Streamflow Data
 
 During this time, it is most likely that the dates were read/input
 incorrectly, resulting in an unnatural oscillation of stream flow values
@@ -285,7 +286,7 @@ p_subset_altered
 #ggplotly(p_subset_altered)
 ```
 
-## Water Year 2019
+# Water Year 2019
 
 -   Read in the WY 2019 data from the External-MEF_DATA Box folder
     -   Raw data for the S2 Bog site is found at the following file
@@ -391,7 +392,7 @@ p_2019 <- ggplot(data = wy2019_clean) +
 ggplotly(p_2019)
 ```
 
-## Water Year 2020
+# Water Year 2020
 
 -   Read in the WY 2020 data from the External-MEF_DATA Box folder
     -   Raw data for the S2 Bog site is found at the following file
@@ -468,7 +469,7 @@ p_2020 <- ggplot(data = wy2020_clean) +
 ggplotly(p_2020)
 ```
 
-## Water Year 2021
+# Water Year 2021
 
 -   Read in the WY 2021 data from the External-MEF_DATA Box folder
     -   Raw data for the S2 Bog site is found at the following file
@@ -564,7 +565,8 @@ p_2021 <- ggplot(data = wy2021_clean) +
 ggplotly(p_2021)
 ```
 
-## All Water Years
+# All Water Years (2017 - 2021)
+
 ```{r}
 #combine 2017 - 2021 data
 all_streamflow <- rbind(wy2017_clean, 
