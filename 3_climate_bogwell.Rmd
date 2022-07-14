@@ -5,7 +5,7 @@ date: '`r format(Sys.time(), "%B %d, %Y")`'
 output:
   html_document:
     theme: flatly
-    code_folding: show
+    code_folding: hide
     toc: yes
     toc_float: yes
   pdf_document:
@@ -44,12 +44,12 @@ Set date range
 
 ```{r min_max_year}
 min_year = 2017
-max_year = 2019
+max_year = 2021
 ```
 
 # Climate and Bogwell data
 
-#Precipitation 
+# Precipitation 
 
 ## Precipitation Every 15min
 
