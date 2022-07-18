@@ -74,6 +74,8 @@ dir.create(output_dir)
 
 # Precipitation 
 
+More information about precipitation data collected at the Marcell Experimental Forest can be found on the [Environmental Data Initiative Repository Portal](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=563). 
+
 ## Precipitation Every 15min
 
 -   Read in the data from the following Box file path:
@@ -359,6 +361,8 @@ p_air_30
 ```
 
 # Peatland Daily Water Table
+
+More information about peatland and upland water elevation data collected at the Marcell Experimental Forest can be found on the [Environmental Data Initiative Repository Portal](https://data.nal.usda.gov/dataset/marcell-experimental-forest-peatland-and-upland-water-table-elevations). 
 
 -   Read in the data from the following Box file path:
     `External-MEF_DATA/EDI/peatland_water_table_daily/edi.562.2/data_objects/`
