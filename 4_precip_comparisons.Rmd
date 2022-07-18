@@ -223,6 +223,11 @@ precip_daily_join <- precip_daily_clean %>%
                            format = '%Y-%m-%d %H:%M:%S'),
          datetime = as.POSIXct(datetime))
 
+#save as CSV
+write.csv(x = precip_daily_join, 
+          file = file.path(here("intermediate_data", "precip_daily_join.csv")),
+          row.names = FALSE)
+
 #join streamflow and daily precipitation data 
 streamflow_precip_daily <- full_join(x = all_streamflow, 
                                      y = precip_daily_join, 
