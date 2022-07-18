@@ -2,6 +2,9 @@
 title: 'Marcell Experimental Forest: S2 Streamflow Manual Checks'
 author: "Mia Forsline"
 date: '`r format(Sys.time(), "%B %d, %Y")`'
+knit: (function(inputFile, encoding) { 
+      rmarkdown::render(inputFile,
+                        encoding=encoding, output_file="/Users/miaforsline/Desktop/manual_checks/index.html") })
 output:
   html_document:
     theme: flatly
@@ -324,4 +327,4 @@ ggsave(filename = "streamflow_mc_comparison.png",
 ggplotly(p_1to1)
 ```
 
-
+Note that this file is being knit as [`index.html`](https://github.com/miaforsline/manual_checks/blob/main/index.html) into the [`manual_checks` repository](https://github.com/miaforsline/manual_checks) in order to update the [GitHub pages website](https://miaforsline.github.io/manual_checks/), where the plots can be viewed online. 

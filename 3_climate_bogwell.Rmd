@@ -2,6 +2,9 @@
 title: 'Marcell Experimental Forest: S2 Climate and Bogwell Data'
 author: "Mia Forsline"
 date: '`r format(Sys.time(), "%B %d, %Y")`'
+knit: (function(inputFile, encoding) { 
+      rmarkdown::render(inputFile,
+                        encoding=encoding, output_file="/Users/miaforsline/Desktop/climate_bogwell/index.html") })
 output:
   html_document:
     theme: flatly
@@ -404,3 +407,4 @@ p_bogwell
 #ggplotly(p_bogwell)
 ```
 
+Note that this file is being knit as [`index.html`](https://github.com/miaforsline/climate_bogwell/blob/main/index.html) into the [`climate_bogwell` repository](https://github.com/miaforsline/climate_bogwell) in order to update the [GitHub pages website](https://miaforsline.github.io/climate_bogwell/), where the plots can be viewed online. 

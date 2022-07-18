@@ -4,7 +4,7 @@ author: "Mia Forsline"
 date: '`r format(Sys.time(), "%B %d, %Y")`'
 knit: (function(inputFile, encoding) { 
       rmarkdown::render(inputFile,
-                        encoding=encoding, output_file="/Users/miaforsline/Desktop/water_years/test.html") })
+                        encoding=encoding, output_file="/Users/miaforsline/Desktop/water_years/index.html") })
 output:
   html_document:
     theme: flatly
