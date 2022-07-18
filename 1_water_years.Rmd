@@ -26,6 +26,8 @@ knitr::opts_chunk$set(echo = TRUE,
                       message = FALSE, 
                       warning = FALSE)
 
+options(knitr.duplicate.label = "allow")
+
 #install packages if necessary, then load libraries
 if (!require(librarian)){
   install.packages("librarian")
@@ -46,6 +48,26 @@ librarian::shelf(
 #setwd("/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/Hydro/Streamflow/L0_subdaily/StripCharts/AnnualBreakPoint/S2")
 ## Nina's working directory path 
 #setwd("~/../../Box/External-MEF_DATA/Hydro/Streamflow/L0_subdaily/StripCharts")
+```
+
+## Create sub-directories if necessary 
+
+```{r directories}
+output_dir <- file.path(here("intermediate_data"))
+
+if (!dir.exists(output_dir)){
+dir.create(output_dir)
+} else {
+    print("Directory already exists!")
+}
+
+output_dir <- file.path(here("figures"))
+
+if (!dir.exists(output_dir)){
+dir.create(output_dir)
+} else {
+    print("Directory already exists!")
+}
 ```
 
 # S2 Stripchart Streamflow Data
@@ -567,7 +589,7 @@ ggplotly(p_2021)
 
 # All Water Years (2017 - 2021)
 
-```{r}
+```{r all_streamflow}
 #combine 2017 - 2021 data
 all_streamflow <- rbind(wy2017_clean, 
                         wy2018_altered, 
@@ -595,4 +617,16 @@ p_all <- ggplot(data = all_streamflow) +
 #interactive plot
 ggplotly(p_all)
 ```
+
+# Knit to HTML 
+
+```{r knit}
+knit_path = "/Users/miaforsline/Desktop/water_years/"
+
+rmarkdown::render(input = "1_water_years.Rmd", 
+                  output_format = "html_document",
+                  output_file = paste0(knit_path, "index.html"))
+```
+
+
 
