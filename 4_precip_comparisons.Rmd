@@ -2,6 +2,9 @@
 title: 'Marcell Experimental Forest: S2 Stream Height & Precipitation Comparison Analyses'
 author: "Mia Forsline"
 date: '`r format(Sys.time(), "%B %d, %Y")`'
+knit: (function(inputFile, encoding) { 
+      rmarkdown::render(inputFile,
+                        encoding=encoding, output_file="/Users/miaforsline/Desktop/precip_comparisons/index.html") })
 output:
   html_document:
     theme: flatly
@@ -279,4 +282,6 @@ ggsave(filename = "streamflow_precip_daily_mc.png",
 ggplotly(p_daily)
 ```
 
+
+Note that this file is being knit as [`index.html`](https://github.com/miaforsline/precip_comparisons/blob/main/index.html) into the [`precip_comparisons` repository](https://github.com/miaforsline/precip_comparisons) in order to update the [GitHub pages website](https://miaforsline.github.io/precip_comparisons/), where the plots can be viewed online. 
 
