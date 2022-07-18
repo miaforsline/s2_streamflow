@@ -23,7 +23,6 @@ editor_options:
 -   Install/load necessary R packages
 -   Set working directory if necessary (or create a file path to use
     throughout the RMD to call the data from Box)
--   Set constant values for reused variables
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
@@ -53,13 +52,14 @@ Read in water year data from CSVs in the `intermediate_data` directory
 #read in necessary CSV files from prior RMDs
 all_streamflow <- read_csv(here("intermediate_data", "all_streamflow.csv"))
 air_temp_30_clean <- read_csv(here("intermediate_data", "air_temp_30_clean.csv"))
+#bogwell_clean <- read_csv(here("intermediate_data", "bogwell_clean.csv")) 
 mc_clean <- read_csv(here("intermediate_data", "mc_clean.csv")) %>% 
   rename(datetime = collected)
 precip_15_clean <- read_csv(here("intermediate_data", "precip_15_clean.csv")) 
 precip_6h_clean <- read_csv(here("intermediate_data", "precip_6h_clean.csv")) 
 precip_12h_clean <- read_csv(here("intermediate_data", "precip_12h_clean.csv")) 
 precip_daily_clean <- read_csv(here("intermediate_data", "precip_daily_clean.csv")) 
-se_clean <- read_csv(here("intermediate_data", "se_clean.csv"))
+#se_clean <- read_csv(here("intermediate_data", "se_clean.csv"))
 ```
 
 Set constant values
@@ -68,6 +68,26 @@ Set constant values
 #set constants 
 min_year = 2017
 max_year = 2021
+```
+
+Create sub-directories if necessary 
+
+```{r directories}
+output_dir <- file.path(here("intermediate_data"))
+
+if (!dir.exists(output_dir)){
+dir.create(output_dir)
+} else {
+    print("Directory already exists!")
+}
+
+output_dir <- file.path(here("figures"))
+
+if (!dir.exists(output_dir)){
+dir.create(output_dir)
+} else {
+    print("Directory already exists!")
+}
 ```
 
 
