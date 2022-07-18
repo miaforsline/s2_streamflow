@@ -2,6 +2,9 @@
 title: 'Marcell Experimental Forest: S2 Stream Heights (2017 - 2021)'
 author: "Mia Forsline"
 date: '`r format(Sys.time(), "%B %d, %Y")`'
+knit: (function(inputFile, encoding) { 
+      rmarkdown::render(inputFile,
+                        encoding=encoding, output_file="/Users/miaforsline/Desktop/water_years/test.html") })
 output:
   html_document:
     theme: flatly
@@ -26,7 +29,7 @@ knitr::opts_chunk$set(echo = TRUE,
                       message = FALSE, 
                       warning = FALSE)
 
-options(knitr.duplicate.label = "allow")
+#options(knitr.duplicate.label = "allow")
 
 #install packages if necessary, then load libraries
 if (!require(librarian)){
@@ -621,11 +624,20 @@ ggplotly(p_all)
 # Knit to HTML 
 
 ```{r knit}
-knit_path = "/Users/miaforsline/Desktop/water_years/"
+# knit: (function(inputFile, encoding) { 
+#       rmarkdown::render(inputFile,
+#                         encoding=encoding, 
+#                         output_file="/Users/miaforsline/Desktop/water_years/index.html") })
+# 
+# dirname = "s2_streamflow"
+# inputFile = "1_water_years.Rmd"
+# out_dir = "/Users/miaforsline/Desktop/water_years/"
 
-rmarkdown::render(input = "1_water_years.Rmd", 
-                  output_format = "html_document",
-                  output_file = paste0(knit_path, "index.html"))
+#knit_path = "/Users/miaforsline/Desktop/water_years/"
+
+# rmarkdown::render(input = "1_water_years.Rmd", 
+#                   output_format = "html_document",
+#                   output_file = paste0(knit_path, "index.html"))
 ```
 
 
