@@ -330,7 +330,7 @@ p_1to1 <- ggplot() +
   ylim(0, 0.4)
 
 #static plot
-p_1to1
+#p_1to1
 
 #save the figure 
 ggsave(filename = "streamflow_mc_comparison.png",
