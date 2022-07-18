@@ -23,7 +23,6 @@ editor_options:
 -   Install/load necessary R packages
 -   Set working directory if necessary (or create a file path to use
     throughout the RMD to call the data from Box)
--   Set constant values for reused variables
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
@@ -92,6 +91,8 @@ dir.create(output_dir)
 ```
 
 # Streamflow compared to cumulative precipitation and manual checkpoints
+
+Stream height (from stripchart data) is plotted as a blue line. Cumulative precipitation is plotted as grey bars. Stream height (from manual checkpoints) is plotted as black dots. 
 
 # Cumulative Precipitation Every 6 Hours
 
