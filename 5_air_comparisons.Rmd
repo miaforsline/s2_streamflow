@@ -94,7 +94,7 @@ For interactive plots, cumulative precipitation is plotted as grey bars, and air
 
 ## Cumulative precipitation (every 15min) + air temperature (every 30min)
 
-```{r}
+```{r p_15}
 #format precipitation data for plotting 
 precip_15_join <- precip_15_clean %>% 
   pivot_wider(
@@ -165,7 +165,7 @@ ggsave(filename = "precip_15_airtemp_30.png",
 
 ## Daily Cumulative Precipitation vs Air Temperature
 
-```{r}
+```{r p_daily}
 #join air and precipitation data 
 precip_air <- full_join(x = precip_15_join, 
                         y = airtemp_join, 
