@@ -621,24 +621,6 @@ p_all <- ggplot(data = all_streamflow) +
 ggplotly(p_all)
 ```
 
-# Knit to HTML 
-
-```{r knit}
-# knit: (function(inputFile, encoding) { 
-#       rmarkdown::render(inputFile,
-#                         encoding=encoding, 
-#                         output_file="/Users/miaforsline/Desktop/water_years/index.html") })
-# 
-# dirname = "s2_streamflow"
-# inputFile = "1_water_years.Rmd"
-# out_dir = "/Users/miaforsline/Desktop/water_years/"
-
-#knit_path = "/Users/miaforsline/Desktop/water_years/"
-
-# rmarkdown::render(input = "1_water_years.Rmd", 
-#                   output_format = "html_document",
-#                   output_file = paste0(knit_path, "index.html"))
-```
-
+Note that this file is being knit as [`index.html`](https://github.com/miaforsline/water_years/blob/main/index.html) into the [`water_years` repository](https://github.com/miaforsline/water_years) in order to update the [GitHub pages website](https://miaforsline.github.io/water_years/), where the plots can be viewed online. 
 
 
