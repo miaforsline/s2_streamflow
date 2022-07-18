@@ -92,7 +92,7 @@ dir.create(output_dir)
 
 For interactive plots, cumulative precipitation is plotted as grey bars, and air temperature is plotted as a red line. 
 
-# Cumulative precipitation (every 15min) + air temperature (every 30min)
+## Cumulative precipitation (every 15min) + air temperature (every 30min)
 
 ```{r}
 #format precipitation data for plotting 
@@ -163,7 +163,7 @@ ggsave(filename = "precip_15_airtemp_30.png",
 #ggplotly(p_15)
 ```
 
-# Daily Cumulative Precipitation vs Air Temperature
+## Daily Cumulative Precipitation vs Air Temperature
 
 ```{r}
 #join air and precipitation data 
