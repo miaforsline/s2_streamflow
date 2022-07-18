@@ -148,7 +148,7 @@ p_15 <- ggplot() +
   ) 
 
 #static plot
-p_15
+#p_15
 
 #save figure
 ggsave(filename = "precip_15_airtemp_30.png",
@@ -160,7 +160,7 @@ ggsave(filename = "precip_15_airtemp_30.png",
        dpi = 300)
 
 #interactive plot
-#ggplotly(p_15)
+ggplotly(p_15)
 ```
 
 ## Daily Cumulative Precipitation vs Air Temperature
