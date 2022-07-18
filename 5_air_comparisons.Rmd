@@ -2,6 +2,9 @@
 title: 'Marcell Experimental Forest: S2 Stream Height & Air Temperature Comparison Analyses'
 author: "Mia Forsline"
 date: '`r format(Sys.time(), "%B %d, %Y")`'
+knit: (function(inputFile, encoding) { 
+      rmarkdown::render(inputFile,
+                        encoding=encoding, output_file="/Users/miaforsline/Desktop/air_comparisons/index.html") })
 output:
   html_document:
     theme: flatly
@@ -191,3 +194,4 @@ ggsave(filename = "precip_15_airtemp_30.png",
 ```
 
 
+Note that this file is being knit as [`index.html`](https://github.com/miaforsline/air_comparisons/blob/main/index.html) into the [`air_comparisons` repository](https://github.com/miaforsline/precip_comparisons) in order to update the [GitHub pages website](https://miaforsline.github.io/air_comparisons/), where the plots can be viewed online. 
