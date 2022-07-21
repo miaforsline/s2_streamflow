@@ -359,7 +359,10 @@ p_all <- ggplot() +
   labs(x = "Time", 
        y = " ", 
        title = paste0("S2 Bog Streamflow, Air Temperature, \n and Precipitation (", min_year, "-", max_year, ")"),
-       subtitle = "Air temperature is plotted in pink. \n Streamflow is plotted in blue. \n Manual streamflow checkpoints are plotted as black dots.") + 
+       subtitle = "Air temperature is plotted in pink.
+       Precipitation is plotted as grey bars
+       Streamflow is plotted in blue.
+       Manual streamflow checkpoints are plotted as black dots.") + 
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5, 
                                      size = 7)) 
