@@ -58,7 +58,7 @@ output_dir <- file.path(here("intermediate_data"))
 if (!dir.exists(output_dir)){
 dir.create(output_dir)
 } else {
-    print("Directory already exists!")
+    print("intermediate_data directory already exists!")
 }
 
 output_dir <- file.path(here("figures"))
@@ -66,7 +66,7 @@ output_dir <- file.path(here("figures"))
 if (!dir.exists(output_dir)){
 dir.create(output_dir)
 } else {
-    print("Directory already exists!")
+    print("figures directory already exists!")
 }
 ```
 
