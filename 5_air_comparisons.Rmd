@@ -175,7 +175,7 @@ ggplotly(p = p_15,
          tooltip = "text")
 ```
 
-## Daily Cumulative Precipitation vs Air Temperature
+## Daily cumulative precipitation + air temperature (every 30min)
 
 ```{r p_daily}
 #join air and precipitation data 
@@ -233,33 +233,6 @@ ggsave(filename = "precip_daily_airtemp_30.png",
        units = c("in"),
        dpi = 300)
 
-# p_daily_interactive <- ggplot() + 
-#   #airtemp data
-#   geom_line(data = airtemp_join, 
-#             aes(x = datetime, 
-#                 y = airtempc_100),
-#             color = "pink",
-#             alpha = 0.5,
-#             size = 0.25) + 
-#   #precipitation data 
-#   geom_line(data = precip_daily_join, 
-#             aes(x = datetime, 
-#                 y = precip_10_in,
-#                 colour = I("grey"), 
-#                 group = 1,
-#                 text = paste0("DateTime: ", datetime, "\n",
-#                               "Precip: ", precip_10_in)
-#                 ),
-#             size = 0.25) +
-#   theme_classic() + 
-#   labs(x = "Time",
-#        y = "",
-#        title = "S2 Daily Cumulative Precipitation \n and Air Temperature Every 30min",
-#        subtitle = "Cumulative precipitation is plotted in grey. \n Air temperature is plotted in pink.") + 
-#   theme(plot.title = element_text(hjust = 0.5),
-#         plot.subtitle = element_text(hjust = 0.5, 
-#                                      size = 7))
-
 #interactive plot
 ggplotly(p_daily,
          tooltip = "text")
@@ -276,19 +249,34 @@ p_air <- ggplot() +
   #airtemp data
   geom_line(data = airtemp_join, 
             aes(x = datetime,
-                y = airtempc_100),
+                y = airtempc_100, 
+                group = 1,
+                #create hovering labels for interactive graph 
+                text = paste0("DateTime: ", datetime, "\n",
+                              "AirTemp: ", airtempc_100)
+                ),
             color = "pink", 
             alpha = 0.4) +
   #streamflow data 
   geom_line(data = all_streamflow,
              aes(x = datetime, 
-                 y = stream_height_ft),
+                 y = stream_height_ft,
+                 group = 1,
+                 #create hovering labels for interactive graph 
+                 text = paste0("DateTime: ", datetime, "\n",
+                              "Stream Height (ft): ", round(stream_height_ft, digits = 3))
+                 ),
             color = "blue",
             size = 0.75) + 
   #manual check points
   geom_point(data = mc_clean, 
              aes(x = datetime, 
-                 y = stripchart_stage),
+                 y = stripchart_stage,
+                 group = 1,
+                 #create hovering labels for interactive graph 
+                 text = paste0("DateTime: ", datetime, "\n",
+                              "Manual Strem Height Check: ", stripchart_stage)
+                 ),
              size = 0.5) + 
   theme_classic() + 
   labs(x = "Time", 
@@ -317,7 +305,8 @@ ggsave(filename = "streamflow_airtemp_mc.png",
        dpi = 300)
 
 #interactive plot
-ggplotly(p_air)
+ggplotly(p_air,
+         tooltip = "text")
 ```
 
 Note that this file is being knit as
