@@ -46,7 +46,7 @@ librarian::shelf(
   )
 ```
 
-Read in water year data from CSVs in the `intermediate_data` directory
+Read in data from CSVs in the `intermediate_data` directory
 
 ```{r csv, message=FALSE, warning=FALSE}
 #read in necessary CSV files from prior RMDs
@@ -61,7 +61,7 @@ precip_daily_clean <- read_csv(here("intermediate_data", "precip_daily_clean.csv
 precip_daily_join <- read_csv(here("intermediate_data", "precip_daily_join.csv")) 
 ```
 
-Set constant values
+Set constant values (aka the date range of the analysis)
 
 ```{r min_max_year}
 #set constants 
@@ -77,7 +77,7 @@ output_dir <- file.path(here("intermediate_data"))
 if (!dir.exists(output_dir)){
 dir.create(output_dir)
 } else {
-    print("Directory already exists!")
+    print("intermediate_data directory already exists!")
 }
 
 output_dir <- file.path(here("figures"))
@@ -85,9 +85,10 @@ output_dir <- file.path(here("figures"))
 if (!dir.exists(output_dir)){
 dir.create(output_dir)
 } else {
-    print("Directory already exists!")
+    print("figures directory already exists!")
 }
 ```
+
 # Cumulative precipitation + air temperature
 
 For interactive plots, cumulative precipitation is plotted as grey bars, and air temperature is plotted as a red line. 
@@ -123,7 +124,13 @@ p_15 <- ggplot() +
   #airtemp data
   geom_line(data = airtemp_join, 
             aes(x = datetime, 
-                y = airtempc_100),
+                y = airtempc_100,
+                #text will not work without specifying the group 
+                group = 1,
+                #create hovering labels for interactive graph 
+                text = paste0("DateTime: ", datetime, "\n",
+                              "AirTemp: ", airtempc_100)
+                ),
             color = "pink",
             alpha = 0.5,
             size = 0.25) + 
@@ -131,7 +138,10 @@ p_15 <- ggplot() +
   geom_line(data = precip_15_join, 
             aes(x = datetime, 
                 y = precip_10,
-                colour = I("grey")),
+                colour = I("grey"),
+                group = 1,
+                text = paste0("DateTime: ", datetime, "\n",
+                              "Precip: ", precip_10)),
             size = 0.25) +
   theme_classic() + 
   labs(x = "Time", 
@@ -160,7 +170,9 @@ ggsave(filename = "precip_15_airtemp_30.png",
        dpi = 300)
 
 #interactive plot
-ggplotly(p_15)
+ggplotly(p = p_15, 
+         #format the hovering labels 
+         tooltip = "text")
 ```
 
 ## Daily Cumulative Precipitation vs Air Temperature
@@ -177,7 +189,12 @@ p_daily <- ggplot() +
   #airtemp data
   geom_line(data = airtemp_join, 
             aes(x = datetime, 
-                y = airtempc_100),
+                y = airtempc_100,
+                group = 1,
+                #create hovering labels for interactive graph 
+                text = paste0("DateTime: ", datetime, "\n",
+                              "AirTemp: ", airtempc_100)
+                ),
             color = "pink",
             alpha = 0.5,
             size = 0.25) + 
@@ -185,7 +202,10 @@ p_daily <- ggplot() +
   geom_line(data = precip_daily_join, 
             aes(x = datetime, 
                 y = precip_10_in,
-                colour = I("grey")),
+                colour = I("grey"),
+                group = 1,
+                text = paste0("DateTime: ", datetime, "\n",
+                              "Precip: ", precip_10_in)),
             size = 0.25) +
   theme_classic() + 
   labs(x = "Time", 
@@ -213,31 +233,36 @@ ggsave(filename = "precip_daily_airtemp_30.png",
        units = c("in"),
        dpi = 300)
 
-p_daily_interactive <- ggplot() + 
-  #airtemp data
-  geom_line(data = airtemp_join, 
-            aes(x = datetime, 
-                y = airtempc_100),
-            color = "pink",
-            alpha = 0.5,
-            size = 0.25) + 
-  #precipitation data 
-  geom_line(data = precip_daily_join, 
-            aes(x = datetime, 
-                y = precip_10_in,
-                colour = I("grey")),
-            size = 0.25) +
-  theme_classic() + 
-  labs(x = "Time",
-       y = "",
-       title = "S2 Daily Cumulative Precipitation \n and Air Temperature Every 30min",
-       subtitle = "Cumulative precipitation is plotted in grey. \n Air temperature is plotted in pink.") + 
-  theme(plot.title = element_text(hjust = 0.5),
-        plot.subtitle = element_text(hjust = 0.5, 
-                                     size = 7))
+# p_daily_interactive <- ggplot() + 
+#   #airtemp data
+#   geom_line(data = airtemp_join, 
+#             aes(x = datetime, 
+#                 y = airtempc_100),
+#             color = "pink",
+#             alpha = 0.5,
+#             size = 0.25) + 
+#   #precipitation data 
+#   geom_line(data = precip_daily_join, 
+#             aes(x = datetime, 
+#                 y = precip_10_in,
+#                 colour = I("grey"), 
+#                 group = 1,
+#                 text = paste0("DateTime: ", datetime, "\n",
+#                               "Precip: ", precip_10_in)
+#                 ),
+#             size = 0.25) +
+#   theme_classic() + 
+#   labs(x = "Time",
+#        y = "",
+#        title = "S2 Daily Cumulative Precipitation \n and Air Temperature Every 30min",
+#        subtitle = "Cumulative precipitation is plotted in grey. \n Air temperature is plotted in pink.") + 
+#   theme(plot.title = element_text(hjust = 0.5),
+#         plot.subtitle = element_text(hjust = 0.5, 
+#                                      size = 7))
 
 #interactive plot
-ggplotly(p_daily_interactive)
+ggplotly(p_daily,
+         tooltip = "text")
 ```
 
 # Streamflow + air temperature data (every 30min) + manual checks
