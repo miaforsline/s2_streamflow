@@ -375,16 +375,16 @@ p_all <- ggplot() +
 #   ) 
 
 #static plot
-p_all
+#p_all
 
-# #save the plot in the figures folder 
-# ggsave(filename = "airtemp_mc_precip_streamflow.png",
-#        plot = p_all,
-#        path = "figures/",
-#        width = 8,
-#        height = 4,
-#        units = c("in"),
-#        dpi = 300)
+#save the plot in the figures folder
+ggsave(filename = "airtemp_mc_precip_streamflow.png",
+       plot = p_all,
+       path = "figures/",
+       width = 8,
+       height = 4,
+       units = c("in"),
+       dpi = 300)
 
 #interactive plot
 ggplotly(p_all,
