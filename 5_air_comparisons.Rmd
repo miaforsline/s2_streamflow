@@ -96,6 +96,30 @@ For interactive plots, cumulative precipitation is plotted as grey bars, and air
 ## Daily cumulative precipitation + air temperature (every 30min)
 
 ```{r p_daily}
+#format precipitation data for plotting 
+precip_15_join <- precip_15_clean %>% 
+  pivot_wider(
+    names_from = "precip_type",
+    values_from = "precip_in"
+  ) %>% 
+  subset(year >= min_year & year <= max_year) %>% 
+  rename(precip_10_in = precip_10)
+
+#format air temperature data for plotting 
+airtemp_join <- air_temp_30_clean %>% 
+  pivot_wider(
+    names_from = "airtemp_type",
+    values_from = "airtempC"
+  ) %>% 
+  subset(year >= min_year & year <= max_year) %>% 
+  mutate(freezing = as.factor(freezing))
+
+#format air temp data for plotting 
+precip_air <- full_join(x = precip_15_join, 
+                        y = airtemp_join, 
+                        by = c("datetime", "year")) %>% 
+  subset(year >= min_year & year <= max_year)
+
 #join air and precipitation data 
 precip_air <- full_join(x = precip_15_join, 
                         y = airtemp_join, 
