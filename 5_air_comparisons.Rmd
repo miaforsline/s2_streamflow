@@ -253,7 +253,7 @@ p_air <- ggplot() +
                 group = 1,
                 #create hovering labels for interactive graph 
                 text = paste0("DateTime: ", datetime, "\n",
-                              "AirTemp: ", airtempc_100)
+                              "AirTemp (ºC/100): ", airtempc_100)
                 ),
             color = "pink", 
             alpha = 0.4) +
@@ -275,7 +275,7 @@ p_air <- ggplot() +
                  group = 1,
                  #create hovering labels for interactive graph 
                  text = paste0("DateTime: ", datetime, "\n",
-                              "Manual Strem Height Check: ", stripchart_stage)
+                              "Manual Strem Height Check (ft): ", stripchart_stage)
                  ),
              size = 0.5) + 
   theme_classic() + 
@@ -321,7 +321,7 @@ p_all <- ggplot() +
                 group = 1,
                 #create hovering labels for interactive graph 
                 text = paste0("DateTime: ", datetime, "\n",
-                              "AirTemp: ", airtempc_100)
+                              "AirTemp (ºC/100): ", airtempc_100)
                 ),
             color = "pink", 
             alpha = 0.4) +
@@ -343,7 +343,7 @@ p_all <- ggplot() +
                  group = 1,
                  #create hovering labels for interactive graph 
                  text = paste0("DateTime: ", datetime, "\n",
-                              "Manual Strem Height Check: ", stripchart_stage)
+                              "Manual Strem Height Check (ft): ", stripchart_stage)
                  ),
              size = 0.5) + 
   #precipitation data 
@@ -353,14 +353,14 @@ p_all <- ggplot() +
                 colour = I("grey"),
                 group = 1,
                 text = paste0("DateTime: ", datetime, "\n",
-                              "Precip: ", precip_10_in)),
+                              "Precipitation (in/10): ", precip_10_in)),
             size = 0.25) +
   theme_classic() + 
   labs(x = "Time", 
        y = " ", 
        title = paste0("S2 Bog Streamflow, Air Temperature, \n and Precipitation (", min_year, "-", max_year, ")"),
-       subtitle = "Air temperature is plotted in pink.
-       Precipitation is plotted as grey bars
+       subtitle = "Air temperature is plotted in pink and scaled by 100. 
+       Precipitation is plotted as grey bars and scaled by 10.
        Streamflow is plotted in blue.
        Manual streamflow checkpoints are plotted as black dots.") + 
   theme(plot.title = element_text(hjust = 0.5),
