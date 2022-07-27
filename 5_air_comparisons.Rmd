@@ -89,11 +89,10 @@ dir.create(output_dir)
 }
 ```
 
-# Cumulative precipitation + air temperature
+# Daily Cumulative Precipitation + Air Temperature Every 30min
 
-For interactive plots, cumulative precipitation is plotted as grey bars, and air temperature is plotted as a red line. 
-
-## Daily cumulative precipitation + air temperature (every 30min)
+For interactive plots, cumulative precipitation is plotted as grey bars,
+and air temperature is plotted as a red line.
 
 ```{r p_daily}
 #format precipitation data for plotting 
@@ -255,7 +254,7 @@ ggplotly(p_air,
          tooltip = "text")
 ```
 
-# Streamflow + precip (daily) + air temp + manual checks 
+# Streamflow + precip (daily) + air temp + manual checks
 
 ```{r p_all}
 #plot 
@@ -336,7 +335,6 @@ p_all <- ggplot() +
 ggplotly(p_all,
          tooltip = "text")
 ```
-
 
 Note that this file is being knit as
 [`index.html`](https://github.com/miaforsline/air_comparisons/blob/main/index.html)
