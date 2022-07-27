@@ -91,8 +91,9 @@ dir.create(output_dir)
 
 # Daily Cumulative Precipitation + Air Temperature Every 30min
 
-For interactive plots, cumulative precipitation is plotted as grey bars,
-and air temperature is plotted as a red line.
+For interactive plots, cumulative precipitation is plotted as **grey
+bars**, and air temperature is plotted as a [pink
+line]{style="color:pink"}.
 
 ```{r p_daily}
 #format precipitation data for plotting 
@@ -162,8 +163,8 @@ p_daily <- ggplot() +
        subtitle = "Daily cumulative precipitation is plotted in grey. \n Air temperature is plotted in pink.") + 
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5, 
-                                     size = 7)) + 
-    #scale_fill_identity(name = 'the fill', guide = 'legend',labels = c('m1')) +
+                                     size = 7)) 
+    #+ scale_fill_identity(name = 'the fill', guide = 'legend',labels = c('m1')) +
     # scale_fill_manual(name = 'Color', 
     #      values = c("grey" = "grey", 
     #                 "pink" = "pink"), 
@@ -195,6 +196,14 @@ ggplotly(p_daily,
 ```
 
 # Streamflow + air temperature data (every 30min) + manual checks
+
+For interactive plots,
+
+-   air temperature is plotted as a [pink line]{style="color:pink"},
+
+-   streamflow is plotted as a [blue line]{style="color:blue"},
+
+-   and streamflow manual checkpoints are plotted as **black dots**.
 
 ```{r p_air}
 #calculate the ratio of the 2 y-axes to plot the variables together in the static plot
@@ -268,6 +277,16 @@ ggplotly(p_air,
 
 # Streamflow + precip (daily) + air temp + manual checks
 
+For interactive plots,
+
+-   air temperature is plotted as a [pink line]{style="color:pink"},
+
+-   cumulative precipitation is plotted as grey bars,
+
+-   streamflow is plotted as a [blue line]{style="color:blue"},
+
+-   and streamflow manual checkpoints are plotted as **black dots**.
+
 ```{r p_all}
 #plot 
 p_all <- ggplot() + 
@@ -279,8 +298,8 @@ p_all <- ggplot() +
                 #create hovering labels for interactive graph 
                 text = paste0("DateTime: ", datetime, "\n",
                               "AirTemp (ºC/100): ", airtempc_100)
-                ),
-            color = "pink", 
+                ), 
+            color = "pink",
             alpha = 0.4) +
   #streamflow data 
   geom_line(data = all_streamflow,
@@ -307,10 +326,10 @@ p_all <- ggplot() +
   geom_col(data = precip_daily_join, 
             aes(x = datetime, 
                 y = precip_10_in,
-                colour = I("grey"),
                 group = 1,
                 text = paste0("Date: ", date, "\n",
                               "Daily Cumulative Precipitation (in/10): ", precip_10_in)),
+            colour = I("grey"),
             size = 0.25) +
   theme_classic() + 
   labs(x = "Time", 
@@ -322,7 +341,8 @@ p_all <- ggplot() +
        Manual streamflow checkpoints are plotted as black dots.") + 
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5, 
-                                     size = 7)) 
+                                     size = 7),
+        legend.position = "none") 
 # + 
 #   scale_y_continuous(
 #     # Features of the first axis
