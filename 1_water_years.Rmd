@@ -53,7 +53,7 @@ librarian::shelf(
 #setwd("~/../../Box/External-MEF_DATA/Hydro/Streamflow/L0_subdaily/StripCharts")
 ```
 
-## Create sub-directories if necessary 
+Create sub-directories if necessary 
 
 ```{r directories}
 output_dir <- file.path(here("intermediate_data"))
@@ -127,10 +127,18 @@ write.csv(x = wy2017_clean,
 
 #test the 2017 data
 if(nrow(wy2017) != nrow(wy2017_clean)) stop("Check clean dataframe dimensions")
+```
 
+
+```{r wy2017_plot}
 #plot 
 p_2017 <- ggplot(data = wy2017_clean) + 
-  geom_line(aes(x = datetime, y = stream_height_ft)) + 
+  geom_line(aes(x = datetime, 
+                y = stream_height_ft,
+                group = 1,
+                #create hovering labels for interactive graph 
+                text = paste0("DateTime: ", datetime, "\n",
+                              "Stream Height (ft): ", round(stream_height_ft, digits = 3)))) + 
   theme_classic() + 
   labs(x = "Time", 
        y = "Stream Height (ft)", 
@@ -141,7 +149,8 @@ p_2017 <- ggplot(data = wy2017_clean) +
 #p_2017
 
 #interactive plot 
-ggplotly(p_2017)
+ggplotly(p_2017, 
+         tooltip = "text")
 ```
 
 
@@ -215,14 +224,22 @@ wy2018_clean$stream_height_ft[wy2018_clean$date %between% as.Date(c('2018-12-11'
 
 #test the 2018 data
 if(nrow(wy2018) != nrow(wy2018_clean)) stop("Check clean dataframe dimensions")
+```
 
+
+```{r wy2018_plot}
 #plot
 p_2018_clean <- ggplot(data = wy2018_clean) + 
-  geom_line(aes(x = datetime, y = stream_height_ft)) + 
+  geom_line(aes(x = datetime, 
+                y = stream_height_ft,
+                group = 1,
+                #create hovering labels for interactive graph 
+                text = paste0("DateTime: ", datetime, "\n",
+                              "Stream Height (ft): ", round(stream_height_ft, digits = 3)))) + 
   theme_classic() + 
   labs(x = "Time", 
        y = "Stream Height (ft)", 
-       title = "WY 2018 S2 Bog Weir Stream Height") + 
+       title = "WY 2018 S2 Bog Weir Stream Height (Unaltered)") + 
   theme(plot.title = element_text(hjust = 0.5))
 
 #note the weird oscillating values from Oct 31 - Nov 1
@@ -230,7 +247,7 @@ p_2018_clean <- ggplot(data = wy2018_clean) +
 #p_2018_clean
 
 #interactive plot 
-ggplotly(p_2018_clean)
+ggplotly(p_2018_clean, tooltip = "text")
 ```
 
 Next, we need to remove unusual stream height values from Oct 31 - Nov
@@ -247,14 +264,22 @@ wy2018_altered <- subset(wy2018_altered, !(wy2018_altered$date %between% as.Date
 
 #test the 2018 altered data - there should be fewer rows in the altered dataframe than the original/cleaned dataframe 
 if(nrow(wy2018_altered) == nrow(wy2018_clean)) stop("Check altered dataframe dimensions")
+```
 
+
+```{r wy2018_altered_plot}
 #plot
 p_2018_altered <- ggplot(data = wy2018_altered) + 
-  geom_line(aes(x = datetime, y = stream_height_ft)) + 
+  geom_line(aes(x = datetime, 
+                y = stream_height_ft, 
+                group = 1,
+                #create hovering labels for interactive graph 
+                text = paste0("DateTime: ", datetime, "\n",
+                              "Stream Height (ft): ", round(stream_height_ft, digits = 3)))) + 
   theme_classic() + 
   labs(x = "Time", 
        y = "Stream Height (ft)", 
-       title = "WY 2018 S2 Bog Stream Height") + 
+       title = "WY 2018 S2 Bog Stream Height (Altered)") + 
   theme(plot.title = element_text(hjust = 0.5))
 
 #save clean data CSV to use in future RMD files
@@ -267,7 +292,7 @@ write.csv(x = wy2018_altered,
 #p_2018_altered
 
 #interactive plot 
-ggplotly(p_2018_altered)
+ggplotly(p_2018_altered, tooltip = "text")
 ```
 
 ## Altered Oct 31 - Nov 1, 2018 Streamflow Data
@@ -400,10 +425,18 @@ write.csv(x = wy2019_clean,
 
 #test the 2019 data 
 if(nrow(wy2019) != nrow(wy2019_clean)) stop("Check clean dataframe dimensions")
+```
 
+
+```{r wy2019_plot}
 #plot 
 p_2019 <- ggplot(data = wy2019_clean) + 
-  geom_line(aes(x = datetime, y = stream_height_ft)) + 
+  geom_line(aes(x = datetime, 
+                y = stream_height_ft, 
+                group = 1,
+                #create hovering labels for interactive graph 
+                text = paste0("DateTime: ", datetime, "\n",
+                              "Stream Height (ft): ", round(stream_height_ft, digits = 3)))) + 
   theme_classic() + 
   labs(x = "Time", 
        y = "Stream Height (Ft)",
@@ -414,7 +447,7 @@ p_2019 <- ggplot(data = wy2019_clean) +
 #p_2019
 
 #interactive plot
-ggplotly(p_2019)
+ggplotly(p_2019, tooltip = "text")
 ```
 
 # Water Year 2020
@@ -477,10 +510,18 @@ write.csv(x = wy2020_clean,
 
 #test the 2020 data 
 if(nrow(wy2020) != nrow(wy2020_clean)) stop("Check clean dataframe dimensions")
+```
 
+
+```{r wy2020_plot}
 #plot 
 p_2020 <- ggplot(data = wy2020_clean) + 
-  geom_line(aes(x = datetime, y = stream_height_ft)) + 
+  geom_line(aes(x = datetime, 
+                y = stream_height_ft,
+                group = 1,
+                #create hovering labels for interactive graph 
+                text = paste0("DateTime: ", datetime, "\n",
+                              "Stream Height (ft): ", round(stream_height_ft, digits = 3)))) + 
   theme_classic() + 
   labs(x = "Time", 
        y = "Stream Height (Ft)",
@@ -491,7 +532,7 @@ p_2020 <- ggplot(data = wy2020_clean) +
 #p_2020
 
 #interactive plot
-ggplotly(p_2020)
+ggplotly(p_2020, tooltip = "text")
 ```
 
 # Water Year 2021
@@ -573,10 +614,18 @@ write.csv(x = wy2021_clean,
 
 #test the 2021 data 
 if(nrow(wy2021) != nrow(wy2021_clean)) stop("Check clean dataframe dimensions")
+```
 
+
+```{r wy2021_plot}
 #plot 
 p_2021 <- ggplot(data = wy2021_clean) + 
-  geom_line(aes(x = datetime, y = stream_height_ft)) + 
+  geom_line(aes(x = datetime, 
+                y = stream_height_ft,
+                group = 1,
+                #create hovering labels for interactive graph 
+                text = paste0("DateTime: ", datetime, "\n",
+                              "Stream Height (ft): ", round(stream_height_ft, digits = 3)))) + 
   theme_classic() + 
   labs(x = "Time", 
        y = "Stream Height (Ft)",
@@ -587,7 +636,7 @@ p_2021 <- ggplot(data = wy2021_clean) +
 #p_2021
 
 #interactive plot
-ggplotly(p_2021)
+ggplotly(p_2021, tooltip = "text")
 ```
 
 # All Water Years (2017 - 2021)
@@ -607,7 +656,12 @@ write.csv(x = all_streamflow,
 
 #plot 
 p_all <- ggplot(data = all_streamflow) + 
-  geom_line(aes(x = datetime, y = stream_height_ft)) + 
+  geom_line(aes(x = datetime, 
+                y = stream_height_ft, 
+                group = 1,
+                #create hovering labels for interactive graph 
+                text = paste0("DateTime: ", datetime, "\n",
+                              "Stream Height (ft): ", round(stream_height_ft, digits = 3)))) + 
   theme_classic() + 
   labs(x = "Time", 
        y = "Stream Height (Ft)",
@@ -618,7 +672,7 @@ p_all <- ggplot(data = all_streamflow) +
 #p_all
 
 #interactive plot
-ggplotly(p_all)
+ggplotly(p_all, tooltip = "text")
 ```
 
 Note that this file is being knit as [`index.html`](https://github.com/miaforsline/water_years/blob/main/index.html) into the [`water_years` repository](https://github.com/miaforsline/water_years) in order to update the [GitHub pages website](https://miaforsline.github.io/water_years/), where the plots can be viewed online. 
