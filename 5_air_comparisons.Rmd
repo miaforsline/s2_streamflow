@@ -91,9 +91,12 @@ dir.create(output_dir)
 
 # Daily Cumulative Precipitation + Air Temperature Every 30min
 
-For interactive plots, cumulative precipitation is plotted as **grey
-bars**, and air temperature is plotted as a [pink
-line]{style="color:pink"}.
+For interactive plots,
+
+-   air temperature (ºC / 100) is plotted as a [pink
+    line]{style="color:pink"}, and
+
+-   cumulative daily precipitation (in / 10) is plotted as grey bars.
 
 ```{r p_daily}
 #format precipitation data for plotting 
@@ -199,11 +202,13 @@ ggplotly(p_daily,
 
 For interactive plots,
 
--   air temperature is plotted as a [pink line]{style="color:pink"},
+-   air temperature (ºC / 100) is plotted as a [pink
+    line]{style="color:pink"},
 
--   streamflow is plotted as a [blue line]{style="color:blue"},
+-   streamflow (ft) is plotted as a [blue line]{style="color:blue"},
 
--   and streamflow manual checkpoints are plotted as **black dots**.
+-   and streamflow manual checkpoints (ft) are plotted as **black
+    dots**.
 
 ```{r p_air}
 #calculate the ratio of the 2 y-axes to plot the variables together in the static plot
@@ -279,13 +284,15 @@ ggplotly(p_air,
 
 For interactive plots,
 
--   air temperature is plotted as a [pink line]{style="color:pink"},
+-   air temperature (ºC / 100) is plotted as a [pink
+    line]{style="color:pink"},
 
--   cumulative precipitation is plotted as grey bars,
+-   cumulative daily precipitation (in / 10) is plotted as grey bars,
 
--   streamflow is plotted as a [blue line]{style="color:blue"},
+-   streamflow (ft) is plotted as a [blue line]{style="color:blue"},
 
--   and streamflow manual checkpoints are plotted as **black dots**.
+-   and streamflow manual checkpoints (ft) are plotted as **black
+    dots**.
 
 ```{r p_all}
 #plot 
