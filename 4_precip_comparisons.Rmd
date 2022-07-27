@@ -70,7 +70,7 @@ min_year = 2017
 max_year = 2021
 ```
 
-Create sub-directories if necessary 
+Create sub-directories if necessary
 
 ```{r directories}
 output_dir <- file.path(here("intermediate_data"))
@@ -92,7 +92,13 @@ dir.create(output_dir)
 
 # Streamflow compared to cumulative precipitation and manual checkpoints
 
-Stream height (from stripchart data) is plotted as a blue line. Cumulative precipitation is plotted as grey bars. Stream height (from manual checkpoints) is plotted as black dots. 
+For interactive plots,
+
+-   cumulative precipitation is plotted as grey bars,
+
+-   streamflow is plotted as a [blue line]{style="color:blue"},
+
+-   and streamflow manual checkpoints are plotted as **black dots**.
 
 # Cumulative Precipitation Every 6 Hours
 
@@ -106,17 +112,30 @@ p_6h <- ggplot() +
   geom_col(data = precip_6h_clean, 
             aes(x = datetime, 
                 y = precip_10_in,
-                colour = I("grey")),
+                group = 1,
+                #create hovering labels for interactive graph 
+                text = paste0("DateTime: ", datetime, "\n",
+                              "Precipitation (in/10): ", precip_10_in)),
+            colour = I("grey"),
             size = 0.25) + 
   #streamflow data 
   geom_line(data = all_streamflow,
              aes(x = datetime, 
-                 y = stream_height_ft),
+                 y = stream_height_ft, 
+                 group = 1,
+                 #create hovering labels for interactive graph 
+                 text = paste0("DateTime: ", datetime, "\n",
+                              "Stream Height (ft): ", round(stream_height_ft, digits = 3))),
             color = "blue",
             size = 0.4) + 
   #manual check points
   geom_point(data = mc_clean, 
-             aes(x = datetime, y = stripchart_stage),
+             aes(x = datetime, 
+                 y = stripchart_stage, 
+                 group = 1,
+                 #create hovering labels for interactive graph 
+                 text = paste0("DateTime: ", datetime, "\n",
+                              "Stream Height Checkpoint (ft): ", stripchart_stage)),
              size = 0.5) + 
   theme_classic() + 
   labs(x = "Time", 
@@ -146,7 +165,7 @@ ggsave(filename = "streamflow_precip_6h_mc.png",
        dpi = 300)
 
 #interactive plot 
-ggplotly(p_6h)
+ggplotly(p_6h, tooltip = "text")
 
 ```
 
@@ -161,18 +180,31 @@ p_12h <- ggplot() +
   #precipitation data 
   geom_col(data = precip_12h_clean, 
             aes(x = datetime, 
-                y = precip_10_in,
-                colour = I("grey")),
+                y = precip_10_in, 
+                group = 1,
+                #create hovering labels for interactive graph 
+                text = paste0("DateTime: ", datetime, "\n",
+                              "Precipitation (in/10): ", precip_10_in)),
+            colour = I("grey"),
             size = 0.25) + 
   #streamflow data 
   geom_line(data = all_streamflow,
              aes(x = datetime, 
-                 y = stream_height_ft),
+                 y = stream_height_ft, 
+                 group = 1,
+                 #create hovering labels for interactive graph 
+                 text = paste0("DateTime: ", datetime, "\n",
+                              "Stream Height (ft): ", round(stream_height_ft, digits = 3))),
             color = "blue",
             size = 0.4) + 
   #manual check points
   geom_point(data = mc_clean, 
-             aes(x = datetime, y = stripchart_stage),
+             aes(x = datetime, 
+                 y = stripchart_stage, 
+                 group = 1,
+                 #create hovering labels for interactive graph 
+                 text = paste0("DateTime: ", datetime, "\n",
+                              "Stream Height Checkpoint (ft): ", stripchart_stage)),
              size = 0.5) + 
   theme_classic() + 
   labs(x = "Time", 
@@ -203,7 +235,7 @@ ggsave(filename = "streamflow_precip_12h_mc.png",
        dpi = 300)
 
 #interactive plot 
-ggplotly(p_12h)
+ggplotly(p_12h, tooltip = "text")
 
 ```
 
@@ -244,17 +276,30 @@ p_daily <- ggplot() +
   geom_col(data = precip_daily_join, 
             aes(x = datetime, 
                 y = precip_10_in,
-                colour = I("grey")),
+                group = 1,
+                #create hovering labels for interactive graph 
+                text = paste0("DateTime: ", datetime, "\n",
+                              "Precipitation (in/10): ", precip_10_in)),
+            colour = I("grey"),
             size = 0.25) + 
   #streamflow data 
   geom_line(data = all_streamflow,
              aes(x = datetime, 
-                 y = stream_height_ft),
+                 y = stream_height_ft, 
+                 group = 1,
+                 #create hovering labels for interactive graph 
+                 text = paste0("DateTime: ", datetime, "\n",
+                              "Stream Height (ft): ", round(stream_height_ft, digits = 3))),
             color = "blue",
             size = 0.4) + 
   #manual check points
   geom_point(data = mc_clean, 
-             aes(x = datetime, y = stripchart_stage),
+             aes(x = datetime, 
+                 y = stripchart_stage, 
+                 group = 1,
+                 #create hovering labels for interactive graph 
+                 text = paste0("DateTime: ", datetime, "\n",
+                              "Stream Height Checkpoint (ft): ", stripchart_stage)),
              size = 0.5) + 
   theme_classic() + 
   labs(x = "Time", 
@@ -285,9 +330,13 @@ ggsave(filename = "streamflow_precip_daily_mc.png",
        dpi = 300)
 
 #interactive plot 
-ggplotly(p_daily)
+ggplotly(p_daily, tooltip = "text")
 ```
 
-
-Note that this file is being knit as [`index.html`](https://github.com/miaforsline/precip_comparisons/blob/main/index.html) into the [`precip_comparisons` repository](https://github.com/miaforsline/precip_comparisons) in order to update the [GitHub pages website](https://miaforsline.github.io/precip_comparisons/), where the plots can be viewed online. 
-
+Note that this file is being knit as
+[`index.html`](https://github.com/miaforsline/precip_comparisons/blob/main/index.html)
+into the [`precip_comparisons`
+repository](https://github.com/miaforsline/precip_comparisons) in order
+to update the [GitHub pages
+website](https://miaforsline.github.io/precip_comparisons/), where the
+plots can be viewed online.
