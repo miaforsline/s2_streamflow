@@ -157,26 +157,6 @@ p_daily <- ggplot() +
         plot.subtitle = element_text(hjust = 0.5, 
                                      size = 7)) 
 
-# + 
-#   scale_y_continuous(
-#     # Features of the first axis
-#     name = "Air Temperature (ºC) / 100",
-#     # Add a second axis and specify its features
-#     sec.axis = sec_axis(trans = ~., name = "Cumulative Precipitation (in) / 10")
-#   ) 
-
-#static plot
-#p_daily
-
-# #save figure 
-# ggsave(filename = "precip_daily_airtemp_30.png",
-#        plot = p_daily,
-#        path = "figures/",
-#        width = 10,
-#        height = 5,
-#        units = c("in"),
-#        dpi = 300)
-
 #interactive plot
 ggplotly(p_daily,
          tooltip = "text")
