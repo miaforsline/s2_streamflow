@@ -128,7 +128,8 @@ write.csv(x = mc_clean,
 
 #plot 
 ggplot(data = mc_clean) + 
-  geom_point(aes(x = collected, y = stripchart_stage)) + 
+  geom_point(aes(x = collected, 
+                 y = stripchart_stage))+ 
   theme_classic() + 
   labs(y = "Stream Height (ft)", 
        x = "Time", 
@@ -145,14 +146,22 @@ ggplot(data = mc_clean) +
     points) on top
 
 ```{r wy2017-2019}
-
 #plot
 p_all <- ggplot(data = all_streamflow) + 
-  geom_line(aes(x = datetime, y = stream_height_ft),
+  geom_line(aes(x = datetime, 
+                y = stream_height_ft,
+                group = 1,
+                #create hovering labels for interactive graph 
+                text = paste0("DateTime: ", datetime, "\n",
+                              "Stream Height (ft): ", round(stream_height_ft, digits = 3))),
             size = 0.25) + 
   geom_point(data = mc_clean, 
              aes(x = collected, 
-                 y = stripchart_stage), 
+                 y = stripchart_stage,
+                 group = 1,
+                 #create hovering labels for interactive graph 
+                 text = paste0("DateTime: ", collected, "\n",
+                              "Stream Height Checkpoint (ft): ", round(stripchart_stage, digits = 3))), 
              color = "red",
              size = 0.5) + 
   theme_classic() + 
@@ -177,7 +186,7 @@ ggsave(filename = "streamflow_with_manual_checks.png",
        dpi = 300)
 
 #interactive plot 
-ggplotly(p_all)
+ggplotly(p_all, tooltip = "text")
 ```
 
 ## 1:1 Stripchart vs Manual Checkpoints Comparison (2017 - 2021)
@@ -313,10 +322,18 @@ if(abs(lj$diff) > 0.01 ) stop("Check differences")
 write.csv(x = lj, 
           file = file.path(here("intermediate_data", "streamflow_mc_lj.csv")),
           row.names = FALSE)
+```
 
+```{r 1_to_1_plot}
+#plot 
 p_1to1 <- ggplot() + 
   geom_point(data = lj, 
-             aes(x = manual_check, y = stripchart),
+             aes(x = manual_check, 
+                 y = stripchart, 
+                 group = 1,
+                 #create hovering labels for interactive graph 
+                 text = paste0("Manual Checkpoint (ft): ", manual_check, "\n",
+                              "Stripchart (ft): ", stripchart)),
              alpha = 0.5) + 
   theme_classic() +
   labs(x = "Manual Checkpoints",
@@ -342,7 +359,7 @@ ggsave(filename = "streamflow_mc_comparison.png",
        dpi = 300)
 
 #interactive plot 
-ggplotly(p_1to1)
+ggplotly(p_1to1, tooltip = "text")
 ```
 
 Note that this file is being knit as
