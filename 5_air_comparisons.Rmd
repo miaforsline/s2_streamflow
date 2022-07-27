@@ -104,6 +104,10 @@ precip_15_join <- precip_15_clean %>%
   subset(year >= min_year & year <= max_year) %>% 
   rename(precip_10_in = precip_10)
 
+precip_daily_join <- precip_daily_join %>% 
+  mutate(dummy = "b",
+         dummy = as.factor(dummy))
+
 #format air temperature data for plotting 
 airtemp_join <- air_temp_30_clean %>% 
   pivot_wider(
@@ -111,7 +115,8 @@ airtemp_join <- air_temp_30_clean %>%
     values_from = "airtempC"
   ) %>% 
   subset(year >= min_year & year <= max_year) %>% 
-  mutate(freezing = as.factor(freezing))
+  mutate(freezing = as.factor(freezing),
+         dummy = "a")
 
 #format air temp data for plotting 
 precip_air <- full_join(x = precip_15_join, 
@@ -131,6 +136,7 @@ p_daily <- ggplot() +
   geom_line(data = airtemp_join, 
             aes(x = datetime, 
                 y = airtempc_100,
+                color = dummy,
                 group = 1,
                 #create hovering labels for interactive graph 
                 text = paste0("DateTime: ", datetime, "\n",
@@ -143,11 +149,12 @@ p_daily <- ggplot() +
   geom_col(data = precip_daily_join, 
             aes(x = datetime, 
                 y = precip_10_in,
-                colour = I("grey"),
+                colour = dummy,
                 group = 1,
                 text = paste0("Date: ", date, "\n",
                               "Daily Cumulative Precipitation (in/10): ", precip_10_in)),
-            size = 0.25) +
+            size = 0.25,
+            color = I("grey")) +
   theme_classic() + 
   labs(x = "Time", 
        y = " ", 
@@ -155,7 +162,12 @@ p_daily <- ggplot() +
        subtitle = "Daily cumulative precipitation is plotted in grey. \n Air temperature is plotted in pink.") + 
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5, 
-                                     size = 7)) 
+                                     size = 7)) + 
+    #scale_fill_identity(name = 'the fill', guide = 'legend',labels = c('m1')) +
+    # scale_fill_manual(name = 'Color', 
+    #      values = c("grey" = "grey", 
+    #                 "pink" = "pink"), 
+    #      labels = c("test", "test2"))
 
 # + 
 #   scale_y_continuous(
@@ -185,7 +197,7 @@ ggplotly(p_daily,
 # Streamflow + air temperature data (every 30min) + manual checks
 
 ```{r p_air}
-#calculate the ratio of the 2 y-axes to plot the variables together
+#calculate the ratio of the 2 y-axes to plot the variables together in the static plot
 trans_value <- max(airtemp_join$airtempc_100, na.rm = TRUE) / max(all_streamflow$stream_height_ft, na.rm = TRUE)
 
 #plot 
