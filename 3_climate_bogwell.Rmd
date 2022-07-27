@@ -76,7 +76,7 @@ dir.create(output_dir)
 
 More information about precipitation data collected at the Marcell Experimental Forest can be found on the [Environmental Data Initiative Repository Portal](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=563). 
 
-## Precipitation Every 15min
+## Cumulative Precipitation Every 15min
 
 -   Read in the data from the following Box file path:
     `External-MEF_DATA/EDI/precipitation_15min/edi.849.2/data_objects/`
@@ -118,11 +118,16 @@ write.csv(x = precip_15_clean,
 
 #plot 
 p_15 <- ggplot(data = precip_15_clean) + 
-  geom_line(aes(x = datetime, y = precip_in, color = precip_type)) + 
+  geom_line(aes(x = datetime, 
+                y = precip_in, 
+                color = precip_type),
+            alpha = 0.5) + 
   theme_classic() + 
   labs(x = "Time", 
        y = "Precipitation (cm)", 
-       title = paste0("Precipitation Sum Every 15 Min (", min_year, "-", max_year, ")"))
+       title = paste0("Precipitation Sum Every 15 Min (", min_year, "-", max_year, ")"),
+       color = "Precipitation Type") + 
+  scale_color_discrete(labels = c("inches / 10", "inches"))
 
 #static plot
 p_15
@@ -131,7 +136,7 @@ p_15
 #ggplotly(p_15)
 ```
 
-## Precipitation Every 6 Hours
+## Cumulative Precipitation Every 6 Hours
 
 ```{r precip_6h}
 #read in 15min precip data 
@@ -183,7 +188,7 @@ p_precip_6h
 
 
 
-## Precipitation Every 12 Hours
+## Cumulative Precipitation Every 12 Hours
 
 ```{r precip_12h}
 #read in 15min precip data 
@@ -233,7 +238,7 @@ p_precip_12h
 ```
 
 
-## Precipitation Daily
+## Cumulative Precipitation Daily
 
 -   Read in the data from the following Box file path:
     `External-MEF_DATA/EDI/precipitation_daily/edi.563.3/data_objects/`
@@ -275,12 +280,17 @@ write.csv(x = precip_daily_clean,
 
 #plot 
 p_daily <- ggplot(data = precip_daily_clean) + 
-  geom_line(aes(x = date, y = precip_in, color = precip_type)) + 
+  geom_line(aes(x = date, 
+                y = precip_in, 
+                color = precip_type),
+            alpha = 0.5) + 
   theme_classic() + 
   labs(x = "Time", 
        y = "South Precipitation (in)", 
-       title = paste0("Daily Cumulative Precipitation (", min_year, "-", max_year, ")")
-       )
+       title = paste0("Daily Cumulative Precipitation (", min_year, "-", max_year, ")"),
+       color = "Precipitation Type"
+       ) + 
+  scale_color_discrete(labels = c("inches / 10", "inches"))
 
 #static plot
 p_daily
@@ -344,14 +354,20 @@ write.csv(x = air_temp_30_clean,
 
 #plot 
 p_air_30 <- ggplot(data = air_temp_30_clean) + 
-  geom_line(aes(x = datetime, y = airtempC, color = airtemp_type)) + 
+  geom_line(aes(x = datetime, 
+                y = airtempC, 
+                color = airtemp_type)) + 
   theme_classic() + 
   labs(x = "Time", 
        y = "Air Temperature (ºC)", 
-       title = paste0("Air Temperature Every 30 Min (", min_year, "-", max_year, ")") 
+       title = paste0("Air Temperature Every 30 Min (", min_year, "-", max_year, ")"), 
+       color = "Air Temperature Type"
        ) + 
   theme(plot.title = element_text(hjust = 0.5),
-          plot.subtitle = element_text(hjust = 0.5))
+          plot.subtitle = element_text(hjust = 0.5)) + 
+  scale_color_discrete(labels = c("ºC", 
+                                  "ºC / 10", 
+                                  "ºC / 100"))
 
 #static plot
 p_air_30
