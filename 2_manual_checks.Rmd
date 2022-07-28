@@ -462,15 +462,16 @@ fj_pc <- full_join(x = pc_sub,
   #rename columns 
   rename(manual_check = point_gage,
          stripchart = stream_height_ft) %>% 
-  #rearrange dataframe into a long format
-  pivot_longer(cols = c("manual_check", "stripchart"),
-               names_to = "types",
-               values_to = "stream_height_ft") %>%
   #interpolate to fill in missing NA values
-  mutate(approx = na.approx(object = stream_height_ft,
+  mutate(approx = na.approx(object = stripchart,
                             x = datetime,
                             method = "linear",
                             maxgap = 6))
+
+# #rearrange dataframe into a long format
+#   pivot_longer(cols = c("manual_check", "stripchart"),
+#                names_to = "types",
+#                values_to = "stream_height_ft") %>%
 
 # #visually examine the approximated values
 # ggplot(data = fj_pc) +
@@ -492,14 +493,15 @@ fj_pc <- full_join(x = pc_sub,
 
 fj_pc <- fj_pc %>%
   #remove extraneous columns 
-  select(-stream_height_ft, -diff) %>% 
-  #return to wide format to create scatterplot
-  pivot_wider(
-    names_from = "types",
-    values_from = "approx"
-  ) %>% 
-  #unlist the columns created by pivot_wider() 
-  unnest
+  select(-stripchart) 
+# %>% 
+#   #return to wide format to create scatterplot
+#   pivot_wider(
+#     names_from = "types",
+#     values_from = "approx"
+#   ) %>% 
+#   #unlist the columns created by pivot_wider() 
+#   unnest
 
 
 # #visually examine all data
@@ -518,11 +520,11 @@ fj_pc <- fj_pc %>%
 #left join the joined data and manual checks data to keep only the timestamps of interest 
 lj_pc <- left_join(x = pc_sub, 
                 y = fj_pc,
-                by = c("datetime", "year", "date")) %>% 
+                by = c("datetime", "year", "date", "point_gage" = "manual_check")) %>% 
   #ensure the correct column types
-  mutate(manual_check = as.numeric(manual_check),
-         stripchart = as.numeric(stripchart),
-         diff = manual_check - stripchart)
+  mutate(point_gage = as.numeric(point_gage),
+         approx = as.numeric(approx),
+         diff = point_gage - approx)
 
 #test if the subsetted data has the same number of observations as the manual checks dataframe
 if(nrow(lj_pc) != (nrow(pc_sub))) stop("Check lj dataframe dimensions")
