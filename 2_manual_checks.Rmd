@@ -101,6 +101,9 @@ dir.create(output_dir)
 ## Mia's file path 
 filepath <- "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/Hydro/Streamflow/L0_subdaily/ManualChecks"
 
+#temporary filepath after the Hydro folder got moved 
+filepath <- "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/FoliarChemistry/Hydro/Streamflow/L0_subdaily/ManualChecks"
+
 #read in the manual checks data 
 mc <- read_csv(here(filepath, "2017-2021_S2Stage.csv"))
 
@@ -118,24 +121,58 @@ mc_clean <- mc %>%
                                   tz = "GMT"), 
                        format = '%Y-%m-%d')
          ) %>% 
-  subset(year >= min_year & year <= max_year) %>% 
+  subset(year >= min_year & year <= max_year) 
+
+#point check data 
+pc_clean <- mc_clean %>% 
+  subset(!is.na(point_gage))
+
+#stripchart check data 
+sc_clean <- mc_clean %>% 
   subset(!is.na(stripchart_stage))
+
+#format data for plotting 
+mc_plot <- mc_clean %>% 
+  select(-logger_stage,
+         -year,
+         -date,
+         -site,
+         -name) %>% 
+  pivot_longer(cols = c("point_gage", "stripchart_stage"),
+               names_to = "type", 
+               values_to = "stream_height_ft")
 
 #save clean data CSV to use in future RMD files
 write.csv(x = mc_clean, 
           file = file.path(here("intermediate_data", "mc_clean.csv")),
           row.names = FALSE)
 
+write.csv(x = pc_clean, 
+          file = file.path(here("intermediate_data", "pc.csv")),
+          row.names = FALSE)
+
+write.csv(x = sc_clean, 
+          file = file.path(here("intermediate_data", "sc_clean.csv")),
+          row.names = FALSE)
+
+write.csv(x = mc_plot, 
+          file = file.path(here("intermediate_data", "mc_plot.csv")),
+          row.names = FALSE)
+
 #plot 
-ggplot(data = mc_clean) + 
+ggplot(data = mc_plot) + 
   geom_point(aes(x = collected, 
-                 y = stripchart_stage))+ 
+                 y = stream_height_ft,
+                 color = type),
+             alpha = 0.5) +  
   theme_classic() + 
   labs(y = "Stream Height (ft)", 
        x = "Time", 
-       title = paste0("S2 Weir Manual Streamflow Checks (", min_year, "-", max_year, ")")
+       title = paste0("S2 Weir Manual Streamflow Checks (", min_year, "-", max_year, ")"),
+       color = "Checkpoint Type"
        ) + 
-  theme(plot.title = element_text(hjust = 0.5))
+  theme(plot.title = element_text(hjust = 0.5)) + 
+  scale_color_discrete(labels = c("Point Gage", "Stripchart Stage"))
 ```
 
 # Streamflow + Manual Checks (2017 - 2021)
@@ -145,19 +182,29 @@ ggplot(data = mc_clean) +
 -   Plot stripchart data (as lines) then add the manual checks (as
     points) on top
 
-```{r wy2017-2019}
+For interactive plots,
+
+-   stripchart stream height (ft) is plotted as a black line, and
+
+-   manual checkpoints of stream height (ft) are plotted as [red
+    dots]{style="color:red"}.
+
+```{r wy2017-2021}
 #plot
-p_all <- ggplot(data = all_streamflow) + 
-  geom_line(aes(x = datetime, 
+p_all <- ggplot() +
+  #stripchart streamflow data
+  geom_line(data = all_streamflow,
+            aes(x = datetime, 
                 y = stream_height_ft,
                 group = 1,
                 #create hovering labels for interactive graph 
                 text = paste0("DateTime: ", datetime, "\n",
                               "Stream Height (ft): ", round(stream_height_ft, digits = 3))),
             size = 0.25) + 
+  #manual checkpoints 
   geom_point(data = mc_clean, 
              aes(x = collected, 
-                 y = stripchart_stage,
+                 y = point_gage,
                  group = 1,
                  #create hovering labels for interactive graph 
                  text = paste0("DateTime: ", collected, "\n",
@@ -176,14 +223,14 @@ p_all <- ggplot(data = all_streamflow) +
 #static plot
 #p_all
 
-#save PNG file
-ggsave(filename = "streamflow_with_manual_checks.png",
-       plot = p_all,
-       path = "figures/",
-       width = 6,
-       height = 3,
-       units = c("in"),
-       dpi = 300)
+# #save PNG file
+# ggsave(filename = "streamflow_with_manual_checks.png",
+#        plot = p_all,
+#        path = "figures/",
+#        width = 6,
+#        height = 3,
+#        units = c("in"),
+#        dpi = 300)
 
 #interactive plot 
 ggplotly(p_all, tooltip = "text")
@@ -198,12 +245,172 @@ stripchart stream flow values using the `na.approx()` function from the
 `zoo` package to estimate stripchart values at the time of the manual
 checks.
 
+## Stripchart vs Stripchart Stage 
+
 -   Clean the data
 
 -   Note that the manual checks data only range from 2017-04-04 to
     2019-12-31, which is a smaller time range than the stripchart data
 
 ```{r interpolate}
+#clean the stripchart_stage data 
+sc_sub <- mc_clean %>% 
+  #extract the data (without the timestamp)
+  mutate(date = format(as.POSIXct(collected, format = '%m/%d/%Y %H:%M:%S', 
+                                  tz = "GMT"), 
+                       format = '%Y-%m-%d'),
+         date = as.POSIXct(date, tz = "GMT"),
+         year = as.numeric(year)
+         ) %>% 
+  #rename column
+  rename(datetime = collected) %>% 
+  #remove unnecessary columns 
+  select(-site, -lab_id, -name, -point_gage, -logger_stage) 
+
+#identify date ranges of interest: 2017-04-04 to 2019-12-31
+##aka the range of the manual checkpoint data
+max_date <- max(sc_sub$date)
+min_date <- min(sc_sub$date)
+nrows <- nrow(sc_sub)
+
+#subset stripchart data to fit within the time range of the manual checkpoints
+streamflow_sub <- all_streamflow %>% 
+  mutate(
+    year = format(as.POSIXct(datetime, format = '%m/%d/%Y %H:%M:%S', 
+                             tz = "GMT"),
+                  format = '%Y'), 
+    year = as.numeric(year)
+    ) %>% 
+  subset(date <= max_date & date >= min_date) 
+```
+
+-   Join the stripchart_stage dataset with the continuous stripchart dataset
+
+-   Plot the data to visually examine if the approximated values
+    generated by na.approx() look correct
+
+```{r join}
+#join the stripchart data and manual checks data 
+fj_sc <- full_join(x = sc_sub, 
+                y = streamflow_sub, 
+                by = c("datetime", "date", "year")) %>% 
+  #rearrange dataframe into a long format
+  pivot_longer(cols = c("stripchart_stage", "stream_height_ft"),
+               names_to = "types",
+               values_to = "stream_height_ft") %>%
+  #interpolate to fill in missing NA values
+  mutate(approx = na.approx(object = stream_height_ft,
+                             x = datetime,
+                            method = "linear",
+                            maxgap = 6),
+         #calculate the difference between approximated values and real values
+         diff = approx - stream_height_ft) 
+
+##visually examine the approximated values 
+# ggplot(data = fj_sc) +
+#   geom_line(aes(x = datetime, y = approx))
+# 
+# ggplot(data = fj_sc) +
+#   geom_point(aes(x = datetime,
+#                 y = stream_height_ft,
+#                 color = types))
+# 
+# ggplot(data = fj_sc) +
+#   geom_point(aes(x = datetime,
+#                 y = stream_height_ft,
+#                 color = types)) +
+#   geom_point(aes(x = datetime,
+#                 y = approx),
+#              alpha = 0.05)
+
+
+fj_sc <- fj_sc %>%
+  #remove extraneous columns 
+  select(-stream_height_ft, -diff) %>% 
+  #return to wide format to create scatterplot
+  pivot_wider(
+    names_from = "types",
+    values_from = "approx"
+  ) %>% 
+  #unlist the columns created by pivot_wider() 
+  unnest
+
+
+# #visually examine all data 
+# ggplot(data = fj_sc) +
+#   geom_point(aes(x = manual_check,
+#                  y = stripchart))
+```
+
+-   Subset the joined dataframe to include only the timestamps of
+    interest (AKA the timestamps from the original stripchart_stage
+    dataset)
+
+-   Plot
+
+```{r 1_to_1}
+#left join the joined data and stripchart_stage data to keep only the timestamps of interest 
+lj_sc <- left_join(x = sc_sub, 
+                y = fj_sc,
+                by = c("datetime", "year", "date", "stripchart_stage")) %>% 
+  #ensure the correct column types
+  mutate(stripchart_stage = as.numeric(stripchart_stage),
+         stream_height_ft = as.numeric(stream_height_ft),
+         diff = stripchart_stage - stream_height_ft)
+
+#test if the subsetted data has the same number of observations as the manual checks dataframe
+if(nrow(lj_sc) != (nrow(sc_sub))) stop("Check lj_sc dataframe dimensions")
+
+#test if the approximated data differs greatly from the stripchart/manual checks data 
+if(abs(lj_sc$diff) > 0.01 ) stop("Check differences")
+
+#save clean data CSV to use in future RMD files
+write.csv(x = lj_sc, 
+          file = file.path(here("intermediate_data", "lj_sc.csv")),
+          row.names = FALSE)
+```
+
+```{r 1_to_1_plot}
+#plot 
+p_1to1 <- ggplot() + 
+  geom_point(data = lj_sc, 
+             aes(x = stripchart_stage, #approximated values from manual checkpoints
+                 y = stream_height_ft, #continuous stripchart values 
+                 group = 1,
+                 #create hovering labels for interactive graph 
+                 text = paste0("Stripchart Stage (ft): ", stripchart_stage, "\n",
+                              "Stripchart (ft): ", stream_height_ft)),
+             alpha = 0.4) + 
+  theme_classic() +
+  labs(x = "Stripchart Stage",
+       y = "Stripchart",
+       title = paste0("S2 Stripchart vs Interpolated Stripchart Values (", min_year, "-", max_year, ")"),
+       subtitle = "The line y = x is plotted for reference.") +
+    theme(plot.title = element_text(hjust = 0.5),
+          plot.subtitle = element_text(hjust = 0.5)) + 
+  geom_abline(slope = 1, intercept = 0) +
+  xlim(0, 0.4) +
+  ylim(0, 0.4)
+
+#static plot
+#p_1to1
+
+# #save the figure 
+# ggsave(filename = "streamflow_mc_comparison.png",
+#        plot = p_1to1,
+#        path = "figures/",
+#        width = 6,
+#        height = 5,
+#        units = c("in"),
+#        dpi = 300)
+
+#interactive plot 
+ggplotly(p_1to1, tooltip = "text")
+```
+
+## Stripchart vs Manual Checkpoints 
+
+```{r interpolate_mc}
 #clean the manual checks data 
 mc_sub <- mc_clean %>% 
   #extract the data (without the timestamp)
@@ -349,18 +556,19 @@ p_1to1 <- ggplot() +
 #static plot
 #p_1to1
 
-#save the figure 
-ggsave(filename = "streamflow_mc_comparison.png",
-       plot = p_1to1,
-       path = "figures/",
-       width = 6,
-       height = 5,
-       units = c("in"),
-       dpi = 300)
+# #save the figure 
+# ggsave(filename = "streamflow_mc_comparison.png",
+#        plot = p_1to1,
+#        path = "figures/",
+#        width = 6,
+#        height = 5,
+#        units = c("in"),
+#        dpi = 300)
 
 #interactive plot 
 ggplotly(p_1to1, tooltip = "text")
 ```
+
 
 Note that this file is being knit as
 [`index.html`](https://github.com/miaforsline/manual_checks/blob/main/index.html)
