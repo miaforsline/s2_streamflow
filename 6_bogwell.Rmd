@@ -329,14 +329,16 @@ min_year = 2020
 max_year = 2021
 ```
 
--   Read in the data from the following Box file path:
+## S1 Shaft Encoder 
+
+-   Read in the 2022 data from the following Box file path:
     `External-MEF_DATA/DataDump/RealTimeData`
 
--   Clean the data into a tidy format
+-   Clean the 2022 data into a tidy format
 
     -   Subset data to 2020 - present
 
-```{r eval=FALSE, include=FALSE}
+```{r s1_realtimedata}
 #set file path to read in data from Box 
 filepath = "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/DataDump/RealTimeData"
 
@@ -359,8 +361,6 @@ s1_se_clean <- s1_se %>%
     wt_elev_ft = as.numeric(wt_elev_ft),
     wt_elev_m = wt_elev_ft * MetersPerFoot)
 ```
-
-## S1 Shaft Encoder 
 
 2019 data 
 
@@ -424,8 +424,38 @@ s1_2020_clean <- s1_2020 %>%
 
 Combine S1 data 
 
-```{r}
-s1_all <- rbind(s1_se_clean, s1_2019_clean, s1_2020_clean)
+```{r s1_all}
+s1_all <- rbind(s1_se_clean, s1_2019_clean, s1_2020_clean) %>% 
+  #remove NA values
+  filter(!is.na(wt_elev_m)) %>% 
+  #extract year 
+  mutate(year = format(as.POSIXct(datetime, format = '%m/%d/%Y %H:%M:%S', 
+                             tz = "GMT"),
+                  format = '%Y'),
+    year = as.numeric(year))
+
+#set min and max year 
+min_year = min(s1_all$year)
+max_year = max(s1_all$year)
+
+p_s1 <- ggplot(data = s1_all) + 
+  geom_line(aes(x = datetime,
+                y = wt_elev_m,
+                group = 1,
+                text = paste0("Date: ", datetime, "\n",
+                              "Water Table Elevation (m): ", wt_elev_m))) + 
+  theme_classic() + 
+  labs(x = "Time", 
+       y = "Water Table Elevation (m above sea level)",
+       title = paste0("S1 Shaft Encoder Water Table Elevation (", min_year, "-", max_year, ")") 
+       ) + 
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5, 
+                                     size = 7))
+
+#interactive plot 
+ggplotly(p_s1,
+         tooltip = "text")
 ```
 
 
