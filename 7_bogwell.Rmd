@@ -58,7 +58,7 @@ collected at the Marcell Experimental Forest can be found on the
 [Environmental Data Initiative Repository
 Portal](https://data.nal.usda.gov/dataset/marcell-experimental-forest-peatland-and-upland-water-table-elevations).
 
-## Manual Stripcharts
+# Manual Stripcharts
 
 -   Read in the most up-to-date data from the following Box file path:
     `External-MEF_DATA/Hydro/WaterTableElevation/Bogwells/L1`
@@ -111,7 +111,7 @@ p_bogwell <- ggplot(data = bogwell_clean) +
 p_bogwell
 ```
 
-### S2 Manual Stripchart
+## S2 Manual Stripchart
 
 ```{r bogwell_s2}
 bogwell_clean_s2 <- bogwell_clean %>% 
@@ -138,7 +138,7 @@ ggplotly(p_bogwell_s2,
          tooltip = "text")
 ```
 
-Statistics
+
 
 ```{r bogwell_s2_stats}
 bogwell_clean_s2 %>% 
@@ -158,7 +158,7 @@ bogwell_clean_s2 %>%
   kable_material(c("striped", "hover"))
 ```
 
-## Shaft Encoders
+# Shaft Encoders
 
 Function for loading Campbell DataLogger .dat files:
 
@@ -229,7 +229,7 @@ filepath = "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/Da
 
 ```
 
-### S2 Shaft Encoder
+## S2 Shaft Encoder
 
 -   We are interested in the `MaxWTElev` column
 
