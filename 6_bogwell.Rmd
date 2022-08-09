@@ -341,6 +341,7 @@ max_year = 2021
 filepath = "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/DataDump/RealTimeData"
 
 #read in the raw data 
+##note: this data is only 2022 
 s1_se <- readCDL(file = here(filepath, "S1-EM3_Table1.dat"))
 
 #clean the data 
@@ -359,13 +360,74 @@ s1_se_clean <- s1_se %>%
     wt_elev_m = wt_elev_ft * MetersPerFoot)
 ```
 
-```{r s1_append, eval=FALSE, include=FALSE}
-#set file path to read in data from Box 
-filepath = "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/DataDump/RealTimeData"
+## S1 Shaft Encoder 
 
-#read in appended data 
+2019 data 
+
+```{r s1_2019}
+#set file path to read in data from Box 
+filepath = "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/DataDump/annual_appended_logger_files"
+
+year = "2019"
+
+file = "S1-EM3_Table1.dat"
+
+#read in 2019 data 
+s1_2019 <- readCDL(file = here(filepath, year, file))
+
+#clean 2019 data 
+s1_2019_clean <- s1_2019 %>% 
+  clean_names() %>% 
+  #select relevant columns
+  select(timestamp,
+         wt_elev) %>% 
+  #rename columns 
+  rename(datetime = timestamp,
+         wt_elev_ft = wt_elev) %>% 
+  #reformat columns into appropriate classes 
+  mutate(datetime = as.POSIXct(datetime, format = '%Y-%m-%d %H:%M:%S', 
+                                  tz = "GMT"),
+    wt_elev_ft = as.numeric(wt_elev_ft),
+    wt_elev_m = wt_elev_ft * MetersPerFoot)
 
 ```
+
+2020 data
+
+```{r s1_2020}
+#set file path to read in data from Box 
+filepath = "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/DataDump/annual_appended_logger_files"
+
+year = "2020"
+
+file = "S1-EM3_Table1.dat"
+
+#read in 2020 data
+#note: this data is 2020 - 2022 
+s1_2020 <- readCDL(file = here(filepath, year, file))
+
+#clean 2020 data 
+s1_2020_clean <- s1_2020 %>% 
+  clean_names() %>% 
+  #select relevant columns
+  select(timestamp,
+         wt_elev) %>% 
+  #rename columns 
+  rename(datetime = timestamp,
+         wt_elev_ft = wt_elev) %>% 
+  #reformat columns into appropriate classes 
+  mutate(datetime = as.POSIXct(datetime, format = '%Y-%m-%d %H:%M:%S', 
+                                  tz = "GMT"),
+    wt_elev_ft = as.numeric(wt_elev_ft),
+    wt_elev_m = wt_elev_ft * MetersPerFoot)
+```
+
+Combine S1 data 
+
+```{r}
+s1_all <- rbind(s1_se_clean, s1_2019_clean, s1_2020_clean)
+```
+
 
 ## S2 Shaft Encoder
 
