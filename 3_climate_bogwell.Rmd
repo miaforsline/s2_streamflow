@@ -383,7 +383,7 @@ collected at the Marcell Experimental Forest can be found on the
 [Environmental Data Initiative Repository
 Portal](https://data.nal.usda.gov/dataset/marcell-experimental-forest-peatland-and-upland-water-table-elevations).
 
-## S2 Manual Stripcharts
+## Manual Stripcharts
 
 -   Read in the most up-to-date data from the following Box file path:
     `External-MEF_DATA/Hydro/WaterTableElevation/Bogwells/L1`
@@ -396,7 +396,7 @@ Portal](https://data.nal.usda.gov/dataset/marcell-experimental-forest-peatland-a
 
     -   Subset data to 2017 - present
 
-```{r bogwell_s2}
+```{r bogwell_clean}
 #set file path to read in data from Box 
 filepath = "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/Hydro/WaterTableElevation/Bogwells/L1"
 
@@ -416,29 +416,9 @@ bogwell_clean <- bogwell %>%
 write.csv(x = bogwell_clean, 
           file = file.path(here("intermediate_data", "bogwell_clean.csv")),
           row.names = FALSE)
-
-bogwell_clean_s2 <- bogwell_clean %>% 
-    subset(peatland == "S2")
 ```
 
 -   Plot
-
-```{r bogwell_s2_plot}
-#plot
-p_bogwell_s2 <- ggplot(data = bogwell_clean_s2) + 
-  geom_line(aes(x = date, y = wte)) + 
-  theme_classic() + 
-  labs(x = "Time", 
-       y = "Water Table Elevation (m above sea level)",
-       title = paste0("S2 Daily Peatland Water Table Elevation (", min_year, "-", max_year, ")") 
-       ) + 
-  theme(plot.title = element_text(hjust = 0.5),
-        plot.subtitle = element_text(hjust = 0.5, 
-                                     size = 7))
-
-#static plot 
-p_bogwell_s2
-```
 
 ```{r bogwell_plot }
 #plot
@@ -457,8 +437,29 @@ p_bogwell <- ggplot(data = bogwell_clean) +
 p_bogwell
 ```
 
+### S2
 
-## S2 Shaft Encoders
+```{r bogwell_s2}
+bogwell_clean_s2 <- bogwell_clean %>% 
+    subset(peatland == "S2")
+
+#plot
+p_bogwell_s2 <- ggplot(data = bogwell_clean_s2) + 
+  geom_line(aes(x = date, y = wte)) + 
+  theme_classic() + 
+  labs(x = "Time", 
+       y = "Water Table Elevation (m above sea level)",
+       title = paste0("S2 Daily Peatland Water Table Elevation (", min_year, "-", max_year, ")") 
+       ) + 
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5, 
+                                     size = 7))
+
+#static plot 
+p_bogwell_s2
+```
+
+## Shaft Encoders
 
 Function for loading Campbell DataLogger .dat files:
 
@@ -497,7 +498,10 @@ max_year = 2021
 -   Clean the data into a tidy format
 
     -   Subset data to 2020 - present
-    -   We are interested in the `MaxWTElev` column
+
+### S2
+
+-   We are interested in the `MaxWTElev` column
 
 ```{r s2_dat}
 #set file path to read in data from Box 
