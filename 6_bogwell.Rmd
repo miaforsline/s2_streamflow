@@ -528,6 +528,79 @@ s2_se_clean %>%
   kable_material(c("striped", "hover"))
 ```
 
+## S3 Shaft Encoder
+
+S3 was omitted due to unreliable data 
+
+## S4 Shaft Encoder 
+
+S4_bogwell_S4BW_Daily.dat(MaxWTElev; annual_appended)
+
+2020 data
+
+```{r s4_2020}
+#set file path to read in data from Box 
+filepath = "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/DataDump/annual_appended_logger_files"
+
+year = "2020"
+
+file = "S4_bogwell_S4BW_Daily.dat"
+
+#read in 2020 data 
+s4_2020 <- readCDL(file = here(filepath, year, file))
+
+#clean the data 
+s4_2020_clean <- s4_2020 %>% 
+  clean_names() %>% 
+  #select relevant columns
+  select(timestamp,
+         max_wt_elev,
+         max_wt_elev_m) %>% 
+  #rename columns 
+  rename(datetime = timestamp,
+         max_wt_elev_ft = max_wt_elev) %>% 
+  #reformat columns into appropriate classes 
+  mutate(datetime = as.POSIXct(datetime, format = '%Y-%m-%d %H:%M:%S', 
+                                  tz = "GMT"),
+    max_wt_elev_ft = as.numeric(max_wt_elev_ft),
+    max_wt_elev_m = as.numeric(max_wt_elev_m), 
+    date = format(as.POSIXct(datetime, format = '%m/%d/%Y %H:%M:%S', 
+                                  tz = "GMT"), 
+                       format = '%Y-%m-%d'),
+         date = as.POSIXct(date, tz = "GMT"),
+         year = format(as.POSIXct(datetime, format = '%m/%d/%Y %H:%M:%S', 
+                                  tz = "GMT"), 
+                       format = '%Y'),
+         year = as.numeric(year))
+
+#set min and max year 
+min_year = min(s4_2020_clean$year)
+max_year = max(s4_2020_clean$year)
+```
+
+-   Plot
+
+```{r s4_plot}
+#plot 
+p_s4 <- ggplot(data = s4_2020_clean) + 
+  geom_line(aes(x = datetime, 
+                y = max_wt_elev_m,
+                group = 1,
+                text = paste0("Date: ", date, "\n",
+                              "Water Table Elevation (m): ", max_wt_elev_m))) + 
+  theme_classic() + 
+  labs(x = "Time", 
+       y = "Water Table Elevation (m)", 
+       title = paste0("S4 Bogwell Water Table Elevation (", min_year, "-", max_year, ")")
+       ) + 
+  theme(plot.title = element_text(hjust = 0.5),
+          plot.subtitle = element_text(hjust = 0.5))
+
+#interactive plot
+ggplotly(p_s4,
+         tooltip = "text")
+```
+
 # 1:1 Plots 
 
 ## S1 1:1 Plot
