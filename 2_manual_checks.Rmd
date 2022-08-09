@@ -294,18 +294,22 @@ streamflow_sub <- all_streamflow %>%
 #join the stripchart data and manual checks data 
 fj_sc <- full_join(x = sc_sub, 
                 y = streamflow_sub, 
-                by = c("datetime", "date", "year")) %>% 
-  #rearrange dataframe into a long format
-  pivot_longer(cols = c("stripchart_stage", "stream_height_ft"),
-               names_to = "types",
-               values_to = "stream_height_ft") %>%
+                by = c("datetime", "date", "year"))  %>%
   #interpolate to fill in missing NA values
   mutate(approx = na.approx(object = stream_height_ft,
-                             x = datetime,
+                            x = datetime,
+                            xout = datetime,
                             method = "linear",
                             maxgap = 6),
          #calculate the difference between approximated values and real values
          diff = approx - stream_height_ft) 
+
+
+# %>% 
+#   #rearrange dataframe into a long format
+#   pivot_longer(cols = c("stripchart_stage", "stream_height_ft"),
+#                names_to = "types",
+#                values_to = "stream_height_ft")
 
 ##visually examine the approximated values 
 # ggplot(data = fj_sc) +

@@ -380,6 +380,8 @@ p_air_30
 
 More information about peatland and upland water elevation data collected at the Marcell Experimental Forest can be found on the [Environmental Data Initiative Repository Portal](https://data.nal.usda.gov/dataset/marcell-experimental-forest-peatland-and-upland-water-table-elevations). 
 
+## S2 Manual Stripcharts
+
 -   Read in the data from the following Box file path:
     `External-MEF_DATA/EDI/peatland_water_table_daily/edi.562.2/data_objects/`
 
@@ -389,7 +391,79 @@ More information about peatland and upland water elevation data collected at the
 
 -   Plot
 
-```{r bogwell_daily}
+Box\External-MEF_DATA\Hydro\WaterTableElevation\Bogwells\L1\ L1_Peatland_well_daily_history_2021forMia.csv
+```{r bogwell_s2}
+#set file path to read in data from Box 
+filepath = "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/Hydro/WaterTableElevation/Bogwells/L1"
+
+#read in the raw data 
+bogwell <- read_csv(here(filepath, "L1_Peatland_well_daily_history_2021forMia.csv"))
+
+#clean the data
+bogwell_s2_clean <- bogwell_l1 %>% 
+  clean_names() %>% 
+  subset(peatland == "S2") %>% 
+  mutate(year = format(as.POSIXct(date, format = '%Y-%m-%d', 
+                                  tz = "GMT"), 
+                       format = '%Y'),
+         year = as.numeric(year)) %>% 
+  subset(year >= min_year & year <= max_year)
+
+#save clean data CSV to use in future RMD files
+write.csv(x = bogwell_s2_clean, 
+          file = file.path(here("intermediate_data", "bogwell_s2_clean.csv")),
+          row.names = FALSE)
+```
+
+```{r bogwell_s2_plot}
+#plot
+p_bogwell_s2 <- ggplot(data = bogwell_s2_clean) + 
+  geom_line(aes(x = date, y = wte)) + 
+  theme_classic() + 
+  labs(x = "Time", 
+       y = "Water Table Elevation (m above sea level)",
+       title = paste0("S2 Daily Peatland Water Table Elevation (", min_year, "-", max_year, ")") 
+       )
+
+#static plot 
+p_bogwell_s2
+```
+
+## S2 Shaft Encoders 
+
+S2_bogwell_S2BW_Daily.dat (MaxWTElev)
+
+Handy function for loading Campbell DataLogger .dat files:
+```{r dat_function}
+readCDL=function(file){
+  
+  # read data file starting on 5th line
+  dat <- read.csv(file, sep=",",header=FALSE,skip=4,na.strings="NAN",stringsAsFactors=F)
+  
+  # Read in just the header line (l2)
+  # unlist the line, and remove quotes 
+  h <- readLines(file, n=2)[2]
+  n <- as.factor(unlist(strsplit(h, ",")) )
+  n2 <- gsub('"', "", n)
+  
+  # assign column names to dataframe
+  colnames(dat) = n2
+  
+  return(dat)
+}
+```
+
+Constants I used for converting between feet and meters:
+```{r constants}
+MetersPerFoot = 0.3048
+FeetPerMeter = 3.28048
+```
+
+
+
+
+
+```{r bogwell_daily, eval=FALSE, include=FALSE}
 #set file path to read in data from Box 
 filepath = "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/EDI/peatland_water_table_daily/edi.562.2/data_objects/"
 
@@ -410,7 +484,9 @@ bogwell_clean <- bogwell %>%
 write.csv(x = bogwell_clean, 
           file = file.path(here("intermediate_data", "bogwell_clean.csv")),
           row.names = FALSE)
+```
 
+```{r bogwell_daily_plot, eval=FALSE, include=FALSE}
 #plot
 p_bogwell <- ggplot(data = bogwell_clean) + 
   geom_line(aes(x = date, y = wte)) + 
@@ -426,5 +502,8 @@ p_bogwell
 #interactive plot
 #ggplotly(p_bogwell)
 ```
+
+
+
 
 Note that this file is being knit as [`index.html`](https://github.com/miaforsline/climate_bogwell/blob/main/index.html) into the [`climate_bogwell` repository](https://github.com/miaforsline/climate_bogwell) in order to update the [GitHub pages website](https://miaforsline.github.io/climate_bogwell/), where the plots can be viewed online. 
