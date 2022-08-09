@@ -22,7 +22,7 @@ The project is designed to for RMD files to be executed in the following order:
 
 1. `1_water_years.Rmd`: Reads in, cleans, and visualizes stream height (ft) for each individual water year based on stripchart data
 2. `2_manual_checks.Rmd`: Reads in stream height data collected during periodic manual checks and plots these checkpoints on top of the stripchart data as a way to assess the accuracy of the stripcharts 
-3. `3_climate_bogwell.Rmd`: Reads in and manipulates relevant climate and bogwell data to compare against streamflow data 
+3. `3_climate.Rmd`: Reads in and manipulates relevant climate data to compare against streamflow data 
 4. `4_precip_comparisons`: Compares streamflow data with aggregated precipitation data to assess the accuracy of the stripchart data 
 5. `5_comparisons`: Compares streamflow data with air temperature and bogwell data to assess the accuracy of the stripchart data 
 
