@@ -50,7 +50,7 @@ min_year = 2017
 max_year = 2021
 ```
 
-Create sub-directories if necessary 
+Create sub-directories if necessary
 
 ```{r directories}
 output_dir <- file.path(here("intermediate_data"))
@@ -70,11 +70,14 @@ dir.create(output_dir)
 }
 ```
 
-# Climate and Bogwell data
+# Climate Data
 
-# Precipitation 
+# Precipitation
 
-More information about precipitation data collected at the Marcell Experimental Forest can be found on the [Environmental Data Initiative Repository Portal](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=563). 
+More information about precipitation data collected at the Marcell
+Experimental Forest can be found on the [Environmental Data Initiative
+Repository
+Portal](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=563).
 
 ## Cumulative Precipitation Every 15min
 
@@ -186,8 +189,6 @@ p_precip_6h
 
 ```
 
-
-
 ## Cumulative Precipitation Every 12 Hours
 
 ```{r precip_12h}
@@ -236,7 +237,6 @@ p_precip_12h
 #interactive plot
 #ggplotly(p_precip_12h)
 ```
-
 
 ## Cumulative Precipitation Daily
 
@@ -376,22 +376,26 @@ p_air_30
 #ggplotly(p_air_30)
 ```
 
-# Peatland Daily Water Table
+# Peatland Daily Water Table (Bogwell Data)
 
-More information about peatland and upland water elevation data collected at the Marcell Experimental Forest can be found on the [Environmental Data Initiative Repository Portal](https://data.nal.usda.gov/dataset/marcell-experimental-forest-peatland-and-upland-water-table-elevations). 
+More information about peatland and upland water elevation data
+collected at the Marcell Experimental Forest can be found on the
+[Environmental Data Initiative Repository
+Portal](https://data.nal.usda.gov/dataset/marcell-experimental-forest-peatland-and-upland-water-table-elevations).
 
 ## S2 Manual Stripcharts
 
--   Read in the data from the following Box file path:
-    `External-MEF_DATA/EDI/peatland_water_table_daily/edi.562.2/data_objects/`
+-   Read in the most up-to-date data from the following Box file path:
+    `External-MEF_DATA/Hydro/WaterTableElevation/Bogwells/L1`
+
+    -   Less up-to-date, already published data can be found at the
+        following Box file path:
+        `External-MEF_DATA/EDI/peatland_water_table_daily/edi.562.2/data_objects/`
 
 -   Clean the data into a tidy format
 
-    -   Subset precipitation data to 2017 - present
+    -   Subset data to 2017 - present
 
--   Plot
-
-Box\External-MEF_DATA\Hydro\WaterTableElevation\Bogwells\L1\ L1_Peatland_well_daily_history_2021forMia.csv
 ```{r bogwell_s2}
 #set file path to read in data from Box 
 filepath = "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/Hydro/WaterTableElevation/Bogwells/L1"
@@ -400,9 +404,8 @@ filepath = "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/Hy
 bogwell <- read_csv(here(filepath, "L1_Peatland_well_daily_history_2021forMia.csv"))
 
 #clean the data
-bogwell_s2_clean <- bogwell_l1 %>% 
+bogwell_clean <- bogwell %>% 
   clean_names() %>% 
-  subset(peatland == "S2") %>% 
   mutate(year = format(as.POSIXct(date, format = '%Y-%m-%d', 
                                   tz = "GMT"), 
                        format = '%Y'),
@@ -410,26 +413,52 @@ bogwell_s2_clean <- bogwell_l1 %>%
   subset(year >= min_year & year <= max_year)
 
 #save clean data CSV to use in future RMD files
-write.csv(x = bogwell_s2_clean, 
-          file = file.path(here("intermediate_data", "bogwell_s2_clean.csv")),
+write.csv(x = bogwell_clean, 
+          file = file.path(here("intermediate_data", "bogwell_clean.csv")),
           row.names = FALSE)
+
+bogwell_clean_s2 <- bogwell_clean %>% 
+    subset(peatland == "S2")
 ```
+
+-   Plot
 
 ```{r bogwell_s2_plot}
 #plot
-p_bogwell_s2 <- ggplot(data = bogwell_s2_clean) + 
+p_bogwell_s2 <- ggplot(data = bogwell_clean_s2) + 
   geom_line(aes(x = date, y = wte)) + 
   theme_classic() + 
   labs(x = "Time", 
        y = "Water Table Elevation (m above sea level)",
        title = paste0("S2 Daily Peatland Water Table Elevation (", min_year, "-", max_year, ")") 
-       )
+       ) + 
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5, 
+                                     size = 7))
 
 #static plot 
 p_bogwell_s2
 ```
 
-## S2 Shaft Encoders 
+```{r bogwell_plot }
+#plot
+p_bogwell <- ggplot(data = bogwell_clean) + 
+  geom_line(aes(x = date, y = wte, color = peatland)) + 
+  theme_classic() + 
+  labs(x = "Time", 
+       y = "Water Table Elevation (m above sea level)",
+       title = paste0("Daily Peatland Water Table Elevation (", min_year, "-", max_year, ")") 
+       ) + 
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5, 
+                                     size = 7))
+
+#static plot 
+p_bogwell
+```
+
+
+## S2 Shaft Encoders
 
 Function for loading Campbell DataLogger .dat files:
 
@@ -462,7 +491,13 @@ min_year = 2020
 max_year = 2021
 ```
 
-S2_bogwell_S2BW_Daily.dat (MaxWTElev)
+-   Read in the data from the following Box file path:
+    `External-MEF_DATA/DataDump/RealTimeData`
+
+-   Clean the data into a tidy format
+
+    -   Subset data to 2020 - present
+    -   We are interested in the `MaxWTElev` column
 
 ```{r s2_dat}
 #set file path to read in data from Box 
@@ -486,6 +521,7 @@ s2_se_clean <- s2_se %>%
     max_wt_elev_m = max_wt_elev_ft * MetersPerFoot)
 ```
 
+-   Plot
 
 ```{r s2_dat_plot}
 #plot 
@@ -507,9 +543,6 @@ p_s2 <- ggplot(data = s2_se_clean) +
 ggplotly(p_s2,
          tooltip = "text")
 ```
-
-
-
 
 ```{r bogwell_daily, eval=FALSE, include=FALSE}
 #set file path to read in data from Box 
@@ -551,7 +584,10 @@ p_bogwell
 #ggplotly(p_bogwell)
 ```
 
-
-
-
-Note that this file is being knit as [`index.html`](https://github.com/miaforsline/climate_bogwell/blob/main/index.html) into the [`climate_bogwell` repository](https://github.com/miaforsline/climate_bogwell) in order to update the [GitHub pages website](https://miaforsline.github.io/climate_bogwell/), where the plots can be viewed online. 
+Note that this file is being knit as
+[`index.html`](https://github.com/miaforsline/climate_bogwell/blob/main/index.html)
+into the [`climate_bogwell`
+repository](https://github.com/miaforsline/climate_bogwell) in order to
+update the [GitHub pages
+website](https://miaforsline.github.io/climate_bogwell/), where the
+plots can be viewed online.
