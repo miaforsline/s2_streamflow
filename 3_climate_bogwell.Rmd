@@ -36,6 +36,7 @@ if (!require(librarian)){
 librarian::shelf(
   here, #for file paths 
   janitor, 
+  kableExtra,
   plotly, #for creating interactive plots 
   readxl, 
   tidyverse,
@@ -404,6 +405,7 @@ filepath = "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/Hy
 bogwell <- read_csv(here(filepath, "L1_Peatland_well_daily_history_2021forMia.csv"))
 
 #clean the data
+##note: we do not want any E values for the flag column 
 bogwell_clean <- bogwell %>% 
   clean_names() %>% 
   mutate(year = format(as.POSIXct(date, format = '%Y-%m-%d', 
@@ -418,9 +420,7 @@ write.csv(x = bogwell_clean,
           row.names = FALSE)
 ```
 
--   Plot
-
-```{r bogwell_plot }
+```{r bogwell_plot, eval=FALSE, include=FALSE}
 #plot
 p_bogwell <- ggplot(data = bogwell_clean) + 
   geom_line(aes(x = date, y = wte, color = peatland)) + 
@@ -437,7 +437,7 @@ p_bogwell <- ggplot(data = bogwell_clean) +
 p_bogwell
 ```
 
-### S2
+### S2 Manual Stripchart
 
 ```{r bogwell_s2}
 bogwell_clean_s2 <- bogwell_clean %>% 
@@ -445,7 +445,11 @@ bogwell_clean_s2 <- bogwell_clean %>%
 
 #plot
 p_bogwell_s2 <- ggplot(data = bogwell_clean_s2) + 
-  geom_line(aes(x = date, y = wte)) + 
+  geom_line(aes(x = date, 
+                y = wte, 
+                group = 1,
+                text = paste0("Date: ", date, "\n",
+                              "Water Table Elevation (m): ", wte))) + 
   theme_classic() + 
   labs(x = "Time", 
        y = "Water Table Elevation (m above sea level)",
@@ -455,8 +459,29 @@ p_bogwell_s2 <- ggplot(data = bogwell_clean_s2) +
         plot.subtitle = element_text(hjust = 0.5, 
                                      size = 7))
 
-#static plot 
-p_bogwell_s2
+#interactive plot 
+ggplotly(p_bogwell_s2,
+         tooltip = "text")
+```
+
+Statistics
+
+```{r bogwell_s2_stats}
+bogwell_clean_s2 %>% 
+  #remove rows that have NA wte values 
+  filter(!is.na(wte)) %>% 
+  summarise(mean_wte_m = round(mean(wte), digits = 3),
+            max_wte_m = max(wte),
+            min_wte_m = min(wte), 
+            sd_wte_m = round(sd(wte), digits = 3)
+            ) %>% 
+  #t() %>% 
+  kable(caption = "S2 Stripchart Bogwell Statistics", 
+        col.names = c("Mean WTE (m)", 
+                      "Max WTE (m)",
+                      "Min WTE (m)",
+                      "SD")) %>% 
+  kable_material(c("striped", "hover"))
 ```
 
 ## Shaft Encoders
@@ -499,7 +524,38 @@ max_year = 2021
 
     -   Subset data to 2020 - present
 
-### S2
+```{r eval=FALSE, include=FALSE}
+#set file path to read in data from Box 
+filepath = "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/DataDump/RealTimeData"
+
+#read in the raw data 
+s1_se <- readCDL(file = here(filepath, "S1-EM3_Table1.dat"))
+
+#clean the data 
+s1_se_clean <- s1_se %>% 
+  clean_names() %>% 
+  #select relevant columns
+  select(timestamp,
+         wt_elev) %>% 
+  #rename columns 
+  rename(datetime = timestamp,
+         wt_elev_ft = wt_elev) %>% 
+  #reformat columns into appropriate classes 
+  mutate(datetime = as.POSIXct(datetime, format = '%Y-%m-%d %H:%M:%S', 
+                                  tz = "GMT"),
+    wt_elev_ft = as.numeric(wt_elev_ft),
+    wt_elev_m = wt_elev_ft * MetersPerFoot)
+```
+
+```{r s1_append, eval=FALSE, include=FALSE}
+#set file path to read in data from Box 
+filepath = "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/DataDump/RealTimeData"
+
+#read in appended data 
+
+```
+
+### S2 Shaft Encoder
 
 -   We are interested in the `MaxWTElev` column
 
@@ -547,6 +603,32 @@ p_s2 <- ggplot(data = s2_se_clean) +
 ggplotly(p_s2,
          tooltip = "text")
 ```
+
+```{r s2_dat_stats}
+s2_se_clean %>% 
+  #rename columns 
+  rename(wte = max_wt_elev_m) %>% 
+  #remove rows that have NA wte values 
+  filter(!is.na(wte)) %>% 
+  summarise(mean_wte_m = round(mean(wte), digits = 3),
+            max_wte_m = max(wte),
+            min_wte_m = min(wte), 
+            sd_wte_m = round(sd(wte), digits = 3)
+            ) %>% 
+  #t() %>% 
+  kable(caption = "S2 Shaft Encoder Bogwell Statistics", 
+        col.names = c("Mean WTE (m)", 
+                      "Max WTE (m)",
+                      "Min WTE (m)",
+                      "SD")) %>% 
+  kable_material(c("striped", "hover"))
+```
+
+
+
+
+
+
 
 ```{r bogwell_daily, eval=FALSE, include=FALSE}
 #set file path to read in data from Box 
