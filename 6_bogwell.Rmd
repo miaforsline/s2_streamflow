@@ -601,6 +601,99 @@ ggplotly(p_s4,
          tooltip = "text")
 ```
 
+## S5 Shaft Encoder 
+
+2020-2022 data
+
+```{r s5_2020}
+#set file path to read in data from Box 
+filepath = "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/DataDump/annual_appended_logger_files"
+
+year = "2020"
+
+file = "S5_bogwell_S5BW_Daily.dat"
+
+#read in 2020-2022 data 
+s5_2020 <- readCDL(file = here(filepath, year, file))
+
+#clean the data 
+s5_2020_clean <- s5_2020 %>% 
+  clean_names() %>% 
+  #select relevant columns
+  select(timestamp,
+         max_wt_elev,
+         max_wt_elev_m) %>% 
+  #rename columns 
+  rename(datetime = timestamp,
+         max_wt_elev_ft = max_wt_elev) %>% 
+  #reformat columns into appropriate classes 
+  mutate(datetime = as.POSIXct(datetime, format = '%Y-%m-%d %H:%M:%S', 
+                                  tz = "GMT"),
+    max_wt_elev_ft = as.numeric(max_wt_elev_ft),
+    max_wt_elev_m = as.numeric(max_wt_elev_m), 
+    date = format(as.POSIXct(datetime, format = '%m/%d/%Y %H:%M:%S', 
+                                  tz = "GMT"), 
+                       format = '%Y-%m-%d'),
+         date = as.POSIXct(date, tz = "GMT"),
+         year = format(as.POSIXct(datetime, format = '%m/%d/%Y %H:%M:%S', 
+                                  tz = "GMT"), 
+                       format = '%Y'),
+         year = as.numeric(year))
+
+#set min and max year 
+min_year = min(s4_2020_clean$year)
+max_year = max(s4_2020_clean$year)
+```
+
+RealTimeData
+
+```{r s1_realtimedata}
+#set file path to read in data from Box 
+filepath = "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/DataDump/RealTimeData"
+
+#read in the raw data 
+##note: this data is 2021 - 2022 
+s5_se <- readCDL(file = here(filepath, "S5_bogwell_S5BW_Daily.dat"))
+
+#clean the data 
+s1_se_clean <- s1_se %>% 
+  clean_names() %>% 
+  #select relevant columns
+  select(timestamp,
+         wt_elev) %>% 
+  #rename columns 
+  rename(datetime = timestamp,
+         wt_elev_ft = wt_elev) %>% 
+  #reformat columns into appropriate classes 
+  mutate(datetime = as.POSIXct(datetime, format = '%Y-%m-%d %H:%M:%S', 
+                                  tz = "GMT"),
+    wt_elev_ft = as.numeric(wt_elev_ft),
+    wt_elev_m = wt_elev_ft * MetersPerFoot)
+```
+
+-   Plot
+
+```{r s5_plot}
+#plot 
+p_s5 <- ggplot(data = s5_2020_clean) + 
+  geom_line(aes(x = datetime, 
+                y = max_wt_elev_m,
+                group = 1,
+                text = paste0("Date: ", date, "\n",
+                              "Water Table Elevation (m): ", max_wt_elev_m))) + 
+  theme_classic() + 
+  labs(x = "Time", 
+       y = "Water Table Elevation (m)", 
+       title = paste0("S5 Bogwell Water Table Elevation (", min_year, "-", max_year, ")")
+       ) + 
+  theme(plot.title = element_text(hjust = 0.5),
+          plot.subtitle = element_text(hjust = 0.5))
+
+#interactive plot
+ggplotly(p_s5,
+         tooltip = "text")
+```
+
 # 1:1 Plots 
 
 ## S1 1:1 Plot
