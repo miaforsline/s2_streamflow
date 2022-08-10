@@ -643,7 +643,7 @@ s5_2020_clean <- s5_2020 %>%
 
 RealTimeData
 
-```{r s1_realtimedata}
+```{r s5_realtimedata}
 #set file path to read in data from Box 
 filepath = "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/DataDump/RealTimeData"
 
@@ -999,7 +999,7 @@ max_year = max(s5_join_sub$year)
 
 Plot
 
-```{r p4}
+```{r p5}
 p5 <- ggplot(data = s5_join_sub) + 
   geom_point(aes(x = stripchart, 
                  y = shaft_encoder,
@@ -1014,7 +1014,7 @@ p5 <- ggplot(data = s5_join_sub) +
   theme_classic() + 
   labs(x = "Manual Stripchart", 
        y = "Shaft Encoder",
-       title = paste0("S4 1:1 WTE Comparison (", min_year, "-", max_year, ")")
+       title = paste0("S5 1:1 WTE Comparison (", min_year, "-", max_year, ")")
        ) + 
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5, 
@@ -1022,7 +1022,7 @@ p5 <- ggplot(data = s5_join_sub) +
         legend.position = "none")
 
 #interactive plot 
-ggplotly(p = p4, 
+ggplotly(p = p5, 
          tooltip = "text")
 ```
 
