@@ -1461,7 +1461,7 @@ min_year = min(s6_join_sub$year)
 max_year = max(s6_join_sub$year)
 ```
 
-```{r p6, eval=FALSE, include=FALSE}
+```{r p6}
 p6 <- ggplot(data = s6_join_sub) + 
   geom_point(aes(x = stripchart, 
                  y = shaft_encoder,
@@ -1490,7 +1490,7 @@ ggplotly(p = p6,
 
 ## Bog Lake Fen (BOGLK) 1:1 Plot
 
-```{r eval=FALSE, include=FALSE}
+```{r}
 #format stripchart data
 boglk <- bogwell_clean_boglk %>% 
   #remove unnecessary columns 
@@ -1546,7 +1546,7 @@ min_year = min(boglk_join_sub$year)
 max_year = max(boglk_join_sub$year)
 ```
 
-```{r p_boglk, eval=FALSE, include=FALSE}
+```{r p_boglk}
 p_boglk <- ggplot(data = boglk_join_sub) + 
   geom_point(aes(x = stripchart,
                  y = shaft_encoder,
