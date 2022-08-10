@@ -324,9 +324,6 @@ Constants to convert between feet and meters:
 ```{r constants}
 MetersPerFoot = 0.3048
 FeetPerMeter = 3.28048
-
-min_year = 2020
-max_year = 2021
 ```
 
 ## S1 Shaft Encoder 
@@ -706,6 +703,155 @@ p_s5 <- ggplot(data = s5_all) +
 
 #interactive plot
 ggplotly(p_s5,
+         tooltip = "text")
+```
+
+## S6 Shaft Encoder
+
+RealTimeData
+
+```{r s6_realtimedata}
+#set file path to read in data from Box 
+filepath = "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/DataDump/RealTimeData"
+
+#read in the raw data 
+##note: this data is 2021 - 2022 
+s6_se <- readCDL(file = here(filepath, "S6_bogwell_S6BW_Daily.dat"))
+
+#clean the data 
+s6_se_clean <- s6_se %>% 
+  clean_names() %>% 
+  #select relevant columns
+  select(timestamp,
+         max_wt_elev,
+         max_wt_elev_m) %>% 
+  #rename columns 
+  rename(datetime = timestamp,
+         max_wt_elev_ft = max_wt_elev) %>% 
+  #reformat columns into appropriate classes 
+  mutate(datetime = as.POSIXct(datetime, format = '%Y-%m-%d %H:%M:%S', 
+                                  tz = "GMT"),
+    max_wt_elev_ft = as.numeric(max_wt_elev_ft),
+    max_wt_elev_m = as.numeric(max_wt_elev_m), 
+    date = format(as.POSIXct(datetime, format = '%m/%d/%Y %H:%M:%S', 
+                                  tz = "GMT"), 
+                       format = '%Y-%m-%d'),
+         date = as.POSIXct(date, tz = "GMT"),
+         year = format(as.POSIXct(datetime, format = '%m/%d/%Y %H:%M:%S', 
+                                  tz = "GMT"), 
+                       format = '%Y'),
+         year = as.numeric(year))
+```
+
+
+2019 data 
+
+```{r s6_2019}
+#set file path to read in data from Box 
+filepath = "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/DataDump/annual_appended_logger_files"
+
+year = "2019"
+
+file = "S6_bogwell_S6BW_Daily.dat"
+
+#read in 2019 data 
+s6_2019 <- readCDL(file = here(filepath, year, file))
+
+#clean 2019 data 
+s6_2019_clean <- s6_2019 %>% 
+  clean_names() %>% 
+  #select relevant columns
+  select(timestamp,
+         max_wt_elev,
+         max_wt_elev_m) %>% 
+  #rename columns 
+  rename(datetime = timestamp,
+         max_wt_elev_ft = max_wt_elev) %>% 
+  #reformat columns into appropriate classes 
+  mutate(datetime = as.POSIXct(datetime, format = '%Y-%m-%d %H:%M:%S', 
+                                  tz = "GMT"),
+         date = format(as.POSIXct(datetime, format = '%m/%d/%Y %H:%M:%S', 
+                                  tz = "GMT"), 
+                       format = '%Y-%m-%d'),
+         date = as.POSIXct(date, tz = "GMT"),
+         year = format(as.POSIXct(datetime, format = '%m/%d/%Y %H:%M:%S', 
+                                  tz = "GMT"), 
+                       format = '%Y'),
+         year = as.numeric(year),
+    max_wt_elev_ft = as.numeric(max_wt_elev_ft),
+    max_wt_elev_m = as.numeric(max_wt_elev_m))
+
+```
+
+2020 data
+
+```{r s1_2020}
+#set file path to read in data from Box 
+filepath = "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/DataDump/annual_appended_logger_files"
+
+year = "2020"
+
+file = "S6_bogwell_S6BW_Daily.dat"
+
+#read in 2020-2022 data 
+s6_2020 <- readCDL(file = here(filepath, year, file))
+
+#clean 2020-2022 data 
+s6_2020_clean <- s6_2020 %>% 
+  clean_names() %>% 
+  #select relevant columns
+  select(timestamp,
+         max_wt_elev,
+         max_wt_elev_m) %>% 
+  #rename columns 
+  rename(datetime = timestamp,
+         max_wt_elev_ft = max_wt_elev) %>% 
+  #reformat columns into appropriate classes 
+  mutate(datetime = as.POSIXct(datetime, format = '%Y-%m-%d %H:%M:%S', 
+                                  tz = "GMT"),
+         date = format(as.POSIXct(datetime, format = '%m/%d/%Y %H:%M:%S', 
+                                  tz = "GMT"), 
+                       format = '%Y-%m-%d'),
+         date = as.POSIXct(date, tz = "GMT"),
+         year = format(as.POSIXct(datetime, format = '%m/%d/%Y %H:%M:%S', 
+                                  tz = "GMT"), 
+                       format = '%Y'),
+         year = as.numeric(year),
+    max_wt_elev_ft = as.numeric(max_wt_elev_ft),
+    max_wt_elev_m = as.numeric(max_wt_elev_m))
+```
+
+Combine S6 data 
+
+```{r s1_all}
+s6_all <- rbind(s6_se_clean, s6_2019_clean, s6_2020_clean) %>% 
+  #remove one row where WTE = 0 
+  subset(max_wt_elev_m > 0) %>% 
+  #remove NA values
+  filter(!is.na(max_wt_elev_m))
+
+#set min and max year 
+min_year = min(s6_all$year)
+max_year = max(s6_all$year)
+
+#plot
+p_s6 <- ggplot(data = s6_all) + 
+  geom_line(aes(x = datetime,
+                y = max_wt_elev_m,
+                group = 1,
+                text = paste0("Date: ", date, "\n",
+                              "Max Water Table Elevation (m): ", round(max_wt_elev_m, digits = 3)))) + 
+  theme_classic() + 
+  labs(x = "Time", 
+       y = "Water Table Elevation (m above sea level)",
+       title = paste0("S6 Shaft Encoder Water Table Elevation (", min_year, "-", max_year, ")") 
+       ) + 
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5, 
+                                     size = 7))
+
+#interactive plot 
+ggplotly(p_s6,
          tooltip = "text")
 ```
 
