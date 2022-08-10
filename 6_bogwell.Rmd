@@ -836,6 +836,10 @@ s2_join_sub <- s2_join %>%
   #remove rows with NA values 
   filter(!is.na(shaft_encoder), 
          !is.na(stripchart))
+
+#set min and max year 
+min_year = min(s2_join_sub$year)
+max_year = max(s2_join_sub$year)
 ```
 
 Plot
@@ -867,41 +871,6 @@ ggplotly(p = p2,
          tooltip = "text")
 ```
 
-
-
-Note that this file is being knit as
-[`index.html`](https://github.com/miaforsline/climate_bogwell/blob/main/index.html)
-into the [`climate_bogwell`
-repository](https://github.com/miaforsline/climate_bogwell) in order to
-update the [GitHub pages
-website](https://miaforsline.github.io/climate_bogwell/), where the
-plots can be viewed online.
-
-
-
-
-```{r eval=FALSE, include=FALSE}
-#set file path to read in data from Box 
-filepath = "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/EDI/peatland_water_table_daily/edi.562.2/data_objects/"
-
-#read in the raw data 
-bogwell <- read_csv(here(filepath, "MEF_daily_peatland_water_table.csv"))
-
-#clean the data
-bogwell_clean <- bogwell %>% 
-  clean_names() %>% 
-  subset(peatland == "S2") %>% 
-  mutate(year = format(as.POSIXct(date, format = '%Y-%m-%d', 
-                                  tz = "GMT"), 
-                       format = '%Y'),
-         year = as.numeric(year)) %>% 
-  subset(year >= min_year & year <= max_year)
-
-#save clean data CSV to use in future RMD files
-write.csv(x = bogwell_clean, 
-          file = file.path(here("intermediate_data", "bogwell_clean.csv")),
-          row.names = FALSE)
-```
 
 ## S4 1:1 Plot 
 
@@ -945,6 +914,10 @@ s4_join_sub <- s4_join %>%
   #remove rows with NA values 
   filter(!is.na(shaft_encoder), 
          !is.na(stripchart))
+
+#set min and max year 
+min_year = min(s4_join_sub$year)
+max_year = max(s4_join_sub$year)
 ```
 
 Plot
@@ -982,14 +955,14 @@ Format data
 
 ```{r}
 #format stripchart data
-bog4 <- bogwell_clean_s4 %>% 
+bog5 <- bogwell_clean_s5 %>% 
   #remove unnecessary columns 
   select(-peatland, -flag) %>% 
   #create a column to note what type of data this is 
   mutate(type = "stripchart")
 
 #format shaft encoder data 
-se4 <- s4_2020_clean %>% 
+se5 <- s5_all %>% 
   #extract date and year 
   mutate(date = format(as.POSIXct(datetime, format = '%m/%d/%Y %H:%M:%S', 
                                   tz = "GMT"), 
@@ -1007,23 +980,27 @@ se4 <- s4_2020_clean %>%
   rename(wte = max_wt_elev_m)
 
 #join the data 
-s4_join <- full_join(x = bog4, 
-                     y = se4,
+s5_join <- full_join(x = bog5, 
+                     y = se5,
                      by = c("wte", "date", "year", "type"))
 
 #subset the join to the time period where the two data sources overlap 
-s4_join_sub <- s4_join %>% 
+s5_join_sub <- s5_join %>% 
   pivot_wider(names_from = "type",
               values_from = "wte") %>% 
   #remove rows with NA values 
   filter(!is.na(shaft_encoder), 
          !is.na(stripchart))
+
+#set min and max year 
+min_year = min(s5_join_sub$year)
+max_year = max(s5_join_sub$year)
 ```
 
 Plot
 
 ```{r p4}
-p4 <- ggplot(data = s4_join_sub) + 
+p5 <- ggplot(data = s5_join_sub) + 
   geom_point(aes(x = stripchart, 
                  y = shaft_encoder,
                  alpha = 0.1,
