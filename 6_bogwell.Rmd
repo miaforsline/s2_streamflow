@@ -168,24 +168,6 @@ ggplotly(p_bogwell_s2,
          tooltip = "text")
 ```
 
-```{r bogwell_s2_stats}
-bogwell_clean_s2 %>% 
-  #remove rows that have NA wte values 
-  filter(!is.na(wte)) %>% 
-  summarise(mean_wte_m = round(mean(wte), digits = 3),
-            max_wte_m = max(wte),
-            min_wte_m = min(wte), 
-            sd_wte_m = round(sd(wte), digits = 3)
-            ) %>% 
-  #t() %>% 
-  kable(caption = "S2 Stripchart Bogwell Statistics", 
-        col.names = c("Mean WTE (m)", 
-                      "Max WTE (m)",
-                      "Min WTE (m)",
-                      "SD")) %>% 
-  kable_material(c("striped", "hover"))
-```
-
 ## S3 Manual Stripchart
 
 ```{r bogwell_s3}
