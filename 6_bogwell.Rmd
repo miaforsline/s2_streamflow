@@ -294,6 +294,33 @@ ggplotly(p_bogwell_s6,
          tooltip = "text")
 ```
 
+## BOGLK Manual Stripchart
+
+```{r bogwell_boglk}
+bogwell_clean_boglk <- bogwell_clean %>% 
+    subset(peatland == "BOGLK")
+
+#plot
+p_bogwell_boglk <- ggplot(data = bogwell_clean_boglk) + 
+  geom_line(aes(x = date, 
+                y = wte, 
+                group = 1,
+                text = paste0("Date: ", date, "\n",
+                              "Water Table Elevation (m): ", wte))) + 
+  theme_classic() + 
+  labs(x = "Time", 
+       y = "Water Table Elevation (m above sea level)",
+       title = paste0("BOGLK Daily Peatland Water Table Elevation (", min_year, "-", max_year, ")") 
+       ) + 
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5, 
+                                     size = 7))
+
+#interactive plot 
+ggplotly(p_bogwell_boglk,
+         tooltip = "text")
+```
+
 # Shaft Encoders
 
 Function for loading Campbell DataLogger .dat files:
@@ -357,7 +384,8 @@ s1_se_clean <- s1_se %>%
     wt_elev_m = wt_elev_ft * MetersPerFoot)
 ```
 
-2019 data from the `annual_appended_logger_files` directory in Box
+-   Read in 2019 data from the following Box directory path:
+    `External-MEF_DATA/DataDump/annual_appende_logger_files/2019`
 
 ```{r s1_2019}
 #set file path to read in data from Box 
@@ -389,7 +417,8 @@ s1_2019_clean <- s1_2019 %>%
 
 ```
 
-2020 data from the `annual_appended_logger_files` directory in Box
+-   Read in 2020 data from the following Box directory path:
+    `External-MEF_DATA/DataDump/annual_appende_logger_files/2020`
 
 ```{r s1_2020}
 #set file path to read in data from Box 
@@ -421,8 +450,8 @@ s1_2020_clean <- s1_2020 %>%
     wt_elev_m = wt_elev_ft * MetersPerFoot)
 ```
 
-Combine all S1 data from both the `RealTimeData` folder and
-`annual_appnded_logger_files` folder in Box
+-   Combine all S1 data from both the `RealTimeData` folder and
+    `annual_appnded_logger_files` folder in Box
 
 ```{r s1_all}
 s1_all <- rbind(s1_se_clean, s1_2019_clean, s1_2020_clean) %>% 
@@ -466,8 +495,7 @@ ggplotly(p_s1,
 -   Read in the 2022 data from the following Box file path:
     `External-MEF_DATA/DataDump/RealTimeData`
     -   We are interested in the `MaxWTElev` column
--   Clean the 2022 data into a tidy format
--   Subset data to 2020 - present
+-   Clean the data into a tidy format
 
 ```{r s2_realtimedata}
 #set file path to read in data from Box 
@@ -523,15 +551,17 @@ ggplotly(p_s2,
          tooltip = "text")
 ```
 
+### S2 Shaft Encoder Statistics
+
 -   Calculate S2 statistics of the maximum daily WTE including:
+
+    -   maximum
 
     -   mean
 
-    -   max
+    -   mininim
 
-    -   min
-
-    -   SD
+    -   standard deviation (SD)
 
 ```{r s2_stats}
 s2_se_clean %>% 
@@ -539,23 +569,25 @@ s2_se_clean %>%
   rename(wte = max_wt_elev_m) %>% 
   #remove rows that have NA wte values 
   filter(!is.na(wte)) %>% 
-  summarise(mean_wte_m = round(mean(wte), digits = 3),
-            max_wte_m = max(wte),
+  summarise(max_wte_m = max(wte),
+            mean_wte_m = round(mean(wte), digits = 3),
             min_wte_m = min(wte), 
             sd_wte_m = round(sd(wte), digits = 3)
             ) %>% 
   #t() %>% 
   kable(caption = "S2 Shaft Encoder Bogwell Daily Max WTE Statistics", 
-        col.names = c("Mean WTE (m)", 
-                      "Max WTE (m)",
+        col.names = c("Max WTE (m)", 
+                      "Mean WTE (m)",
                       "Min WTE (m)",
                       "SD")) %>% 
   kable_material(c("striped", "hover"))
 ```
 
-Next, calculate the difference from the mean and SD of the difference from the mean 
+-   Calculate the difference from the mean and SD of the difference from
+    the mean
+-   Plot differences from the mean
 
-```{r s2_diff_from_mean}
+```{r s2_diff_from_mean_histogram}
 #create a dataframe to calculate the difference from the mean WTE (in meters)
 diff <- s2_se_clean %>% 
   #rename columns 
@@ -565,7 +597,8 @@ diff <- s2_se_clean %>%
   mutate(diff_from_mean = wte - mean(wte))
 
 #calculate the SD of the differences from the mean WTE (in meters)
-sd_diff_from_mean <- sd(diff$diff_from_mean)
+sd_diff_from_mean <- round(sd(diff$diff_from_mean), digits = 3)
+avg_diff_from_mean <- round(mean(diff$diff_from_mean), digits = 3)
 
 #set min and max year 
 min_year = min(diff$year)
@@ -585,15 +618,32 @@ ggplot(data = diff) +
             
 ```
 
+-   Create a table to display the max, mean, min, and SD of the
+    difference from the mean
+
+```{r diff_from_mean_table}
+diff %>% 
+  summarise(max_diff = max(diff_from_mean),
+            mean_diff = mean(diff_from_mean),
+            min_diff = min(diff_from_mean), 
+            sd_diff = sd(diff_from_mean)
+            ) %>% 
+  kable(caption = "S2 Shaft Encoder Daily Max WTE Difference from Mean", 
+        col.names = c("Max (m)", 
+                      "Mean (m)",
+                      "Min (m)",
+                      "SD")) %>% 
+  kable_material(c("striped", "hover"))
+```
+
 ## S3 Shaft Encoder
 
-S3 was omitted due to unreliable data
+S3 was omitted due to unreliable data.
 
 ## S4 Shaft Encoder
 
-S4_bogwell_S4BW_Daily.dat(MaxWTElev; annual_appended)
-
-2020 data
+-   Read in 2020 data from the following Box directory path:
+    `External-MEF_DATA/DataDump/annual_appende_logger_files/2020`
 
 ```{r s4_2020}
 #set file path to read in data from Box 
@@ -660,7 +710,8 @@ ggplotly(p_s4,
 
 ## S5 Shaft Encoder
 
-2020-2022 data
+-   Read in 2020 data from the following Box directory path:
+    `External-MEF_DATA/DataDump/annual_appende_logger_files/2020`
 
 ```{r s5_2020}
 #set file path to read in data from Box 
@@ -698,7 +749,10 @@ s5_2020_clean <- s5_2020 %>%
          year = as.numeric(year))
 ```
 
-RealTimeData
+-   Read in the 2022 data from the following Box file path:
+    `External-MEF_DATA/DataDump/RealTimeData`
+
+-   Clean the 2022 data into a tidy format
 
 ```{r s5_realtimedata}
 #set file path to read in data from Box 
@@ -733,7 +787,8 @@ s5_se_clean <- s5_se %>%
          year = as.numeric(year))
 ```
 
-Combine all S5 data and plot
+-   Combine all S5 data from both the `RealTimeData` folder and
+    `annual_appnded_logger_files` folder in Box
 
 ```{r s5_all}
 s5_all <- rbind(s5_2020_clean, s5_se_clean) %>% 
@@ -768,7 +823,10 @@ ggplotly(p_s5,
 
 ## S6 Shaft Encoder
 
-RealTimeData
+-   Read in the 2022 data from the following Box file path:
+    `External-MEF_DATA/DataDump/RealTimeData`
+
+-   Clean the 2022 data into a tidy format
 
 ```{r s6_realtimedata}
 #set file path to read in data from Box 
@@ -803,7 +861,8 @@ s6_se_clean <- s6_se %>%
          year = as.numeric(year))
 ```
 
-2019 data
+-   Read in 2019 data from the following Box directory path:
+    `External-MEF_DATA/DataDump/annual_appende_logger_files/2019`
 
 ```{r s6_2019}
 #set file path to read in data from Box 
@@ -842,7 +901,8 @@ s6_2019_clean <- s6_2019 %>%
 
 ```
 
-2020 data
+-   Read in 2020 data from the following Box directory path:
+    `External-MEF_DATA/DataDump/annual_appende_logger_files/2020`
 
 ```{r s6_2020}
 #set file path to read in data from Box 
@@ -880,7 +940,8 @@ s6_2020_clean <- s6_2020 %>%
     max_wt_elev_m = as.numeric(max_wt_elev_m))
 ```
 
-Combine S6 data
+-   Combine all S6 data from both the `RealTimeData` folder and
+    `annual_appnded_logger_files` folder in Box
 
 ```{r s6_all}
 s6_all <- rbind(s6_se_clean, s6_2019_clean, s6_2020_clean) %>% 
@@ -917,8 +978,6 @@ ggplotly(p_s6,
 # 1:1 Plots
 
 ## S1 1:1 Plot
-
-Format data
 
 ```{r}
 #format stripchart data
@@ -970,8 +1029,6 @@ min_year = min(s1_join_sub$year)
 max_year = max(s1_join_sub$year)
 ```
 
-Plot
-
 ```{r p1}
 p1 <- ggplot(data = s1_join_sub) + 
   geom_point(aes(x = stripchart, 
@@ -1000,8 +1057,6 @@ ggplotly(p = p1,
 ```
 
 ## S2 1:1 Plot
-
-Format data
 
 ```{r}
 #format stripchart data
@@ -1047,8 +1102,6 @@ min_year = min(s2_join_sub$year)
 max_year = max(s2_join_sub$year)
 ```
 
-Plot
-
 ```{r p2}
 p2 <- ggplot(data = s2_join_sub) + 
   geom_point(aes(x = stripchart, 
@@ -1077,8 +1130,6 @@ ggplotly(p = p2,
 ```
 
 ## S4 1:1 Plot
-
-Format data
 
 ```{r}
 #format stripchart data
@@ -1124,8 +1175,6 @@ min_year = min(s4_join_sub$year)
 max_year = max(s4_join_sub$year)
 ```
 
-Plot
-
 ```{r p4}
 p4 <- ggplot(data = s4_join_sub) + 
   geom_point(aes(x = stripchart, 
@@ -1154,8 +1203,6 @@ ggplotly(p = p4,
 ```
 
 ## S5 1:1 Plot
-
-Format data
 
 ```{r}
 #format stripchart data
@@ -1201,8 +1248,6 @@ min_year = min(s5_join_sub$year)
 max_year = max(s5_join_sub$year)
 ```
 
-Plot
-
 ```{r p5}
 p5 <- ggplot(data = s5_join_sub) + 
   geom_point(aes(x = stripchart, 
@@ -1231,8 +1276,6 @@ ggplotly(p = p5,
 ```
 
 ## S6 1:1 Plot
-
-Format data
 
 ```{r}
 #format stripchart data
@@ -1266,7 +1309,7 @@ s6_join <- full_join(x = bog6,
                      by = c("wte", "date", "year", "type"))
 
 #subset the join to the time period where the two data sources overlap 
-s5_join_sub <- s5_join %>% 
+s6_join_sub <- s5_join %>% 
   pivot_wider(names_from = "type",
               values_from = "wte") %>% 
   #remove rows with NA values 
@@ -1274,14 +1317,12 @@ s5_join_sub <- s5_join %>%
          !is.na(stripchart))
 
 #set min and max year 
-min_year = min(s5_join_sub$year)
-max_year = max(s5_join_sub$year)
+min_year = min(s6_join_sub$year)
+max_year = max(s6_join_sub$year)
 ```
 
-Plot
-
 ```{r p6}
-p5 <- ggplot(data = s5_join_sub) + 
+p6 <- ggplot(data = s6_join_sub) + 
   geom_point(aes(x = stripchart, 
                  y = shaft_encoder,
                  alpha = 0.1,
@@ -1295,7 +1336,7 @@ p5 <- ggplot(data = s5_join_sub) +
   theme_classic() + 
   labs(x = "Manual Stripchart", 
        y = "Shaft Encoder",
-       title = paste0("S5 1:1 WTE Comparison (", min_year, "-", max_year, ")")
+       title = paste0("S6 1:1 WTE Comparison (", min_year, "-", max_year, ")")
        ) + 
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5, 
@@ -1303,7 +1344,7 @@ p5 <- ggplot(data = s5_join_sub) +
         legend.position = "none")
 
 #interactive plot 
-ggplotly(p = p5, 
+ggplotly(p = p6, 
          tooltip = "text")
 ```
 
