@@ -27,6 +27,15 @@ The project is designed to for RMD files to be executed in the following order:
 5. `5_air_comparisons.Rmd`: Compares streamflow data with air temperature data to assess the accuracy of the stripchart data
 6. `6_bogwell.Rmd`: Reads in bogwell (water table elevation) data from manual stripcharts and new shaft encoders 
 
+## Visualizing the Data
+Each step of this workflow can be viewed online using GitHub pages: 
+1. [Individual Water Years' Streamflow](https://miaforsline.github.io/water_years/)
+2. [Manual Checkpoints of Streamflow](https://miaforsline.github.io/manual_checks/)
+3. [Climate Data](https://miaforsline.github.io/climate/)
+4. [Comparing Streamflow and Precipitation](https://miaforsline.github.io/precip_comparisons/)
+5. [Comparing Streamflow and Air Temperature](https://miaforsline.github.io/air_comparisons/)
+6. [Bogwell (Peatland Water Table Elevation) Data](https://miaforsline.github.io/bogwell/)
+
 ## File Structure 
 RMD files and HTML files are stored in the main directory. The `figures` sub-directory stores PNG images plots/visualizations created in the RMDs. The `intermediate_data` sub-directory stores processed CSV files of the raw data that are important for visualizations. 
 
