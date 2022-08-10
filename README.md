@@ -18,7 +18,7 @@ The overall goals of this project include:
 Ultimately, this project aims to facilitate the transition away from older analogue data collection techniques such as paper stripcharts that must be digitized by hand towards newer data collection techniques such as shaft encoder sensors. 
 
 ## Workflow 
-The project is designed to for RMD files to be executed in the following order:
+The project is designed for RMD files to be executed in the following order:
 
 1. `1_water_years.Rmd`: Reads in, cleans, and visualizes stream height (ft) for each individual water year based on stripchart data
 2. `2_manual_checks.Rmd`: Reads in stream height data collected during periodic manual checks and plots these checkpoints on top of the stripchart data as a way to assess the accuracy of the stripcharts 
