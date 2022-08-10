@@ -94,7 +94,7 @@ write.csv(x = bogwell_clean,
           row.names = FALSE)
 ```
 
-Plot all sites together 
+Plot all sites together
 
 ```{r bogwell_plot}
 #plot
@@ -114,7 +114,7 @@ p_bogwell <- ggplot(data = bogwell_clean) +
 p_bogwell
 ```
 
-## S1 Manual Stripchart 
+## S1 Manual Stripchart
 
 ```{r bogwell_s1}
 bogwell_clean_s1 <- bogwell_clean %>% 
@@ -140,7 +140,6 @@ p_bogwell_s1 <- ggplot(data = bogwell_clean_s1) +
 ggplotly(p_bogwell_s1,
          tooltip = "text")
 ```
-
 
 ## S2 Manual Stripchart
 
@@ -169,8 +168,6 @@ ggplotly(p_bogwell_s2,
          tooltip = "text")
 ```
 
-
-
 ```{r bogwell_s2_stats}
 bogwell_clean_s2 %>% 
   #remove rows that have NA wte values 
@@ -188,7 +185,8 @@ bogwell_clean_s2 %>%
                       "SD")) %>% 
   kable_material(c("striped", "hover"))
 ```
-## S3 Manual Stripchart 
+
+## S3 Manual Stripchart
 
 ```{r bogwell_s3}
 bogwell_clean_s3 <- bogwell_clean %>% 
@@ -215,7 +213,7 @@ ggplotly(p_bogwell_s3,
          tooltip = "text")
 ```
 
-## S4 Manual Stripchart 
+## S4 Manual Stripchart
 
 ```{r bogwell_s4}
 bogwell_clean_s4 <- bogwell_clean %>% 
@@ -242,7 +240,7 @@ ggplotly(p_bogwell_s4,
          tooltip = "text")
 ```
 
-## S5 Manual Stripchart 
+## S5 Manual Stripchart
 
 ```{r bogwell_s5}
 bogwell_clean_s5 <- bogwell_clean %>% 
@@ -269,7 +267,7 @@ ggplotly(p_bogwell_s5,
          tooltip = "text")
 ```
 
-## S6 Manual Stripchart 
+## S6 Manual Stripchart
 
 ```{r bogwell_s6}
 bogwell_clean_s6 <- bogwell_clean %>% 
@@ -326,7 +324,7 @@ MetersPerFoot = 0.3048
 FeetPerMeter = 3.28048
 ```
 
-## S1 Shaft Encoder 
+## S1 Shaft Encoder
 
 -   Read in the 2022 data from the following Box file path:
     `External-MEF_DATA/DataDump/RealTimeData`
@@ -423,7 +421,8 @@ s1_2020_clean <- s1_2020 %>%
     wt_elev_m = wt_elev_ft * MetersPerFoot)
 ```
 
-Combine all S1 data from both the `RealTimeData` folder and `annual_appnded_logger_files` folder in Box 
+Combine all S1 data from both the `RealTimeData` folder and
+`annual_appnded_logger_files` folder in Box
 
 ```{r s1_all}
 s1_all <- rbind(s1_se_clean, s1_2019_clean, s1_2020_clean) %>% 
@@ -462,18 +461,22 @@ ggplotly(p_s1,
          tooltip = "text")
 ```
 
-
 ## S2 Shaft Encoder
 
--   We are interested in the `MaxWTElev` column
+-   Read in the 2022 data from the following Box file path:
+    `External-MEF_DATA/DataDump/RealTimeData`
+    -   We are interested in the `MaxWTElev` column
+-   Clean the 2022 data into a tidy format
+-   Subset data to 2020 - present
 
-```{r s2_dat}
+```{r s2_realtimedata}
 #set file path to read in data from Box 
 filepath = "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/DataDump/RealTimeData"
 
 #read in the raw data 
 s2_se <- readCDL(file = here(filepath, "S2_bogwell_S2BW_Daily.dat"))
 
+#clean the data
 s2_se_clean <- s2_se %>% 
   clean_names() %>% 
   #select relevant columns
@@ -486,7 +489,15 @@ s2_se_clean <- s2_se %>%
   mutate(datetime = as.POSIXct(datetime, format = '%Y-%m-%d %H:%M:%S', 
                                   tz = "GMT"),
     max_wt_elev_ft = as.numeric(max_wt_elev_ft),
-    max_wt_elev_m = max_wt_elev_ft * MetersPerFoot)
+    max_wt_elev_m = max_wt_elev_ft * MetersPerFoot, 
+    year = format(as.POSIXct(datetime, format = '%m/%d/%Y %H:%M:%S', 
+                                  tz = "GMT"), 
+                       format = '%Y'),
+         year = as.numeric(year))
+
+#set min and max year 
+min_year = min(s2_se_clean$year)
+max_year = max(s2_se_clean$year)
 ```
 
 -   Plot
@@ -512,7 +523,17 @@ ggplotly(p_s2,
          tooltip = "text")
 ```
 
-```{r s2_dat_stats}
+-   Calculate S2 statistics of the maximum daily WTE including:
+
+    -   mean
+
+    -   max
+
+    -   min
+
+    -   SD
+
+```{r s2_stats}
 s2_se_clean %>% 
   #rename columns 
   rename(wte = max_wt_elev_m) %>% 
@@ -524,7 +545,7 @@ s2_se_clean %>%
             sd_wte_m = round(sd(wte), digits = 3)
             ) %>% 
   #t() %>% 
-  kable(caption = "S2 Shaft Encoder Bogwell Statistics", 
+  kable(caption = "S2 Shaft Encoder Bogwell Daily Max WTE Statistics", 
         col.names = c("Mean WTE (m)", 
                       "Max WTE (m)",
                       "Min WTE (m)",
@@ -532,11 +553,43 @@ s2_se_clean %>%
   kable_material(c("striped", "hover"))
 ```
 
+Next, calculate the difference from the mean and SD of the difference from the mean 
+
+```{r s2_diff_from_mean}
+#create a dataframe to calculate the difference from the mean WTE (in meters)
+diff <- s2_se_clean %>% 
+  #rename columns 
+  rename(wte = max_wt_elev_m) %>% 
+  #remove rows that have NA wte values 
+  filter(!is.na(wte)) %>% 
+  mutate(diff_from_mean = wte - mean(wte))
+
+#calculate the SD of the differences from the mean WTE (in meters)
+sd_diff_from_mean <- sd(diff$diff_from_mean)
+
+#set min and max year 
+min_year = min(diff$year)
+max_year = max(diff$year)
+
+#plot 
+ggplot(data = diff) + 
+  geom_histogram(aes(x = diff_from_mean),
+                 binwidth = 0.025) + 
+  theme_classic() + 
+  labs(x = "Differences from the Mean WTE (m)", 
+       y = "Frequency", 
+       title = paste0("S2 Daily Max WTE Differences from the Mean (", min_year, "-", max_year, ")")
+       ) + 
+  theme(plot.title = element_text(hjust = 0.5),
+          plot.subtitle = element_text(hjust = 0.5))
+            
+```
+
 ## S3 Shaft Encoder
 
-S3 was omitted due to unreliable data 
+S3 was omitted due to unreliable data
 
-## S4 Shaft Encoder 
+## S4 Shaft Encoder
 
 S4_bogwell_S4BW_Daily.dat(MaxWTElev; annual_appended)
 
@@ -605,7 +658,7 @@ ggplotly(p_s4,
          tooltip = "text")
 ```
 
-## S5 Shaft Encoder 
+## S5 Shaft Encoder
 
 2020-2022 data
 
@@ -750,8 +803,7 @@ s6_se_clean <- s6_se %>%
          year = as.numeric(year))
 ```
 
-
-2019 data 
+2019 data
 
 ```{r s6_2019}
 #set file path to read in data from Box 
@@ -828,7 +880,7 @@ s6_2020_clean <- s6_2020 %>%
     max_wt_elev_m = as.numeric(max_wt_elev_m))
 ```
 
-Combine S6 data 
+Combine S6 data
 
 ```{r s6_all}
 s6_all <- rbind(s6_se_clean, s6_2019_clean, s6_2020_clean) %>% 
@@ -862,7 +914,7 @@ ggplotly(p_s6,
          tooltip = "text")
 ```
 
-# 1:1 Plots 
+# 1:1 Plots
 
 ## S1 1:1 Plot
 
@@ -947,7 +999,7 @@ ggplotly(p = p1,
          tooltip = "text")
 ```
 
-## S2 1:1 Plot 
+## S2 1:1 Plot
 
 Format data
 
@@ -1024,8 +1076,7 @@ ggplotly(p = p2,
          tooltip = "text")
 ```
 
-
-## S4 1:1 Plot 
+## S4 1:1 Plot
 
 Format data
 
@@ -1102,7 +1153,7 @@ ggplotly(p = p4,
          tooltip = "text")
 ```
 
-## S5 1:1 Plot 
+## S5 1:1 Plot
 
 Format data
 
@@ -1179,8 +1230,7 @@ ggplotly(p = p5,
          tooltip = "text")
 ```
 
-
-## S6 1:1 Plot 
+## S6 1:1 Plot
 
 Format data
 
@@ -1230,7 +1280,7 @@ max_year = max(s5_join_sub$year)
 
 Plot
 
-```{r p5}
+```{r p6}
 p5 <- ggplot(data = s5_join_sub) + 
   geom_point(aes(x = stripchart, 
                  y = shaft_encoder,
@@ -1260,8 +1310,6 @@ ggplotly(p = p5,
 Note that this file is being knit as
 [`index.html`](https://github.com/miaforsline/bogwell/blob/main/index.html)
 into the [`climate_bogwell`
-repository](https://github.com/miaforsline/bogwell) in order to
-update the [GitHub pages
-website](https://miaforsline.github.io/bogwell/), where the
-plots can be viewed online.
-
+repository](https://github.com/miaforsline/bogwell) in order to update
+the [GitHub pages website](https://miaforsline.github.io/bogwell/),
+where the plots can be viewed online.
