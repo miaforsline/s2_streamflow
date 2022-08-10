@@ -785,7 +785,7 @@ s6_2019_clean <- s6_2019 %>%
 
 2020 data
 
-```{r s1_2020}
+```{r s6_2020}
 #set file path to read in data from Box 
 filepath = "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/DataDump/annual_appended_logger_files"
 
@@ -823,7 +823,7 @@ s6_2020_clean <- s6_2020 %>%
 
 Combine S6 data 
 
-```{r s1_all}
+```{r s6_all}
 s6_all <- rbind(s6_se_clean, s6_2019_clean, s6_2020_clean) %>% 
   #remove one row where WTE = 0 
   subset(max_wt_elev_m > 0) %>% 
@@ -1172,6 +1172,83 @@ ggplotly(p = p5,
          tooltip = "text")
 ```
 
+
+## S6 1:1 Plot 
+
+Format data
+
+```{r}
+#format stripchart data
+bog6 <- bogwell_clean_s6 %>% 
+  #remove unnecessary columns 
+  select(-peatland, -flag) %>% 
+  #create a column to note what type of data this is 
+  mutate(type = "stripchart")
+
+#format shaft encoder data 
+se6 <- s6_all %>% 
+  #extract date and year 
+  mutate(date = format(as.POSIXct(datetime, format = '%m/%d/%Y %H:%M:%S', 
+                                  tz = "GMT"), 
+                       format = '%Y-%m-%d'),
+         date = as.POSIXct(date, tz = "GMT"),
+         year = format(as.POSIXct(datetime, format = '%m/%d/%Y %H:%M:%S', 
+                                  tz = "GMT"), 
+                       format = '%Y'),
+         year = as.numeric(year),
+         #note data type
+         type = "shaft_encoder") %>% 
+  #remove unnecessary columns 
+  select(-datetime, -max_wt_elev_ft) %>% 
+  #rename columns to join the data  
+  rename(wte = max_wt_elev_m)
+
+#join the data 
+s6_join <- full_join(x = bog6, 
+                     y = se6,
+                     by = c("wte", "date", "year", "type"))
+
+#subset the join to the time period where the two data sources overlap 
+s5_join_sub <- s5_join %>% 
+  pivot_wider(names_from = "type",
+              values_from = "wte") %>% 
+  #remove rows with NA values 
+  filter(!is.na(shaft_encoder), 
+         !is.na(stripchart))
+
+#set min and max year 
+min_year = min(s5_join_sub$year)
+max_year = max(s5_join_sub$year)
+```
+
+Plot
+
+```{r p5}
+p5 <- ggplot(data = s5_join_sub) + 
+  geom_point(aes(x = stripchart, 
+                 y = shaft_encoder,
+                 alpha = 0.1,
+                 group = 1,
+                 text = paste0("Date: ", date, "\n", 
+                               "Stripchart: ", stripchart, "\n",
+                              "Shaft Encoder: ", round(shaft_encoder, digits = 3)))) + 
+  #plot straight line to compare point spread 
+  geom_abline(intercept = 0,
+              slope = 1) + 
+  theme_classic() + 
+  labs(x = "Manual Stripchart", 
+       y = "Shaft Encoder",
+       title = paste0("S5 1:1 WTE Comparison (", min_year, "-", max_year, ")")
+       ) + 
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5, 
+                                     size = 7),
+        legend.position = "none")
+
+#interactive plot 
+ggplotly(p = p5, 
+         tooltip = "text")
+```
 
 Note that this file is being knit as
 [`index.html`](https://github.com/miaforsline/bogwell/blob/main/index.html)
