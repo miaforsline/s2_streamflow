@@ -1124,7 +1124,7 @@ s1_diff <- s1_join_sub %>%
 
 summary(s1_diff$diff)
 
-s1_sd <- round(sd(s2_diff$diff), digits = 5)
+s1_sd <- round(sd(s1_diff$diff), digits = 5)
 ```
 
 The standard deviation of the differences between stripchart and shaft
@@ -1352,6 +1352,48 @@ ggplotly(p = p4,
          tooltip = "text")
 ```
 
+### S4 Statistics
+
+-   Calculate the difference between S4 manual stripchart streamflow
+    values and S4 streamflow shaft encoder values
+    -   Identify the minimum, 1st quartile, median, mean, 3rd quartile,
+        and maximum difference values using `summary()`
+-   Calculate the standard deviation of the differences
+
+```{r s4_stats}
+s4_diff <- s4_join_sub %>% 
+  mutate(diff = shaft_encoder - stripchart) 
+
+summary(s4_diff$diff)
+
+s4_sd <- round(sd(s4_diff$diff), digits = 5)
+```
+
+The standard deviation of the differences between stripchart and shaft
+encoder values is approximately **`r s4_sd`**.
+
+-   Plot the differences between shaft encoder and stripchart streamflow
+    values
+
+```{r s4_diff_histogram}
+#set min and max year 
+min_year = min(s4_diff$year)
+max_year = max(s4_diff$year)
+
+#plot 
+ggplot(data = s4_diff) + 
+  geom_histogram(aes(x = diff),
+                 binwidth = 0.01) + 
+  theme_classic() + 
+  labs(x = "Differences Between Shaft Encoders - Stripcharts (m)", 
+       y = "Frequency", 
+       title = paste0("S4 Daily Max WTE Differences (", min_year, "-", max_year, ")")
+       ) + 
+  theme(plot.title = element_text(hjust = 0.5),
+          plot.subtitle = element_text(hjust = 0.5))
+            
+```
+
 ## S5 1:1 Plot
 
 Format the data
@@ -1427,6 +1469,48 @@ p5 <- ggplot(data = s5_join_sub) +
 #interactive plot 
 ggplotly(p = p5, 
          tooltip = "text")
+```
+
+### S5 Statistics
+
+-   Calculate the difference between S4 manual stripchart streamflow
+    values and S5 streamflow shaft encoder values
+    -   Identify the minimum, 1st quartile, median, mean, 3rd quartile,
+        and maximum difference values using `summary()`
+-   Calculate the standard deviation of the differences
+
+```{r s5_stats}
+s5_diff <- s5_join_sub %>% 
+  mutate(diff = shaft_encoder - stripchart) 
+
+summary(s5_diff$diff)
+
+s5_sd <- round(sd(s5_diff$diff), digits = 5)
+```
+
+The standard deviation of the differences between stripchart and shaft
+encoder values is approximately **`r s5_sd`**.
+
+-   Plot the differences between shaft encoder and stripchart streamflow
+    values
+
+```{r s5_diff_histogram}
+#set min and max year 
+min_year = min(s5_diff$year)
+max_year = max(s5_diff$year)
+
+#plot 
+ggplot(data = s5_diff) + 
+  geom_histogram(aes(x = diff),
+                 binwidth = 0.01) + 
+  theme_classic() + 
+  labs(x = "Differences Between Shaft Encoders - Stripcharts (m)", 
+       y = "Frequency", 
+       title = paste0("S5 Daily Max WTE Differences (", min_year, "-", max_year, ")")
+       ) + 
+  theme(plot.title = element_text(hjust = 0.5),
+          plot.subtitle = element_text(hjust = 0.5))
+            
 ```
 
 ## S6 1:1 Plot
@@ -1508,6 +1592,48 @@ p6 <- ggplot(data = s6_join_sub) +
 #interactive plot 
 ggplotly(p = p6, 
          tooltip = "text")
+```
+
+### S6 Statistics
+
+-   Calculate the difference between S6 manual stripchart streamflow
+    values and S6 streamflow shaft encoder values
+    -   Identify the minimum, 1st quartile, median, mean, 3rd quartile,
+        and maximum difference values using `summary()`
+-   Calculate the standard deviation of the differences
+
+```{r s6_stats}
+s6_diff <- s6_join_sub %>% 
+  mutate(diff = shaft_encoder - stripchart) 
+
+summary(s6_diff$diff)
+
+s6_sd <- round(sd(s6_diff$diff), digits = 5)
+```
+
+The standard deviation of the differences between stripchart and shaft
+encoder values is approximately **`r s6_sd`**.
+
+-   Plot the differences between shaft encoder and stripchart streamflow
+    values
+
+```{r s6_diff_histogram}
+#set min and max year 
+min_year = min(s6_diff$year)
+max_year = max(s6_diff$year)
+
+#plot 
+ggplot(data = s6_diff) + 
+  geom_histogram(aes(x = diff),
+                 binwidth = 0.01) + 
+  theme_classic() + 
+  labs(x = "Differences Between Shaft Encoders - Stripcharts (m)", 
+       y = "Frequency", 
+       title = paste0("S6 Daily Max WTE Differences (", min_year, "-", max_year, ")")
+       ) + 
+  theme(plot.title = element_text(hjust = 0.5),
+          plot.subtitle = element_text(hjust = 0.5))
+            
 ```
 
 ## Bog Lake Fen (BOGLK) 1:1 Plot
@@ -1598,6 +1724,48 @@ p_boglk <- ggplot(data = boglk_join_sub) +
 #interactive plot 
 ggplotly(p = p_boglk, 
          tooltip = "text")
+```
+
+### Bog Lake Fen (BOGLK) Statistics
+
+-   Calculate the difference between BOGLK manual stripchart streamflow
+    values and BOGLK streamflow shaft encoder values
+    -   Identify the minimum, 1st quartile, median, mean, 3rd quartile,
+        and maximum difference values using `summary()`
+-   Calculate the standard deviation of the differences
+
+```{r boglk_stats}
+boglk_diff <- boglk_join_sub %>% 
+  mutate(diff = shaft_encoder - stripchart) 
+
+summary(boglk_diff$diff)
+
+boglk_sd <- round(sd(boglk_diff$diff), digits = 5)
+```
+
+The standard deviation of the differences between stripchart and shaft
+encoder values is approximately **`r boglk_sd`**.
+
+-   Plot the differences between shaft encoder and stripchart streamflow
+    values
+
+```{r boglk_diff_histogram}
+#set min and max year 
+min_year = min(boglk_diff$year)
+max_year = max(boglk_diff$year)
+
+#plot 
+ggplot(data = boglk_diff) + 
+  geom_histogram(aes(x = diff),
+                 binwidth = 0.005) + 
+  theme_classic() + 
+  labs(x = "Differences Between Shaft Encoders - Stripcharts (m)", 
+       y = "Frequency", 
+       title = paste0("Bog Lake Fen (BOGLK) \n Daily Max WTE Differences (", min_year, "-", max_year, ")")
+       ) + 
+  theme(plot.title = element_text(hjust = 0.5),
+          plot.subtitle = element_text(hjust = 0.5))
+            
 ```
 
 Note that this file is being knit as
