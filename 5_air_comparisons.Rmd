@@ -375,6 +375,7 @@ ggplotly(p_all,
          tooltip = "text")
 ```
 
+# Code Accessibility 
 Note that this file is being knit as
 [`index.html`](https://github.com/miaforsline/air_comparisons/blob/main/index.html)
 into the [`air_comparisons`

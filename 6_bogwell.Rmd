@@ -1767,10 +1767,11 @@ ggplot(data = boglk_diff) +
           plot.subtitle = element_text(hjust = 0.5))
             
 ```
+# Code Accessibility 
 
 Note that this file is being knit as
 [`index.html`](https://github.com/miaforsline/bogwell/blob/main/index.html)
-into the [`climate_bogwell`
+into the [`bogwell`
 repository](https://github.com/miaforsline/bogwell) in order to update
 the [GitHub pages website](https://miaforsline.github.io/bogwell/),
 where the plots can be viewed online.

@@ -675,6 +675,7 @@ p_all <- ggplot(data = all_streamflow) +
 ggplotly(p_all, tooltip = "text")
 ```
 
+# Code Accessibility 
 Note that this file is being knit as [`index.html`](https://github.com/miaforsline/water_years/blob/main/index.html) into the [`water_years` repository](https://github.com/miaforsline/water_years) in order to update the [GitHub pages website](https://miaforsline.github.io/water_years/), where the plots can be viewed online. 
 
 

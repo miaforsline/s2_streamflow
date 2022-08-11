@@ -256,3 +256,4 @@ ggplotly(p_stripchart_se)
 
 
 
+# Code Accessibility 

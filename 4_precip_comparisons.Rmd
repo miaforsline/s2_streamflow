@@ -332,7 +332,7 @@ ggsave(filename = "streamflow_precip_daily_mc.png",
 #interactive plot 
 ggplotly(p_daily, tooltip = "text")
 ```
-
+# Code Accessibility 
 Note that this file is being knit as
 [`index.html`](https://github.com/miaforsline/precip_comparisons/blob/main/index.html)
 into the [`precip_comparisons`

@@ -374,7 +374,7 @@ p_air_30
 #interactive plot
 #ggplotly(p_air_30)
 ```
-
+# Code Accessibility 
 Note that this file is being knit as
 [`index.html`](https://github.com/miaforsline/climate_bogwell/blob/main/index.html)
 into the [`climate_bogwell`

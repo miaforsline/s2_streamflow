@@ -580,7 +580,7 @@ p_1to1 <- ggplot() +
 ggplotly(p_1to1, tooltip = "text")
 ```
 
-
+# Code Accessibility 
 Note that this file is being knit as
 [`index.html`](https://github.com/miaforsline/manual_checks/blob/main/index.html)
 into the [`manual_checks`
