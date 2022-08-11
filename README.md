@@ -18,7 +18,7 @@ The overall goals of this project include:
 Ultimately, this project aims to facilitate the transition away from older analogue data collection techniques such as paper stripcharts that must be digitized by hand towards newer data collection techniques such as shaft encoder sensors. 
 
 ## Workflow 
-The project is designed to for RMD files to be executed in the following order:
+The project is designed for RMD files to be executed in the following order:
 
 1. `1_water_years.Rmd`: Reads in, cleans, and visualizes stream height (ft) for each individual water year based on stripchart data
 2. `2_manual_checks.Rmd`: Reads in stream height data collected during periodic manual checks and plots these checkpoints on top of the stripchart data as a way to assess the accuracy of the stripcharts 
@@ -26,6 +26,15 @@ The project is designed to for RMD files to be executed in the following order:
 4. `4_precip_comparisons.Rmd`: Compares streamflow data with aggregated precipitation data to assess the accuracy of the stripchart data 
 5. `5_air_comparisons.Rmd`: Compares streamflow data with air temperature data to assess the accuracy of the stripchart data
 6. `6_bogwell.Rmd`: Reads in bogwell (water table elevation) data from manual stripcharts and new shaft encoders 
+
+## Visualizing the Data
+Each step of this workflow can be viewed online using GitHub pages: 
+1. [Individual Water Years' Streamflow](https://miaforsline.github.io/water_years/)
+2. [Manual Checkpoints of Streamflow](https://miaforsline.github.io/manual_checks/)
+3. [Climate Data](https://miaforsline.github.io/climate/)
+4. [Comparing Streamflow and Precipitation](https://miaforsline.github.io/precip_comparisons/)
+5. [Comparing Streamflow and Air Temperature](https://miaforsline.github.io/air_comparisons/)
+6. [Bogwell (Peatland Water Table Elevation) Data](https://miaforsline.github.io/bogwell/)
 
 ## File Structure 
 RMD files and HTML files are stored in the main directory. The `figures` sub-directory stores PNG images plots/visualizations created in the RMDs. The `intermediate_data` sub-directory stores processed CSV files of the raw data that are important for visualizations. 
