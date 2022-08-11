@@ -1025,10 +1025,11 @@ ggplotly(p_boglk,
          tooltip = "text")
 ```
 
-
 # 1:1 Plots
 
 ## S1 1:1 Plot
+
+Format the data
 
 ```{r}
 #format stripchart data
@@ -1080,6 +1081,8 @@ min_year = min(s1_join_sub$year)
 max_year = max(s1_join_sub$year)
 ```
 
+Plot the data
+
 ```{r p1}
 p1 <- ggplot(data = s1_join_sub) + 
   geom_point(aes(x = stripchart, 
@@ -1108,6 +1111,8 @@ ggplotly(p = p1,
 ```
 
 ## S2 1:1 Plot
+
+Format the data
 
 ```{r}
 #format stripchart data
@@ -1153,6 +1158,8 @@ min_year = min(s2_join_sub$year)
 max_year = max(s2_join_sub$year)
 ```
 
+Plot the data
+
 ```{r p2}
 p2 <- ggplot(data = s2_join_sub) + 
   geom_point(aes(x = stripchart, 
@@ -1180,7 +1187,53 @@ ggplotly(p = p2,
          tooltip = "text")
 ```
 
+### S2 Statistics
+
+- Calculate the difference between S2 manual stripchart streamflow values and S2 streamflow shaft encoder values
+- Calculate the standard deviation of the differences 
+
+```{r s2_stats}
+s2_diff <- s2_join_sub %>% 
+  mutate(diff = shaft_encoder - stripchart) 
+
+summary(s2_diff$diff)
+
+s2_sd <- round(sd(s2_diff$diff), digits = 3)
+```
+
+The standard deviation of the differences between stripchart and shaft encoder values is approximately `r s2_sd`. 
+
+-   Calculate the difference from the mean and SD of the difference from
+    the mean
+-   Plot differences from the mean
+
+```{r s2_diff_from_mean_histogram}
+#set min and max year 
+min_year = min(s2_diff$year)
+max_year = max(s2_diff$year)
+
+#plot 
+ggplot(data = s2_diff) + 
+  geom_histogram(aes(x = diff),
+                 binwidth = 0.002) + 
+  theme_classic() + 
+  labs(x = "Differences Between Shaft Encoders - Stripcharts (m)", 
+       y = "Frequency", 
+       title = paste0("S2 Daily Max WTE Differences (", min_year, "-", max_year, ")")
+       ) + 
+  theme(plot.title = element_text(hjust = 0.5),
+          plot.subtitle = element_text(hjust = 0.5))
+            
+```
+
+
+## S3 1:1 Plot
+
+The S3 site was omitted due to unreliable data.
+
 ## S4 1:1 Plot
+
+Format the data
 
 ```{r}
 #format stripchart data
@@ -1226,6 +1279,8 @@ min_year = min(s4_join_sub$year)
 max_year = max(s4_join_sub$year)
 ```
 
+Plot the data
+
 ```{r p4}
 p4 <- ggplot(data = s4_join_sub) + 
   geom_point(aes(x = stripchart, 
@@ -1254,6 +1309,8 @@ ggplotly(p = p4,
 ```
 
 ## S5 1:1 Plot
+
+Format the data
 
 ```{r}
 #format stripchart data
@@ -1299,6 +1356,8 @@ min_year = min(s5_join_sub$year)
 max_year = max(s5_join_sub$year)
 ```
 
+Plot the data
+
 ```{r p5}
 p5 <- ggplot(data = s5_join_sub) + 
   geom_point(aes(x = stripchart, 
@@ -1327,6 +1386,8 @@ ggplotly(p = p5,
 ```
 
 ## S6 1:1 Plot
+
+Format the data
 
 ```{r}
 #format stripchart data
@@ -1376,6 +1437,8 @@ min_year = min(s6_join_sub$year)
 max_year = max(s6_join_sub$year)
 ```
 
+Plot the data
+
 ```{r p6}
 p6 <- ggplot(data = s6_join_sub) + 
   geom_point(aes(x = stripchart, 
@@ -1404,6 +1467,8 @@ ggplotly(p = p6,
 ```
 
 ## Bog Lake Fen (BOGLK) 1:1 Plot
+
+Format the data
 
 ```{r}
 #format stripchart data
@@ -1461,6 +1526,8 @@ min_year = min(boglk_join_sub$year)
 max_year = max(boglk_join_sub$year)
 ```
 
+Plot the data
+
 ```{r p_boglk}
 p_boglk <- ggplot(data = boglk_join_sub) + 
   geom_point(aes(x = stripchart,
@@ -1488,7 +1555,6 @@ p_boglk <- ggplot(data = boglk_join_sub) +
 ggplotly(p = p_boglk, 
          tooltip = "text")
 ```
-
 
 Note that this file is being knit as
 [`index.html`](https://github.com/miaforsline/bogwell/blob/main/index.html)
