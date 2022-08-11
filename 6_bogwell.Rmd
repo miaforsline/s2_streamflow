@@ -1110,6 +1110,48 @@ ggplotly(p = p1,
          tooltip = "text")
 ```
 
+### S1 Statistics
+
+-   Calculate the difference between S2 manual stripchart streamflow
+    values and S1 streamflow shaft encoder values
+    -   Identify the minimum, 1st quartile, median, mean, 3rd quartile,
+        and maximum difference values using `summary()`
+-   Calculate the standard deviation of the differences
+
+```{r s1_stats}
+s1_diff <- s1_join_sub %>% 
+  mutate(diff = shaft_encoder - stripchart) 
+
+summary(s1_diff$diff)
+
+s1_sd <- round(sd(s2_diff$diff), digits = 5)
+```
+
+The standard deviation of the differences between stripchart and shaft
+encoder values is approximately **`r s1_sd`**.
+
+-   Plot the differences between shaft encoder and stripchart streamflow
+    values
+
+```{r s1_diff_histogram}
+#set min and max year 
+min_year = min(s1_diff$year)
+max_year = max(s1_diff$year)
+
+#plot 
+ggplot(data = s1_diff) + 
+  geom_histogram(aes(x = diff),
+                 binwidth = 0.002) + 
+  theme_classic() + 
+  labs(x = "Differences Between Shaft Encoders - Stripcharts (m)", 
+       y = "Frequency", 
+       title = paste0("S1 Daily Max WTE Differences (", min_year, "-", max_year, ")")
+       ) + 
+  theme(plot.title = element_text(hjust = 0.5),
+          plot.subtitle = element_text(hjust = 0.5))
+            
+```
+
 ## S2 1:1 Plot
 
 Format the data
@@ -1189,8 +1231,11 @@ ggplotly(p = p2,
 
 ### S2 Statistics
 
-- Calculate the difference between S2 manual stripchart streamflow values and S2 streamflow shaft encoder values
-- Calculate the standard deviation of the differences 
+-   Calculate the difference between S2 manual stripchart streamflow
+    values and S2 streamflow shaft encoder values
+    -   Identify the minimum, 1st quartile, median, mean, 3rd quartile,
+        and maximum difference values using `summary()`
+-   Calculate the standard deviation of the differences
 
 ```{r s2_stats}
 s2_diff <- s2_join_sub %>% 
@@ -1198,16 +1243,16 @@ s2_diff <- s2_join_sub %>%
 
 summary(s2_diff$diff)
 
-s2_sd <- round(sd(s2_diff$diff), digits = 3)
+s2_sd <- round(sd(s2_diff$diff), digits = 5)
 ```
 
-The standard deviation of the differences between stripchart and shaft encoder values is approximately `r s2_sd`. 
+The standard deviation of the differences between stripchart and shaft
+encoder values is approximately **`r s2_sd`**.
 
--   Calculate the difference from the mean and SD of the difference from
-    the mean
--   Plot differences from the mean
+-   Plot the differences between shaft encoder and stripchart streamflow
+    values
 
-```{r s2_diff_from_mean_histogram}
+```{r s2_diff_histogram}
 #set min and max year 
 min_year = min(s2_diff$year)
 max_year = max(s2_diff$year)
@@ -1225,7 +1270,6 @@ ggplot(data = s2_diff) +
           plot.subtitle = element_text(hjust = 0.5))
             
 ```
-
 
 ## S3 1:1 Plot
 
