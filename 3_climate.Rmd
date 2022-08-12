@@ -18,9 +18,16 @@ editor_options:
     wrap: 72
 ---
 
+# Objectives
+
+The goal of this step in the workflow is to import, clean, and visualize
+relevant climate data (precipitation and air temperature) to later
+compare to streamflow height values collected from the Marcell
+Experimental Forest.
+
 # Set Up
 
-Install/load necessary R packages
+-   Install/load necessary R packages
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,
@@ -44,31 +51,11 @@ librarian::shelf(
   )
 ```
 
-Set date range
+-   Set date range
 
 ```{r min_max_year}
 min_year = 2017
 max_year = 2021
-```
-
-Create sub-directories if necessary
-
-```{r directories}
-output_dir <- file.path(here("intermediate_data"))
-
-if (!dir.exists(output_dir)){
-dir.create(output_dir)
-} else {
-    print("intermediate_data directory already exists!")
-}
-
-output_dir <- file.path(here("figures"))
-
-if (!dir.exists(output_dir)){
-dir.create(output_dir)
-} else {
-    print("figures directory already exists!")
-}
 ```
 
 # Precipitation
@@ -374,11 +361,12 @@ p_air_30
 #interactive plot
 #ggplotly(p_air_30)
 ```
-# Code Accessibility 
+
+# Code Accessibility
+
 Note that this file is being knit as
-[`index.html`](https://github.com/miaforsline/climate_bogwell/blob/main/index.html)
-into the [`climate_bogwell`
-repository](https://github.com/miaforsline/climate_bogwell) in order to
-update the [GitHub pages
-website](https://miaforsline.github.io/climate_bogwell/), where the
-plots can be viewed online.
+[`index.html`](https://github.com/miaforsline/climate/blob/main/index.html)
+into the public [`climate` GitHub
+repository](https://github.com/miaforsline/climate) in order to update
+the [GitHub pages website](https://miaforsline.github.io/climate/),
+where the plots can be viewed online.
