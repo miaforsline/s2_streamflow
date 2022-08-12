@@ -23,7 +23,7 @@ editor_options:
 The goal of this step in the workflow is to compare S2 streamflow height
 to air temperature data in order to quality check the streamflow data.
 
-# Set Up 
+# Set Up
 
 -   Install/load necessary R packages
 
@@ -336,7 +336,7 @@ ggplotly(p_all,
 
 Note that this file is being knit as
 [`index.html`](https://github.com/miaforsline/air_comparisons/blob/main/index.html)
-into the [`air_comparisons`
+into the public [`air_comparisons` GitHub
 repository](https://github.com/miaforsline/precip_comparisons) in order
 to update the [GitHub pages
 website](https://miaforsline.github.io/air_comparisons/), where the
