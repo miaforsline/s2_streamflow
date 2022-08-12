@@ -20,10 +20,9 @@ editor_options:
 
 # Objectives
 
-The goal of this step in the workflow is to import, clean, and visualize
-relevant climate data (precipitation and air temperature) to later
-compare to streamflow height values collected from the Marcell
-Experimental Forest.
+The goal of this step in the workflow is to compare S2 stripchart stream
+height values to the stream height values recorded at manual checkpoints
+during the time period of interest.
 
 # Set Up
 
