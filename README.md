@@ -14,6 +14,7 @@ The overall goals of this project include:
 - Combining, cleaning, and visualizing multiple water years worth of streamflow data (specifically, stream height) from the MEF S2 bog site 
 - Incorporating climate data (such as air temperature and precipitation), bogwell data (AKA peatland water table elevation), and old sensor data to cross-validate the streamflow data's accuracy 
 - Publishing the cleaned streamflow data in the [EDI Data Portal](https://portal.edirepository.org/nis/home.jsp)
+- Visualizing bogwell data from multiple years and sources to facilitate the transition from old manual stripcharts to new shaft encoders and streamline the data collection process 
 
 Ultimately, this project aims to facilitate the transition away from older analogue data collection techniques such as paper stripcharts that must be digitized by hand towards newer data collection techniques such as shaft encoder sensors. 
 
@@ -27,7 +28,7 @@ The project is designed for RMD files to be executed in the following order:
 5. `5_air_comparisons.Rmd`: Compares streamflow data with air temperature data to assess the accuracy of the stripchart data
 6. `6_bogwell.Rmd`: Reads in bogwell (water table elevation) data from manual stripcharts and new shaft encoders 
 
-## Visualizing the Data
+## Viewing the Data
 Each step of this workflow can be viewed online using GitHub pages: 
 1. [Individual Water Years' Streamflow](https://miaforsline.github.io/water_years/)
 2. [Manual Checkpoints of Streamflow](https://miaforsline.github.io/manual_checks/)
