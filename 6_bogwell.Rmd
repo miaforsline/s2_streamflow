@@ -18,7 +18,15 @@ editor_options:
     wrap: 72
 ---
 
-# Set Up
+# Objectives
+
+The goal of this step in the workflow is to visually examine peatland
+water table elevation (WTE) data at 7 distinct sites in the [Marcell
+Experimental Forest](https://www.nrs.fs.fed.us/ef/marcell/). To do so,
+we use 2 types of WTE (aka bogwell) data:
+
+1.  Manual stripcharts and
+2.  Shaft encoders.
 
 Install and load necessary R packages
 
@@ -438,7 +446,7 @@ file = "S1-EM3_Table1.dat"
 #note: this data is 2020 - 2022 
 s1_2020 <- readCDL(file = here(filepath, year, file))
 
-#clean 2020 data 
+#clean the 2020 data 
 s1_2020_clean <- s1_2020 %>% 
   clean_names() %>% 
   #select relevant columns
@@ -456,7 +464,7 @@ s1_2020_clean <- s1_2020 %>%
 ```
 
 -   Combine all S1 data from both the `RealTimeData` folder and
-    `annual_appnded_logger_files` folder in Box
+    `annual_appended_logger_files` folder in Box
 -   Note that this is all WTE observations, not daily max WTE
 -   Plot
 
@@ -1154,9 +1162,15 @@ the Y axis. We will also plot a y = x line on the plot to help visually
 assess if the shaft encoder values mimic the stripchart values. If they
 do, the points will fall along the y = x line.
 
+Lastly, at each site, we will also calculate the differences between
+stripchart and shaft encoder stramflow values as well as the standard
+deviation of the differences.
+
 ## S1 1:1 Plot
 
-Format the data
+-   Format the data
+
+    -   Note this is daily max WTE
 
 ```{r}
 #format stripchart data
@@ -1208,7 +1222,7 @@ min_year = min(s1_join_sub$year)
 max_year = max(s1_join_sub$year)
 ```
 
-Plot the data
+-   Plot
 
 ```{r p1}
 p1 <- ggplot(data = s1_join_sub) + 
@@ -1239,7 +1253,7 @@ ggplotly(p = p1,
 
 ### S1 Statistics
 
--   Calculate the difference between S2 manual stripchart streamflow
+-   Calculate the difference between S1 manual stripchart streamflow
     values and S1 streamflow shaft encoder values
     -   Identify the minimum, 1st quartile, median, mean, 3rd quartile,
         and maximum difference values using `summary()`
@@ -1281,18 +1295,18 @@ ggplot(data = s1_diff) +
 
 ## S2 1:1 Plot
 
-Format the data
+-   Format the data
 
 ```{r}
 #format stripchart data
-bog <- bogwell_clean_s2 %>% 
+bog2 <- bogwell_clean_s2 %>% 
   #remove unnecessary columns 
   select(-peatland, -flag) %>% 
   #create a column to note what type of data this is 
   mutate(type = "stripchart")
 
 #format shaft encoder data 
-se <- s2_se_clean %>% 
+se2 <- s2_se_clean %>% 
   #extract date and year 
   mutate(date = format(as.POSIXct(datetime, format = '%m/%d/%Y %H:%M:%S', 
                                   tz = "GMT"), 
@@ -1310,8 +1324,8 @@ se <- s2_se_clean %>%
   rename(wte = max_wt_elev_m)
 
 #join the data 
-s2_join <- full_join(x = bog, 
-                     y = se,
+s2_join <- full_join(x = bog2, 
+                     y = se2,
                      by = c("wte", "date", "year", "type"))
 
 #subset the join to the time period where the two data sources overlap 
@@ -1327,7 +1341,7 @@ min_year = min(s2_join_sub$year)
 max_year = max(s2_join_sub$year)
 ```
 
-Plot the data
+-   Plot
 
 ```{r p2}
 p2 <- ggplot(data = s2_join_sub) + 
@@ -1344,7 +1358,7 @@ p2 <- ggplot(data = s2_join_sub) +
   theme_classic() + 
   labs(x = "Manual Stripchart", 
        y = "Shaft Encoder",
-       title = paste0("S2 1:1 WTE Comparison (", min_year, "-", max_year, ")")
+       title = paste0("S2 1:1 Daily Max WTE Comparison (", min_year, "-", max_year, ")")
        ) + 
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5, 
@@ -1404,7 +1418,7 @@ The S3 site was omitted due to unreliable data.
 
 ## S4 1:1 Plot
 
-Format the data
+-   Format the data
 
 ```{r}
 #format stripchart data
@@ -1450,7 +1464,7 @@ min_year = min(s4_join_sub$year)
 max_year = max(s4_join_sub$year)
 ```
 
-Plot the data
+-   Plot
 
 ```{r p4}
 p4 <- ggplot(data = s4_join_sub) + 
@@ -1467,7 +1481,7 @@ p4 <- ggplot(data = s4_join_sub) +
   theme_classic() + 
   labs(x = "Manual Stripchart", 
        y = "Shaft Encoder",
-       title = paste0("S4 1:1 WTE Comparison (", min_year, "-", max_year, ")")
+       title = paste0("S4 1:1 Daily Max WTE Comparison (", min_year, "-", max_year, ")")
        ) + 
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5, 
@@ -1523,7 +1537,7 @@ ggplot(data = s4_diff) +
 
 ## S5 1:1 Plot
 
-Format the data
+-   Format the data
 
 ```{r}
 #format stripchart data
@@ -1569,7 +1583,7 @@ min_year = min(s5_join_sub$year)
 max_year = max(s5_join_sub$year)
 ```
 
-Plot the data
+-   Plot
 
 ```{r p5}
 p5 <- ggplot(data = s5_join_sub) + 
@@ -1586,7 +1600,7 @@ p5 <- ggplot(data = s5_join_sub) +
   theme_classic() + 
   labs(x = "Manual Stripchart", 
        y = "Shaft Encoder",
-       title = paste0("S5 1:1 WTE Comparison (", min_year, "-", max_year, ")")
+       title = paste0("S5 1:1 Daily Max WTE Comparison (", min_year, "-", max_year, ")")
        ) + 
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5, 
@@ -1642,7 +1656,7 @@ ggplot(data = s5_diff) +
 
 ## S6 1:1 Plot
 
-Format the data
+-   Format the data
 
 ```{r}
 #format stripchart data
@@ -1692,7 +1706,7 @@ min_year = min(s6_join_sub$year)
 max_year = max(s6_join_sub$year)
 ```
 
-Plot the data
+-   Plot
 
 ```{r p6}
 p6 <- ggplot(data = s6_join_sub) + 
@@ -1709,7 +1723,7 @@ p6 <- ggplot(data = s6_join_sub) +
   theme_classic() + 
   labs(x = "Manual Stripchart", 
        y = "Shaft Encoder",
-       title = paste0("S6 1:1 WTE Comparison (", min_year, "-", max_year, ")")
+       title = paste0("S6 1:1 Daily Max WTE Comparison (", min_year, "-", max_year, ")")
        ) + 
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5, 
@@ -1765,7 +1779,9 @@ ggplot(data = s6_diff) +
 
 ## Bog Lake Fen (BOGLK) 1:1 Plot
 
-Format the data
+-   Format the data
+
+    -   Calculate the daily WTE max
 
 ```{r}
 #format stripchart data
@@ -1823,7 +1839,7 @@ min_year = min(boglk_join_sub$year)
 max_year = max(boglk_join_sub$year)
 ```
 
-Plot the data
+-   Plot
 
 ```{r p_boglk}
 p_boglk <- ggplot(data = boglk_join_sub) + 
@@ -1840,7 +1856,7 @@ p_boglk <- ggplot(data = boglk_join_sub) +
   theme_classic() + 
   labs(x = "Manual Stripchart", 
        y = "Shaft Encoder",
-       title = paste0("Bog Lake Fen (BOGLK) 1:1 WTE Comparison (", min_year, "-", max_year, ")")
+       title = paste0("Bog Lake Fen (BOGLK) \n Daily Max WTE Comparison (", min_year, "-", max_year, ")")
        ) + 
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5, 
