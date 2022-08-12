@@ -18,9 +18,15 @@ editor_options:
     wrap: 72
 ---
 
-# Set Up
+# Objectives
+
+The goal of this step in the workflow is to compare S2 streamflow height
+to air temperature data in order to quality check the streamflow data.
+
+# Set Up 
 
 -   Install/load necessary R packages
+
 -   Set working directory if necessary (or create a file path to use
     throughout the RMD to call the data from Box)
 
@@ -46,7 +52,8 @@ librarian::shelf(
   )
 ```
 
-Read in data from CSVs in the `intermediate_data` directory
+-   Read in data from CSVs, made in prior workflow steps, from the
+    `intermediate_data` directory
 
 ```{r csv, message=FALSE, warning=FALSE}
 #read in necessary CSV files from prior RMDs
@@ -61,7 +68,7 @@ precip_daily_clean <- read_csv(here("intermediate_data", "precip_daily_clean.csv
 precip_daily_join <- read_csv(here("intermediate_data", "precip_daily_join.csv")) 
 ```
 
-Set constant values (aka the date range of the analysis)
+-   Set date range of interest
 
 ```{r min_max_year}
 #set constants 
@@ -69,36 +76,11 @@ min_year = 2017
 max_year = 2021
 ```
 
-Create sub-directories if necessary
-
-```{r directories}
-output_dir <- file.path(here("intermediate_data"))
-
-if (!dir.exists(output_dir)){
-dir.create(output_dir)
-} else {
-    print("intermediate_data directory already exists!")
-}
-
-output_dir <- file.path(here("figures"))
-
-if (!dir.exists(output_dir)){
-dir.create(output_dir)
-} else {
-    print("figures directory already exists!")
-}
-```
-
 # Daily Cumulative Precipitation + Air Temperature Every 30min
 
-For interactive plots,
+-   Format the data
 
--   air temperature (ºC / 100) is plotted as a [pink
-    line]{style="color:pink"}, and
-
--   cumulative daily precipitation (in / 10) is plotted as grey bars.
-
-```{r p_daily}
+```{r}
 #format precipitation data for plotting 
 precip_15_join <- precip_15_clean %>% 
   pivot_wider(
@@ -133,7 +115,17 @@ precip_air <- full_join(x = precip_15_join,
                         y = airtemp_join, 
                         by = c("datetime", "year")) %>% 
   subset(year >= min_year & year <= max_year)
+```
 
+-   Plot
+
+    -   air temperature (ºC / 100) is plotted as a [pink
+        line]{style="color:pink"}, and
+
+    -   cumulative daily precipitation (in / 10) is plotted as grey
+        bars.
+
+```{r p_daily}
 #plot
 p_daily <- ggplot() + 
   #airtemp data
@@ -162,43 +154,25 @@ p_daily <- ggplot() +
   theme_classic() + 
   labs(x = "Time", 
        y = " ", 
-       title = "S2 Daily Cumulative Precipitation \n and Air Temperature Every 30min",
+       #title = "S2 Daily Cumulative Precipitation \n and Air Temperature Every 30min",
        subtitle = "Daily cumulative precipitation is plotted in grey. \n Air temperature is plotted in pink.") + 
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5, 
                                      size = 7)) 
-    #+ scale_fill_identity(name = 'the fill', guide = 'legend',labels = c('m1')) +
-    # scale_fill_manual(name = 'Color', 
-    #      values = c("grey" = "grey", 
-    #                 "pink" = "pink"), 
-    #      labels = c("test", "test2"))
-
-# + 
-#   scale_y_continuous(
-#     # Features of the first axis
-#     name = "Air Temperature (ºC) / 100",
-#     # Add a second axis and specify its features
-#     sec.axis = sec_axis(trans = ~., name = "Cumulative Precipitation (in) / 10")
-#   ) 
-
-#static plot
-#p_daily
-
-# #save figure 
-# ggsave(filename = "precip_daily_airtemp_30.png",
-#        plot = p_daily,
-#        path = "figures/",
-#        width = 10,
-#        height = 5,
-#        units = c("in"),
-#        dpi = 300)
 
 #interactive plot
 ggplotly(p_daily,
-         tooltip = "text")
+         tooltip = "text") %>% 
+  layout(title = list(text = paste0(paste0("S2 Daily Cumulative Precipitation \n and Air Temperature Every 30min (", min_year, "-", max_year, ")"),
+                                    '<br>',
+                                    '<sup>',
+                                     paste0("Daily cumulative precipitation is plotted in grey. \n Air temperature is plotted in pink."), 
+                                    '</sup>')), 
+         font = list(size = 12)
+         )
 ```
 
-# Streamflow + air temperature data (every 30min) + manual checks
+# Streamflow + Air Temperature Every 30min + Manual Checkpoints
 
 For interactive plots,
 
@@ -263,24 +237,19 @@ p_air <- ggplot() +
     sec.axis = sec_axis(trans = ~.*trans_value, name = "Stream Height (ft)")
   ) 
 
-#static plot
-#p_air
-
-# #save the plot in the figures folder 
-# ggsave(filename = "streamflow_airtemp_mc.png",
-#        plot = p_air,
-#        path = "figures/",
-#        width = 8,
-#        height = 4,
-#        units = c("in"),
-#        dpi = 300)
-
 #interactive plot
 ggplotly(p_air,
-         tooltip = "text")
+         tooltip = "text") %>% 
+  layout(title = list(text = paste0(paste0("S2 Bog Streamflow and Air Temperature (", min_year, "-", max_year, ")"),
+                                    '<br>',
+                                    '<sup>',
+                                     paste0(" "), 
+                                    '</sup>')), 
+         font = list(size = 12)
+         )
 ```
 
-# Streamflow + precip (daily) + air temp + manual checks
+# Streamflow + Daily Cumulative Precipitation + Air Temperature Every 30min + Manual Checkpoints
 
 For interactive plots,
 
@@ -350,32 +319,21 @@ p_all <- ggplot() +
         plot.subtitle = element_text(hjust = 0.5, 
                                      size = 7),
         legend.position = "none") 
-# + 
-#   scale_y_continuous(
-#     # Features of the first axis
-#     name = "Air Temperature / 100 (ºC)",
-#     # Add a second axis and specify its features
-#     sec.axis = sec_axis(trans = ~.*trans_value, name = "Stream Height (ft)")
-#   ) 
-
-#static plot
-#p_all
-
-# #save the plot in the figures folder
-# ggsave(filename = "airtemp_mc_precip_streamflow.png",
-#        plot = p_all,
-#        path = "figures/",
-#        width = 8,
-#        height = 4,
-#        units = c("in"),
-#        dpi = 300)
 
 #interactive plot
 ggplotly(p_all,
-         tooltip = "text")
+         tooltip = "text") %>% 
+  layout(title = list(text = paste0(paste0("S2 Bog Streamflow, Air Temperature, \n and Daily Cumulative Precipitation (", min_year, "-", max_year, ")"),
+                                    '<br>',
+                                    '<sup>',
+                                     paste0(""), 
+                                    '</sup>')), 
+         font = list(size = 12)
+         )
 ```
 
-# Code Accessibility 
+# Code Accessibility
+
 Note that this file is being knit as
 [`index.html`](https://github.com/miaforsline/air_comparisons/blob/main/index.html)
 into the [`air_comparisons`
