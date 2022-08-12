@@ -18,6 +18,11 @@ editor_options:
     wrap: 72
 ---
 
+# Objectives
+
+The goal of this step in the workflow is to compare S2 streamflow height
+to precipitation data in order to quality check the streamflow data.
+
 # Set Up
 
 -   Install/load necessary R packages
@@ -46,7 +51,8 @@ librarian::shelf(
   )
 ```
 
-Read in water year data from CSVs in the `intermediate_data` directory
+-   Read in water year data from CSVs in the `intermediate_data`
+    directory
 
 ```{r csv, message=FALSE, warning=FALSE}
 #read in necessary CSV files from prior RMDs
@@ -62,32 +68,12 @@ precip_daily_clean <- read_csv(here("intermediate_data", "precip_daily_clean.csv
 se_clean <- read_csv(here("intermediate_data", "se_clean.csv"))
 ```
 
-Set constant values
+-   Set constant values
 
 ```{r min_max_year}
 #set constants 
 min_year = 2017
 max_year = 2021
-```
-
-Create sub-directories if necessary
-
-```{r directories}
-output_dir <- file.path(here("intermediate_data"))
-
-if (!dir.exists(output_dir)){
-dir.create(output_dir)
-} else {
-    print("intermediate_data directory already exists!")
-}
-
-output_dir <- file.path(here("figures"))
-
-if (!dir.exists(output_dir)){
-dir.create(output_dir)
-} else {
-    print("figures directory already exists!")
-}
 ```
 
 # Streamflow compared to cumulative precipitation and manual checkpoints
@@ -165,11 +151,26 @@ ggsave(filename = "streamflow_precip_6h_mc.png",
        dpi = 300)
 
 #interactive plot 
-ggplotly(p_6h, tooltip = "text")
+ggplotly(p_6h, tooltip = "text") %>% 
+  layout(title = list(text = paste0(paste0("S2 Bog Streamflow and Cumulative \n Precipitation Every 6 Hours (", min_year, "-", max_year, ")"),
+                                    '<br>',
+                                    '<sup>',
+                                     paste0(" "), 
+                                    '</sup>')), 
+         font = list(size = 12)
+         )
 
 ```
 
 # Cumulative Precipitation Every 12 Hours
+
+For interactive plots,
+
+-   cumulative precipitation is plotted as grey bars,
+
+-   streamflow is plotted as a [blue line]{style="color:blue"},
+
+-   and streamflow manual checkpoints are plotted as **black dots**.
 
 ```{r p_12h}
 #calculate the ratio of the 2 y-axes to plot the variables together
@@ -240,6 +241,14 @@ ggplotly(p_12h, tooltip = "text")
 ```
 
 # Cumulative Daily Precipitation
+
+For interactive plots,
+
+-   cumulative precipitation is plotted as grey bars,
+
+-   streamflow is plotted as a [blue line]{style="color:blue"},
+
+-   and streamflow manual checkpoints are plotted as **black dots**.
 
 ```{r p_daily}
 #format precipitation data for a smooth joining process
@@ -332,10 +341,12 @@ ggsave(filename = "streamflow_precip_daily_mc.png",
 #interactive plot 
 ggplotly(p_daily, tooltip = "text")
 ```
-# Code Accessibility 
+
+# Code Accessibility
+
 Note that this file is being knit as
 [`index.html`](https://github.com/miaforsline/precip_comparisons/blob/main/index.html)
-into the [`precip_comparisons`
+into the public [`precip_comparisons` GitHub
 repository](https://github.com/miaforsline/precip_comparisons) in order
 to update the [GitHub pages
 website](https://miaforsline.github.io/precip_comparisons/), where the
