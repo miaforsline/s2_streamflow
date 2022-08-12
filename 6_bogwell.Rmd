@@ -1225,6 +1225,9 @@ max_year = max(s1_join_sub$year)
 -   Plot
 
 ```{r p1}
+#calculate the number of samples
+s1_n <- nrow(s1_join_sub)
+
 p1 <- ggplot(data = s1_join_sub) + 
   geom_point(aes(x = stripchart, 
                  y = shaft_encoder,
@@ -1238,8 +1241,7 @@ p1 <- ggplot(data = s1_join_sub) +
               slope = 1) + 
   theme_classic() + 
   labs(x = "Manual Stripchart", 
-       y = "Shaft Encoder",
-       title = paste0("S1 1:1 Daily Max WTE Comparison (", min_year, "-", max_year, ")")
+       y = "Shaft Encoder"
        ) + 
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5, 
@@ -1248,7 +1250,18 @@ p1 <- ggplot(data = s1_join_sub) +
 
 #interactive plot 
 ggplotly(p = p1, 
-         tooltip = "text")
+         #set hovering text 
+         tooltip = "text") %>% 
+  layout(
+    title = list(text = paste0(paste0("S1 Daily Max WTE Comparison (", min_year, "-", max_year, ")"),
+                                    '<br>',
+                                    '<sup>',
+                                     #subtitle
+                                     paste0("n = ", s1_n), 
+                                    '</sup>')), 
+         #title size 
+         font = list(size = 12))
+ 
 ```
 
 ### S1 Statistics
@@ -1279,6 +1292,9 @@ encoder values is approximately **`r s1_sd`**.
 min_year = min(s1_diff$year)
 max_year = max(s1_diff$year)
 
+#calculate the number of samples
+s1_n <- nrow(s1_diff)
+
 #plot 
 ggplot(data = s1_diff) + 
   geom_histogram(aes(x = diff),
@@ -1286,7 +1302,8 @@ ggplot(data = s1_diff) +
   theme_classic() + 
   labs(x = "Differences Between Shaft Encoders - Stripcharts (m)", 
        y = "Frequency", 
-       title = paste0("S1 Daily Max WTE Differences (", min_year, "-", max_year, ")")
+       title = paste0("S1 Daily Max WTE Differences (", min_year, "-", max_year, ")"),
+       caption = paste0("n = ", s1_n)
        ) + 
   theme(plot.title = element_text(hjust = 0.5),
           plot.subtitle = element_text(hjust = 0.5))
@@ -1344,6 +1361,9 @@ max_year = max(s2_join_sub$year)
 -   Plot
 
 ```{r p2}
+#calculate the number of samples
+s2_n <- nrow(s2_join_sub)
+
 p2 <- ggplot(data = s2_join_sub) + 
   geom_point(aes(x = stripchart, 
                  y = shaft_encoder,
@@ -1357,8 +1377,7 @@ p2 <- ggplot(data = s2_join_sub) +
               slope = 1) + 
   theme_classic() + 
   labs(x = "Manual Stripchart", 
-       y = "Shaft Encoder",
-       title = paste0("S2 1:1 Daily Max WTE Comparison (", min_year, "-", max_year, ")")
+       y = "Shaft Encoder"
        ) + 
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5, 
@@ -1367,7 +1386,13 @@ p2 <- ggplot(data = s2_join_sub) +
 
 #interactive plot 
 ggplotly(p = p2, 
-         tooltip = "text")
+         tooltip = "text") %>% 
+  layout(title = list(text = paste0(paste0("S2 Daily Max WTE Comparison (", min_year, "-", max_year, ")"),
+                                    '<br>',
+                                    '<sup>',
+                                     paste0("n = ", s2_n), 
+                                    '</sup>')), 
+         font = list(size = 12))
 ```
 
 ### S2 Statistics
@@ -1398,6 +1423,9 @@ encoder values is approximately **`r s2_sd`**.
 min_year = min(s2_diff$year)
 max_year = max(s2_diff$year)
 
+#calculate the number of samples
+s2_n <- nrow(s2_diff)
+
 #plot 
 ggplot(data = s2_diff) + 
   geom_histogram(aes(x = diff),
@@ -1405,7 +1433,8 @@ ggplot(data = s2_diff) +
   theme_classic() + 
   labs(x = "Differences Between Shaft Encoders - Stripcharts (m)", 
        y = "Frequency", 
-       title = paste0("S2 Daily Max WTE Differences (", min_year, "-", max_year, ")")
+       title = paste0("S2 Daily Max WTE Differences (", min_year, "-", max_year, ")"), 
+       caption = paste0("n = ", s2_n)
        ) + 
   theme(plot.title = element_text(hjust = 0.5),
           plot.subtitle = element_text(hjust = 0.5))
@@ -1467,6 +1496,9 @@ max_year = max(s4_join_sub$year)
 -   Plot
 
 ```{r p4}
+#calculate the number of samples
+s4_n <- nrow(s4_join_sub)
+
 p4 <- ggplot(data = s4_join_sub) + 
   geom_point(aes(x = stripchart, 
                  y = shaft_encoder,
@@ -1480,8 +1512,7 @@ p4 <- ggplot(data = s4_join_sub) +
               slope = 1) + 
   theme_classic() + 
   labs(x = "Manual Stripchart", 
-       y = "Shaft Encoder",
-       title = paste0("S4 1:1 Daily Max WTE Comparison (", min_year, "-", max_year, ")")
+       y = "Shaft Encoder"
        ) + 
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5, 
@@ -1490,7 +1521,14 @@ p4 <- ggplot(data = s4_join_sub) +
 
 #interactive plot 
 ggplotly(p = p4, 
-         tooltip = "text")
+         tooltip = "text") %>% 
+  layout(title = list(text = paste0(paste0("S4 Daily Max WTE Comparison (", min_year, "-", max_year, ")"),
+                                    '<br>',
+                                    '<sup>',
+                                     paste0("n = ", s4_n), 
+                                    '</sup>')),
+         font = list(size = 12)
+         )
 ```
 
 ### S4 Statistics
@@ -1521,6 +1559,9 @@ encoder values is approximately **`r s4_sd`**.
 min_year = min(s4_diff$year)
 max_year = max(s4_diff$year)
 
+#calculate the number of samples
+s4_n <- nrow(s4_diff)
+
 #plot 
 ggplot(data = s4_diff) + 
   geom_histogram(aes(x = diff),
@@ -1528,7 +1569,8 @@ ggplot(data = s4_diff) +
   theme_classic() + 
   labs(x = "Differences Between Shaft Encoders - Stripcharts (m)", 
        y = "Frequency", 
-       title = paste0("S4 Daily Max WTE Differences (", min_year, "-", max_year, ")")
+       title = paste0("S4 Daily Max WTE Differences (", min_year, "-", max_year, ")"), 
+       caption = paste0("n = ", s4_n)
        ) + 
   theme(plot.title = element_text(hjust = 0.5),
           plot.subtitle = element_text(hjust = 0.5))
@@ -1586,6 +1628,9 @@ max_year = max(s5_join_sub$year)
 -   Plot
 
 ```{r p5}
+#calculate the number of samples
+s5_n <- nrow(s5_join_sub)
+
 p5 <- ggplot(data = s5_join_sub) + 
   geom_point(aes(x = stripchart, 
                  y = shaft_encoder,
@@ -1599,8 +1644,7 @@ p5 <- ggplot(data = s5_join_sub) +
               slope = 1) + 
   theme_classic() + 
   labs(x = "Manual Stripchart", 
-       y = "Shaft Encoder",
-       title = paste0("S5 1:1 Daily Max WTE Comparison (", min_year, "-", max_year, ")")
+       y = "Shaft Encoder"
        ) + 
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5, 
@@ -1609,7 +1653,14 @@ p5 <- ggplot(data = s5_join_sub) +
 
 #interactive plot 
 ggplotly(p = p5, 
-         tooltip = "text")
+         tooltip = "text") %>% 
+  layout(title = list(text = paste0(paste0("S5 Daily Max WTE Comparison (", min_year, "-", max_year, ")"),
+                                    '<br>',
+                                    '<sup>',
+                                     paste0("n = ", s5_n), 
+                                    '</sup>')), 
+         font = list(size = 12)
+         )
 ```
 
 ### S5 Statistics
@@ -1640,6 +1691,9 @@ encoder values is approximately **`r s5_sd`**.
 min_year = min(s5_diff$year)
 max_year = max(s5_diff$year)
 
+#calculate the number of samples
+s5_n <- nrow(s5_diff)
+
 #plot 
 ggplot(data = s5_diff) + 
   geom_histogram(aes(x = diff),
@@ -1647,7 +1701,8 @@ ggplot(data = s5_diff) +
   theme_classic() + 
   labs(x = "Differences Between Shaft Encoders - Stripcharts (m)", 
        y = "Frequency", 
-       title = paste0("S5 Daily Max WTE Differences (", min_year, "-", max_year, ")")
+       title = paste0("S5 Daily Max WTE Differences (", min_year, "-", max_year, ")"), 
+       caption = paste0("n = ", s5_n)
        ) + 
   theme(plot.title = element_text(hjust = 0.5),
           plot.subtitle = element_text(hjust = 0.5))
@@ -1709,6 +1764,9 @@ max_year = max(s6_join_sub$year)
 -   Plot
 
 ```{r p6}
+#calculate the number of samples
+s6_n <- nrow(s6_join_sub)
+
 p6 <- ggplot(data = s6_join_sub) + 
   geom_point(aes(x = stripchart, 
                  y = shaft_encoder,
@@ -1722,8 +1780,7 @@ p6 <- ggplot(data = s6_join_sub) +
               slope = 1) + 
   theme_classic() + 
   labs(x = "Manual Stripchart", 
-       y = "Shaft Encoder",
-       title = paste0("S6 1:1 Daily Max WTE Comparison (", min_year, "-", max_year, ")")
+       y = "Shaft Encoder"
        ) + 
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5, 
@@ -1732,7 +1789,14 @@ p6 <- ggplot(data = s6_join_sub) +
 
 #interactive plot 
 ggplotly(p = p6, 
-         tooltip = "text")
+         tooltip = "text") %>% 
+  layout(title = list(text = paste0(paste0("S6 Daily Max WTE Comparison (", min_year, "-", max_year, ")"),
+                                    '<br>',
+                                    '<sup>',
+                                     paste0("n = ", s6_n), 
+                                    '</sup>')), 
+         font = list(size = 12)
+         )
 ```
 
 ### S6 Statistics
@@ -1763,6 +1827,9 @@ encoder values is approximately **`r s6_sd`**.
 min_year = min(s6_diff$year)
 max_year = max(s6_diff$year)
 
+#calculate the number of samples
+s6_n <- nrow(s6_diff)
+
 #plot 
 ggplot(data = s6_diff) + 
   geom_histogram(aes(x = diff),
@@ -1770,7 +1837,8 @@ ggplot(data = s6_diff) +
   theme_classic() + 
   labs(x = "Differences Between Shaft Encoders - Stripcharts (m)", 
        y = "Frequency", 
-       title = paste0("S6 Daily Max WTE Differences (", min_year, "-", max_year, ")")
+       title = paste0("S6 Daily Max WTE Differences (", min_year, "-", max_year, ")"), 
+       caption = paste0("n = ", s6_n)
        ) + 
   theme(plot.title = element_text(hjust = 0.5),
           plot.subtitle = element_text(hjust = 0.5))
@@ -1842,6 +1910,9 @@ max_year = max(boglk_join_sub$year)
 -   Plot
 
 ```{r p_boglk}
+#calculate the number of samples
+boglk_n <- nrow(boglk_join_sub)
+
 p_boglk <- ggplot(data = boglk_join_sub) + 
   geom_point(aes(x = stripchart,
                  y = shaft_encoder,
@@ -1855,8 +1926,7 @@ p_boglk <- ggplot(data = boglk_join_sub) +
               slope = 1) + 
   theme_classic() + 
   labs(x = "Manual Stripchart", 
-       y = "Shaft Encoder",
-       title = paste0("Bog Lake Fen (BOGLK) \n Daily Max WTE Comparison (", min_year, "-", max_year, ")")
+       y = "Shaft Encoder"
        ) + 
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5, 
@@ -1866,7 +1936,14 @@ p_boglk <- ggplot(data = boglk_join_sub) +
 
 #interactive plot 
 ggplotly(p = p_boglk, 
-         tooltip = "text")
+         tooltip = "text") %>% 
+  layout(title = list(text = paste0(paste0("Bog Lake Fen (BOGLK) \n Daily Max WTE Comparison (", min_year, "-", max_year, ")"),
+                                    '<br>',
+                                    '<sup>',
+                                     paste0("n = ", boglk_n), 
+                                    '</sup>')), 
+         font = list(size = 12)
+         )
 ```
 
 ### Bog Lake Fen (BOGLK) Statistics
@@ -1897,6 +1974,9 @@ encoder values is approximately **`r boglk_sd`**.
 min_year = min(boglk_diff$year)
 max_year = max(boglk_diff$year)
 
+#calculate the number of samples
+boglk_n <- nrow(boglk_diff)
+
 #plot 
 ggplot(data = boglk_diff) + 
   geom_histogram(aes(x = diff),
@@ -1904,7 +1984,8 @@ ggplot(data = boglk_diff) +
   theme_classic() + 
   labs(x = "Differences Between Shaft Encoders - Stripcharts (m)", 
        y = "Frequency", 
-       title = paste0("Bog Lake Fen (BOGLK) \n Daily Max WTE Differences (", min_year, "-", max_year, ")")
+       title = paste0("Bog Lake Fen (BOGLK) \n Daily Max WTE Differences (", min_year, "-", max_year, ")"), 
+       caption = paste0("n = ", boglk_n)
        ) + 
   theme(plot.title = element_text(hjust = 0.5),
           plot.subtitle = element_text(hjust = 0.5))
