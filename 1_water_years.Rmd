@@ -1,5 +1,5 @@
 ---
-title: 'Marcell Experimental Forest: S2 Stream Heights (2017 - 2021)'
+title: 'Marcell Experimental Forest: S2 Stripchart Stream Height (2017 - 2021)'
 author: "Mia Forsline"
 date: '`r format(Sys.time(), "%B %d, %Y")`'
 knit: (function(inputFile, encoding) { 
@@ -17,6 +17,12 @@ editor_options:
   markdown:
     wrap: 72
 ---
+
+# Objectives
+
+The goal of this step in the workflow is to examine the stripchart
+streamflow data for the S2 Marcell Experimental Forest site for the
+water years of 2017 - 2021.
 
 # Set Up
 
@@ -53,7 +59,7 @@ librarian::shelf(
 #setwd("~/../../Box/External-MEF_DATA/Hydro/Streamflow/L0_subdaily/StripCharts")
 ```
 
-Create sub-directories if necessary 
+-   Create sub-directories if necessary
 
 ```{r directories}
 output_dir <- file.path(here("intermediate_data"))
@@ -77,7 +83,8 @@ dir.create(output_dir)
 
 This RMD is the first in the workflow and reads in, cleans, and
 visualizes the stripchart stream height data for the 2017 - 2021 water
-years at the S2 bog site of the [Marcell Experimental Forest, Northern Research Station](https://www.nrs.fs.fed.us/ef/marcell/). 
+years at the S2 bog site of the [Marcell Experimental Forest, Northern
+Research Station](https://www.nrs.fs.fed.us/ef/marcell/).
 
 # Water Year 2017
 
@@ -129,7 +136,6 @@ write.csv(x = wy2017_clean,
 if(nrow(wy2017) != nrow(wy2017_clean)) stop("Check clean dataframe dimensions")
 ```
 
-
 ```{r wy2017_plot}
 #plot 
 p_2017 <- ggplot(data = wy2017_clean) + 
@@ -152,7 +158,6 @@ p_2017 <- ggplot(data = wy2017_clean) +
 ggplotly(p_2017, 
          tooltip = "text")
 ```
-
 
 # Water Year 2018
 
@@ -226,7 +231,6 @@ wy2018_clean$stream_height_ft[wy2018_clean$date %between% as.Date(c('2018-12-11'
 if(nrow(wy2018) != nrow(wy2018_clean)) stop("Check clean dataframe dimensions")
 ```
 
-
 ```{r wy2018_plot}
 #plot
 p_2018_clean <- ggplot(data = wy2018_clean) + 
@@ -265,7 +269,6 @@ wy2018_altered <- subset(wy2018_altered, !(wy2018_altered$date %between% as.Date
 #test the 2018 altered data - there should be fewer rows in the altered dataframe than the original/cleaned dataframe 
 if(nrow(wy2018_altered) == nrow(wy2018_clean)) stop("Check altered dataframe dimensions")
 ```
-
 
 ```{r wy2018_altered_plot}
 #plot
@@ -427,7 +430,6 @@ write.csv(x = wy2019_clean,
 if(nrow(wy2019) != nrow(wy2019_clean)) stop("Check clean dataframe dimensions")
 ```
 
-
 ```{r wy2019_plot}
 #plot 
 p_2019 <- ggplot(data = wy2019_clean) + 
@@ -511,7 +513,6 @@ write.csv(x = wy2020_clean,
 #test the 2020 data 
 if(nrow(wy2020) != nrow(wy2020_clean)) stop("Check clean dataframe dimensions")
 ```
-
 
 ```{r wy2020_plot}
 #plot 
@@ -616,7 +617,6 @@ write.csv(x = wy2021_clean,
 if(nrow(wy2021) != nrow(wy2021_clean)) stop("Check clean dataframe dimensions")
 ```
 
-
 ```{r wy2021_plot}
 #plot 
 p_2021 <- ggplot(data = wy2021_clean) + 
@@ -675,7 +675,12 @@ p_all <- ggplot(data = all_streamflow) +
 ggplotly(p_all, tooltip = "text")
 ```
 
-# Code Accessibility 
-Note that this file is being knit as [`index.html`](https://github.com/miaforsline/water_years/blob/main/index.html) into the [`water_years` repository](https://github.com/miaforsline/water_years) in order to update the [GitHub pages website](https://miaforsline.github.io/water_years/), where the plots can be viewed online. 
+# Code Accessibility
 
-
+Note that this file is being knit as
+[`index.html`](https://github.com/miaforsline/water_years/blob/main/index.html)
+into the [`water_years`
+repository](https://github.com/miaforsline/water_years) in order to
+update the [GitHub pages
+website](https://miaforsline.github.io/water_years/), where the plots
+can be viewed online.
