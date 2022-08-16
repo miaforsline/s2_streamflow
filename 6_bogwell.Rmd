@@ -695,6 +695,9 @@ s4_2020_clean <- s4_2020 %>%
                        format = '%Y'),
          year = as.numeric(year))
 
+#remove unreliable values 
+s4_2020_clean$max_wt_elev_m[which(s4_2020_clean$max_wt_elev_m > 428.75)] <- NA
+
 #set min and max year 
 min_year = min(s4_2020_clean$year)
 max_year = max(s4_2020_clean$year)
@@ -812,6 +815,13 @@ s5_all <- rbind(s5_2020_clean, s5_se_clean) %>%
   filter(!is.na(max_wt_elev_m)) %>% 
   #remove duplicate observations 
   distinct()
+
+#remove unreliable values 
+s5_all$max_wt_elev_m[which(s5_all$max_wt_elev_m > 424)] <- NA
+s5_all$max_wt_elev_m[which(s5_all$date == as.POSIXct("2022-01-31", tz = "GMT"))] <- NA
+s5_all$max_wt_elev_m[which(s5_all$date == as.POSIXct("2022-03-02", tz = "GMT"))] <- NA
+s5_all$max_wt_elev_m[which(s5_all$date == as.POSIXct("2022-03-06", tz = "GMT"))] <- NA
+s5_all$max_wt_elev_m[which(s5_all$date == as.POSIXct("2022-03-15", tz = "GMT"))] <- NA
 
 #set min and max year 
 min_year = min(s5_se_clean$year)
