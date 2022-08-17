@@ -1997,6 +1997,13 @@ ggplot(data = boglk_diff) +
             
 ```
 
+# Correlation Matrix 
+
+```{r ggpairs}
+library(GGally)
+```
+
+
 Run this code chunk to knit to HTML without using the knit button in
 RStudio
 
