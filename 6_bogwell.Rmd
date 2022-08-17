@@ -42,9 +42,9 @@ if (!require(librarian)){
 }
 
 librarian::shelf(
+  GGally, #for correlation matrices 
   here, #for file paths 
-  janitor, 
-  kableExtra,
+  janitor, #for cleaning column names 
   plotly, #for creating interactive plots 
   readxl, 
   tidyverse,
@@ -2002,11 +2002,11 @@ ggplot(data = boglk_diff) +
 -   Use `ggpairs()` to create correlation matrices to compare shaft
     encoder WTE data from each site
 
--   
+    -   Calculate the correlation coefficients
 
-```{r ggpairs}
-library(GGally)
+-   Use `geom_smooth()` to plot a linear regression line for each panel
 
+```{r}
 #format the data 
 s1 <- s1_join_sub %>% 
   mutate(site = "s1")
@@ -2029,8 +2029,8 @@ cor_all_wide <- cor_all %>%
               values_from = "shaft_encoder")
 ```
 
-```{r multiple_regression_lines}
-#create a function to create linear regression line 
+```{r regression_line}
+#create a function to create linear regression line using geom_smooth() 
 my_fn <- function(data, mapping, ...){
   p <- ggplot(data = data, mapping = mapping) + 
     geom_point() + 
@@ -2039,46 +2039,24 @@ my_fn <- function(data, mapping, ...){
   p
 }
 
+#plot the correlation matrix 
 ggpairs(data = cor_all_wide, 
         columns = c("s1", "s2", "s4", "s5", "s6", "boglk"),
         title = "Shaft Encoder Correlations by Site", 
         xlab = "WTE (m)", 
         ylab = "WTE (m)", 
+        #relabel the columns 
         columnLabels = c("S1", "S2", "S4", "S5", "S6", "BOGLK"),
+        #select the linear regression method 
         lower = list(continuous = my_fn), 
+        #opacity 
         ggplot2::aes(alpha = 0.01)) + 
   theme_minimal() + 
+  #adjust title aesthetics 
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5, 
                                      size = 7)
         )
-```
-
-
-
-```{r ggpairs}
-p_pairs <- ggpairs(data = cor_all_wide, 
-        columns = c("s1", "s2", "s4", "s5", "s6", "boglk"), 
-        ggplot2::aes(colour = as.factor(year), alpha = 0.01)) + 
-  theme_minimal() + 
-  labs(title = "Shaft Encoder Correlations by Site") + 
-  theme(plot.title = element_text(hjust = 0.5),
-        plot.subtitle = element_text(hjust = 0.5, 
-                                     size = 7), 
-        axis.title.x = element_text(angle = 45, 
-                                    vjust = 1, 
-                                    color = "black")
-        )
-
-print(p_pairs)
-```
-
-
-```{r ggpairs}
-ggpairs(data = cor_all_wide, 
-        columns = c("s1", "s2", "s4", "s5", "s6", "boglk"), 
-        ggplot2::aes(alpha = 0.01))
-
 ```
 
 Run this code chunk to knit to HTML without using the knit button in
