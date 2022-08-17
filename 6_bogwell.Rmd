@@ -111,11 +111,6 @@ bogwell_clean <- bogwell %>%
                        format = '%Y'),
          year = as.numeric(year)) %>% 
   subset(year >= min_year & year <= max_year)
-
-#save clean data CSV to use in future RMD files
-write.csv(x = bogwell_clean, 
-          file = file.path(here("intermediate_data", "bogwell_clean.csv")),
-          row.names = FALSE)
 ```
 
 -   Plot all sites together to overview the `r min_year` - `r max_year`
@@ -2000,6 +1995,24 @@ ggplot(data = boglk_diff) +
   theme(plot.title = element_text(hjust = 0.5),
           plot.subtitle = element_text(hjust = 0.5))
             
+```
+
+Run this code chunk to knit to HTML without using the knit button in
+RStudio
+
+-   Save as `index.html` to render GitHub Page
+
+```{r knit_to_html, eval=FALSE, include=FALSE}
+#set file names and file path
+input_file_name <- "6_bogwell.Rmd"
+output_file_name <- "index.html"
+filepath <- "/Users/miaforsline/Desktop/bogwell"
+
+#knit to HTML
+rmarkdown::render(input = input_file_name, 
+                  output_format = "html_document", 
+                  output_file = output_file_name, 
+                  output_dir = filepath)
 ```
 
 # Code Accessibility
