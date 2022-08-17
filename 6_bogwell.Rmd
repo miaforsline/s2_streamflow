@@ -2001,6 +2001,46 @@ ggplot(data = boglk_diff) +
 
 ```{r ggpairs}
 library(GGally)
+
+s1 <- s1_join_sub %>% 
+  mutate(site = "s1")
+s2 <- s2_join_sub %>% 
+  mutate(site = "s2")
+s4 <- s4_join_sub %>% 
+  mutate(site = "s4")
+s5 <- s5_join_sub %>% 
+  mutate(site = "s5")
+s6 <- s6_join_sub %>% 
+  mutate(site = "s6")
+b <- boglk_join_sub %>% 
+  mutate(site = "boglk")
+
+cor_all <- rbind(s1, s2, s4, s5, s6, b) %>% 
+  select(-stripchart)
+
+cor_all_wide <- cor_all %>% 
+  pivot_wider(names_from = "site", 
+              values_from = "shaft_encoder")
+
+p_pairs <- ggpairs(data = cor_all_wide, 
+        columns = c("s1", "s2", "s4", "s5", "s6", "boglk"), 
+        ggplot2::aes(colour = as.factor(year), alpha = 0.01)) + 
+  theme_minimal() + 
+  labs(title = "Shaft Encoder Correlations by Site") + 
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5, 
+                                     size = 7), 
+        axis.title.x = element_text(angle = 45, 
+                                    vjust = 1, 
+                                    color = "black")
+        )
+
+print(p_pairs)
+
+ggpairs(data = cor_all_wide, 
+        columns = c("s1", "s2", "s4", "s5", "s6", "boglk"), 
+        ggplot2::aes(alpha = 0.01))
+
 ```
 
 
