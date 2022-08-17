@@ -100,11 +100,6 @@ precip_15_clean <- precip_15 %>%
   ) %>% 
   rename(datetime = timestamp)
 
-#save clean data CSV to use in future RMD files
-write.csv(x = precip_15_clean, 
-          file = file.path(here("intermediate_data", "precip_15_clean.csv")),
-          row.names = FALSE)
-
 #plot 
 p_15 <- ggplot(data = precip_15_clean) + 
   geom_line(aes(x = datetime, 
@@ -152,11 +147,6 @@ precip_6h_clean <- precip_6h %>%
   ) %>% 
   subset(year >= min_year & year <= max_year)
 
-#save clean data CSV to use in future RMD files
-write.csv(x = precip_6h_clean, 
-          file = file.path(here("intermediate_data", "precip_6h_clean.csv")),
-          row.names = FALSE)
-
 #plot
 p_precip_6h <- ggplot(data = precip_6h_clean) + 
   geom_col(aes(x = datetime, y = precip_in)) + 
@@ -201,11 +191,6 @@ precip_12h_clean <- precip_12h %>%
     precip_10_in = precip_in / 10
   ) %>% 
   subset(year >= min_year & year <= max_year)
-
-#save clean data CSV to use in future RMD files
-write.csv(x = precip_12h_clean, 
-          file = file.path(here("intermediate_data", "precip_12h_clean.csv")),
-          row.names = FALSE)
 
 #plot
 p_precip_12h <- ggplot(data = precip_12h_clean) + 
@@ -258,11 +243,6 @@ precip_daily_clean <- precip_daily %>%
     names_to = "precip_type",
     values_to = "precip_in"
   )
-
-#save clean data CSV to use in future RMD files
-write.csv(x = precip_daily_clean, 
-          file = file.path(here("intermediate_data", "precip_daily_clean.csv")),
-          row.names = FALSE)
 
 #plot 
 p_daily <- ggplot(data = precip_daily_clean) + 
@@ -332,11 +312,6 @@ air_temp_30_clean <- air_temp_30 %>%
 
 #assign a value of 1 to the variable if airtemp is above freezing 
 air_temp_30_clean$freezing[air_temp_30_clean$airtempC > 0] <- 1
-
-#save clean data CSV to use in future RMD files
-write.csv(x = air_temp_30_clean, 
-          file = file.path(here("intermediate_data", "air_temp_30_clean.csv")),
-          row.names = FALSE)
 
 #plot 
 p_air_30 <- ggplot(data = air_temp_30_clean) + 
