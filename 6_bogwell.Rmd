@@ -1997,11 +1997,17 @@ ggplot(data = boglk_diff) +
             
 ```
 
-# Correlation Matrix 
+# Correlation Matrices
+
+-   Use `ggpairs()` to create correlation matrices to compare shaft
+    encoder WTE data from each site
+
+-   
 
 ```{r ggpairs}
 library(GGally)
 
+#format the data 
 s1 <- s1_join_sub %>% 
   mutate(site = "s1")
 s2 <- s2_join_sub %>% 
@@ -2021,7 +2027,36 @@ cor_all <- rbind(s1, s2, s4, s5, s6, b) %>%
 cor_all_wide <- cor_all %>% 
   pivot_wider(names_from = "site", 
               values_from = "shaft_encoder")
+```
 
+```{r multiple_regression_lines}
+#create a function to create linear regression line 
+my_fn <- function(data, mapping, ...){
+  p <- ggplot(data = data, mapping = mapping) + 
+    geom_point() + 
+    #geom_smooth(method=loess, fill="red", color="red", ...) +
+    geom_smooth(method=lm, fill="blue", color="blue", ...)
+  p
+}
+
+ggpairs(data = cor_all_wide, 
+        columns = c("s1", "s2", "s4", "s5", "s6", "boglk"),
+        title = "Shaft Encoder Correlations by Site", 
+        xlab = "WTE (m)", 
+        ylab = "WTE (m)", 
+        columnLabels = c("S1", "S2", "S4", "S5", "S6", "BOGLK"),
+        lower = list(continuous = my_fn), 
+        ggplot2::aes(alpha = 0.01)) + 
+  theme_minimal() + 
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5, 
+                                     size = 7)
+        )
+```
+
+
+
+```{r ggpairs}
 p_pairs <- ggpairs(data = cor_all_wide, 
         columns = c("s1", "s2", "s4", "s5", "s6", "boglk"), 
         ggplot2::aes(colour = as.factor(year), alpha = 0.01)) + 
@@ -2036,13 +2071,15 @@ p_pairs <- ggpairs(data = cor_all_wide,
         )
 
 print(p_pairs)
+```
 
+
+```{r ggpairs}
 ggpairs(data = cor_all_wide, 
         columns = c("s1", "s2", "s4", "s5", "s6", "boglk"), 
         ggplot2::aes(alpha = 0.01))
 
 ```
-
 
 Run this code chunk to knit to HTML without using the knit button in
 RStudio
