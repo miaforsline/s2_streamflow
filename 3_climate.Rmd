@@ -362,6 +362,24 @@ p_air_30
 #ggplotly(p_air_30)
 ```
 
+Run this code chunk to knit to HTML without using the knit button in
+RStudio
+
+-   Save as `index.html` to render GitHub Page
+
+```{r knit_to_html, eval=FALSE, include=FALSE}
+#set file names and file path
+input_file_name <- "3_climate.Rmd"
+output_file_name <- "index.html"
+filepath <- "/Users/miaforsline/Desktop/climate"
+
+#knit to HTML
+rmarkdown::render(input = input_file_name, 
+                  output_format = "html_document", 
+                  output_file = output_file_name, 
+                  output_dir = filepath)
+```
+
 # Code Accessibility
 
 Note that this file is being knit as
