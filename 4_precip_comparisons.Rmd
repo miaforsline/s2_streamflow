@@ -51,9 +51,17 @@ librarian::shelf(
   )
 ```
 
+-   Set constant values
+
+```{r min_max_year}
+#set constants 
+min_year = 2017
+max_year = 2021
+```
+
 -   Recreate intermediate data for later use
 
-```{r csv, message=FALSE, warning=FALSE}
+```{r intermediate_data, message=FALSE, warning=FALSE}
 #2017 
 filepath <- "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/Hydro/Streamflow/L0_subdaily/StripCharts/AnnualBreakPoint/S2"
 
@@ -377,13 +385,6 @@ precip_daily_clean <- precip_daily %>%
   )
 ```
 
--   Set constant values
-
-```{r min_max_year}
-#set constants 
-min_year = 2017
-max_year = 2021
-```
 
 # Streamflow compared to cumulative precipitation and manual checkpoints
 
@@ -449,15 +450,6 @@ p_6h <- ggplot() +
 
 #static plot
 #p_6h
-
-#save the plot in the figures folder 
-ggsave(filename = "streamflow_precip_6h_mc.png",
-       plot = p_6h,
-       path = "figures/",
-       width = 8,
-       height = 4,
-       units = c("in"),
-       dpi = 300)
 
 #interactive plot 
 ggplotly(p_6h, tooltip = "text") %>% 
@@ -535,15 +527,6 @@ p_12h <- ggplot() +
 #static plot
 #p_12h
 
-#save the plot in the figures folder 
-ggsave(filename = "streamflow_precip_12h_mc.png",
-       plot = p_12h,
-       path = "figures/",
-       width = 8,
-       height = 4,
-       units = c("in"),
-       dpi = 300)
-
 #interactive plot 
 ggplotly(p_12h, tooltip = "text")
 
@@ -572,11 +555,6 @@ precip_daily_join <- precip_daily_clean %>%
                                   tz = "GMT"),
                            format = '%Y-%m-%d %H:%M:%S'),
          datetime = as.POSIXct(datetime))
-
-#save as CSV
-write.csv(x = precip_daily_join, 
-          file = file.path(here("intermediate_data", "precip_daily_join.csv")),
-          row.names = FALSE)
 
 #join streamflow and daily precipitation data 
 streamflow_precip_daily <- full_join(x = all_streamflow, 
@@ -637,15 +615,6 @@ p_daily <- ggplot() +
 
 #static plot
 #p_daily
-
-#save the plot in the figures folder 
-ggsave(filename = "streamflow_precip_daily_mc.png",
-       plot = p_daily,
-       path = "figures/",
-       width = 8,
-       height = 4,
-       units = c("in"),
-       dpi = 300)
 
 #interactive plot 
 ggplotly(p_daily, tooltip = "text")
