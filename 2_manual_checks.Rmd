@@ -44,19 +44,189 @@ librarian::shelf(
   janitor, 
   plotly, #for creating interactive plots 
   readxl, 
+  render, 
   tidyverse,
   zoo #for interpolating missing data points 
   )
 ```
 
--   Read in data from CSVs, made in prior workflow steps, from the
-    `intermediate_data` directory
+-   Recreate intermediate data for later use
 
-```{r csv}
-wy2017_clean <- read_csv(here("intermediate_data", "wy2017_clean.csv"))
-wy2018_altered <- read_csv(here("intermediate_data", "wy2018_altered.csv"))
-wy2019_clean <- read_csv(here("intermediate_data", "wy2019_clean.csv")) 
-all_streamflow <- read_csv(here("intermediate_data", "all_streamflow.csv"))
+```{r intermediate_data}
+#2017 
+filepath <- "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/Hydro/Streamflow/L0_subdaily/StripCharts/AnnualBreakPoint/S2"
+
+#read in the 2017 data 
+wy2017 <- read_excel(path = here(filepath, "WY2017.S2_Breakpoint.xlsx"), 
+                     skip =3) #skip the top 3 rows of the Excel Sheet 
+
+#clean the 2017 data
+wy2017_clean <- wy2017 %>% 
+  #change column names
+  rename(datetime = "Date/time",
+         stream_height_ft = "Stage.ft") %>% 
+  #remove unnecessary columns 
+  select(c("datetime", "stream_height_ft")) %>% 
+  #format column names into lower_snake_case
+  clean_names() %>% 
+  #create a date column 
+  mutate(date = format(as.POSIXct(datetime, format = '%m/%d/%Y %H:%M:%S', 
+                                  tz = "GMT"), 
+                       format = '%Y-%m-%d'),
+         date = as.POSIXct(date, tz = "GMT")) 
+
+#2018
+
+filepath <- "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/Hydro/Streamflow/L0_subdaily/StripCharts/AnnualBreakPoint/S2"
+
+#create a function to specify custom time intervals 
+`%between%` <- function(x, interval) x >= interval[1] & x <= interval[2]
+
+#read in the 2018 data 
+wy2018 <- read_excel(path = here(filepath, "WY2018.S2_Breakpoint.xlsx"), 
+                     skip =3)
+
+#clean the 2018 data
+wy2018_clean <- wy2018 %>% 
+  rename(datetime = "Date/time",
+         stream_height_ft = "Stage.ft") %>% 
+  select(c("datetime", "stream_height_ft")) %>% 
+  clean_names() %>% 
+  mutate(date = format(as.POSIXct(datetime, format = '%m/%d/%Y %H:%M:%S', 
+                                  tz = "GMT"), 
+                       format = '%Y-%m-%d'),
+         date = as.POSIXct(date, tz = "GMT")) 
+
+#assign October NA values 
+wy2018_clean$stream_height_ft[wy2018_clean$date %between% as.Date(c('2018-10-09', '2018-10-10'))] <- NA
+wy2018_clean$stream_height_ft[wy2018_clean$date %between% as.Date(c('2018-10-11', '2018-10-15'))] <- NA
+
+#assign November NA values 
+wy2018_clean$stream_height_ft[wy2018_clean$date %between% as.Date(c('2018-11-10', '2018-11-14'))] <- NA
+wy2018_clean$stream_height_ft[wy2018_clean$date %between% as.Date(c('2018-11-25', '2018-12-04'))] <- NA
+
+#assign December NA values 
+wy2018_clean$stream_height_ft[wy2018_clean$date %between% as.Date(c('2018-12-01', '2018-12-03'))] <- NA
+wy2018_clean$stream_height_ft[wy2018_clean$date %between% as.Date(c('2018-12-08', '2018-12-10'))] <- NA
+wy2018_clean$stream_height_ft[wy2018_clean$date %between% as.Date(c('2018-12-11', '2018-12-31'))] <- NA
+
+wy2018_altered <- wy2018_clean
+wy2018_altered <- subset(wy2018_altered, !(wy2018_altered$date %between% as.Date(c('2018-10-31', '2018-11-01')) & wy2018_altered$stream_height_ft < 0.10))
+
+filepath <- "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/Hydro/Streamflow/L0_subdaily/StripCharts/AnnualBreakPoint/S2"
+
+#2019 
+#read in the 2019 data 
+wy2019 <- read_excel(path = here(filepath, "WY2019.S2_Breakpoint.xlsx"), 
+                     skip =3)
+
+#clean the 2019 data
+wy2019_clean <- wy2019 %>% 
+  rename(datetime = "Date/time",
+         stream_height_ft = "Stage.ft") %>% 
+  select(c("datetime", "stream_height_ft")) %>% 
+  clean_names() %>% 
+  mutate(date = format(as.POSIXct(datetime, format = '%m/%d/%Y %H:%M:%S', 
+                                  tz = "GMT"), 
+                       format = '%Y-%m-%d'),
+         date = as.POSIXct(date, tz = "GMT")) 
+
+#assign February NA values 
+wy2019_clean$stream_height_ft[wy2019_clean$date %between% as.Date(c('2019-04-01', '2019-04-02'))] <- NA
+
+#assign March NA values 
+wy2019_clean$stream_height_ft[wy2019_clean$date == as.Date('2019-03-14')] <- NA
+wy2019_clean$stream_height_ft[wy2019_clean$date == as.Date('2019-03-18')] <- NA
+wy2019_clean$stream_height_ft[wy2019_clean$date %between% as.Date(c('2019-03-30', '2019-03-31'))] <- NA
+
+#assign April NA values 
+wy2019_clean$stream_height_ft[wy2019_clean$date %between% as.Date(c('2019-04-01', '2019-04-02'))] <- NA
+wy2019_clean$stream_height_ft[wy2019_clean$date %between% as.Date(c('2019-04-08', '2019-04-17'))] <- NA
+wy2019_clean$stream_height_ft[wy2019_clean$date %between% as.Date(c('2019-04-17', '2019-04-22'))] <- NA
+
+#assign September NA values 
+wy2019_clean$stream_height_ft[wy2019_clean$date %between% as.Date(c('2019-09-03', '2019-09-10'))] <- NA
+
+#2020 
+filepath <- "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/Hydro/Streamflow/L0_subdaily/StripCharts/AnnualBreakPoint/S2"
+
+#read in the 2020 data 
+wy2020 <- read_excel(path = here(filepath, "WY2020.S2_Breakpoint.xlsx"), 
+                     skip =3)
+
+#clean the 2020 data
+wy2020_clean <- wy2020 %>% 
+  rename(datetime = "Date/time",
+         stream_height_ft = "Stage.ft") %>% 
+  select(c("datetime", "stream_height_ft")) %>% 
+  clean_names() %>% 
+  mutate(date = format(as.POSIXct(datetime, format = '%m/%d/%Y %H:%M:%S', 
+                                  tz = "GMT"), 
+                       format = '%Y-%m-%d'),
+         date = as.POSIXct(date, tz = "GMT")) 
+
+#create date range to fill in with NA values 
+start_date <- as.POSIXct("7/28/2020 13:40:00", 
+                         format = '%m/%d/%Y %H:%M:%S',
+                         tz = "GMT")
+end_date <- as.POSIXct("8/11/2020 00:00:00", 
+                         format = '%m/%d/%Y %H:%M:%S',
+                         tz = "GMT")
+
+#create a function to specify custom time intervals 
+`%between%` <- function(x, interval) x >= interval[1] & x <= interval[2]
+
+#assign February NA values 
+wy2020_clean$stream_height_ft[wy2020_clean$datetime %between% c(start_date, end_date)] <- NA
+
+#2021 
+filepath <- "/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/Hydro/Streamflow/L0_subdaily/StripCharts/AnnualBreakPoint/S2"
+
+#read in the 2021 data 
+wy2021 <- read_excel(path = here(filepath, "WY2021.S2_Breakpoint.xlsx"), 
+                     skip =3)
+
+#clean the 2021 data
+wy2021_clean <- wy2021 %>% 
+  rename(datetime = "Date/time",
+         stream_height_ft = "Stage.ft") %>% 
+  select(c("datetime", "stream_height_ft")) %>% 
+  clean_names() %>% 
+  mutate(date = format(as.POSIXct(datetime, format = '%m/%d/%Y %H:%M:%S', 
+                                  tz = "GMT"), 
+                       format = '%Y-%m-%d'),
+         date = as.POSIXct(date, tz = "GMT")) 
+
+#identify date intervals that need to be filled w/NAs
+date1 <- as.POSIXct("2021-03-04 00:00:00", 
+                         format = '%Y-%m-%d %H:%M:%S',
+                         tz = "GMT")
+date2 <- as.POSIXct("2021-03-09 00:00:00", 
+                         format = '%Y-%m-%d %H:%M:%S',
+                         tz = "GMT")
+date3 <- as.POSIXct("2021-11-11 23:59:00", 
+                         format = '%Y-%m-%d %H:%M:%S',
+                         tz = "GMT")
+date4 <- as.POSIXct("2021-12-29 00:00:00", 
+                         format = '%Y-%m-%d %H:%M:%S',
+                         tz = "GMT")
+
+
+#create a function to specify custom time intervals 
+`%between%` <- function(x, interval) x >= interval[1] & x <= interval[2]
+
+#assign March NA values
+wy2021_clean$stream_height_ft[wy2021_clean$datetime %between% c(date1, date2)] <- NA
+
+#assign Nov-Dec NA values 
+wy2021_clean$stream_height_ft[wy2021_clean$datetime %between% c(date3, date4)] <- NA
+
+#all water years 
+all_streamflow <- rbind(wy2017_clean, 
+                        wy2018_altered, 
+                        wy2019_clean,
+                        wy2020_clean,
+                        wy2021_clean)
 ```
 
 -   Set date range
@@ -205,15 +375,6 @@ p_all <- ggplot() +
 
 #static plot
 #p_all
-
-# #save PNG file
-# ggsave(filename = "streamflow_with_manual_checks.png",
-#        plot = p_all,
-#        path = "figures/",
-#        width = 6,
-#        height = 3,
-#        units = c("in"),
-#        dpi = 300)
 
 #interactive plot 
 ggplotly(p_all, tooltip = "text")
@@ -383,15 +544,6 @@ p_1to1 <- ggplot() +
 #static plot
 #p_1to1
 
-# #save the figure 
-# ggsave(filename = "streamflow_mc_comparison.png",
-#        plot = p_1to1,
-#        path = "figures/",
-#        width = 6,
-#        height = 5,
-#        units = c("in"),
-#        dpi = 300)
-
 #interactive plot 
 ggplotly(p_1to1, tooltip = "text")
 ```
@@ -550,17 +702,26 @@ p_1to1 <- ggplot() +
 #static plot
 #p_1to1
 
-# #save the figure 
-# ggsave(filename = "streamflow_mc_comparison.png",
-#        plot = p_1to1,
-#        path = "figures/",
-#        width = 6,
-#        height = 5,
-#        units = c("in"),
-#        dpi = 300)
-
 #interactive plot 
 ggplotly(p_1to1, tooltip = "text")
+```
+
+Run this code chunk to knit to HTML without using the knit button in
+RStudio
+
+-   Save as `index.html` to render GitHub Page
+
+```{r knit_to_html, eval=FALSE, include=FALSE}
+#set file names and file path
+input_file_name <- "2_manual_checks.Rmd"
+output_file_name <- "index.html"
+filepath <- "/Users/miaforsline/Desktop/manual_checks"
+
+#knit to HTML
+rmarkdown::render(input = input_file_name, 
+                  output_format = "html_document", 
+                  output_file = output_file_name, 
+                  output_dir = filepath)
 ```
 
 # Code Accessibility

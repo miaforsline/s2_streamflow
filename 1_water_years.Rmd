@@ -2,6 +2,9 @@
 title: 'Marcell Experimental Forest: S2 Stripchart Stream Height (2017 - 2021)'
 author: "Mia Forsline"
 date: '`r format(Sys.time(), "%B %d, %Y")`'
+knit: (function(inputFile, encoding) { 
+      rmarkdown::render(inputFile,
+                        encoding=encoding, output_file="/Users/miaforsline/Desktop/water_years/index.html") })
 output:
   html_document:
     theme: flatly
@@ -45,13 +48,12 @@ librarian::shelf(
   janitor, 
   plotly, #for creating interactive plots 
   readxl, 
+  render, 
   tidyverse,
   zoo #for interpolating missing data points 
   )
 
 # Set working directory path
-## Mia's working directory path
-#setwd("/Users/miaforsline/Library/CloudStorage/Box-Box/External-MEF_DATA/Hydro/Streamflow/L0_subdaily/StripCharts/AnnualBreakPoint/S2")
 ## Nina's working directory path 
 #setwd("~/../../Box/External-MEF_DATA/Hydro/Streamflow/L0_subdaily/StripCharts")
 ```
@@ -622,6 +624,11 @@ p_all <- ggplot(data = all_streamflow) +
 ggplotly(p_all, tooltip = "text")
 ```
 
+Run this code chunk to knit to HTML without using the knit button in
+RStudio
+
+-   Save as `index.html` to render GitHub Page
+
 ```{r knit_to_html, eval=FALSE, include=FALSE}
 #set file names and file path
 input_file_name <- "1_water_years.Rmd"
@@ -634,7 +641,6 @@ rmarkdown::render(input = input_file_name,
                   output_file = output_file_name, 
                   output_dir = filepath)
 ```
-
 
 # Code Accessibility
 
