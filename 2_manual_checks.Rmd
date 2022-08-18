@@ -403,7 +403,7 @@ stripchart stream flow values using the `na.approx()` function from the
 `zoo` package to estimate stripchart values at the time of the manual
 checks.
 
-## Stripchart vs Stripchart Stage
+## Stripchart vs Stripchart Stage Manual Checks
 
 -   Clean the data
 
@@ -583,6 +583,9 @@ lj_sc <- left_join(x = sc_sub,
 -   Plot
 
 ```{r 1_to_1_plot_sc}
+#sample size
+n <- nrow(lj_sc)
+
 #plot 
 p_1to1 <- ggplot() + 
   geom_point(data = lj_sc, 
@@ -591,7 +594,7 @@ p_1to1 <- ggplot() +
                  group = 1,
                  #create hovering labels for interactive graph 
                  text = paste0("Stripchart Stage (ft): ", stripchart_stage, "\n",
-                              "Interpolated Values (ft): ", approx)),
+                              "Interpolated Values (ft): ", round(approx, digits = 3))),
              alpha = 0.4) + 
   theme_classic() +
   labs(x = "Stripchart Stage",
@@ -600,15 +603,22 @@ p_1to1 <- ggplot() +
        subtitle = "The line y = x is plotted for reference.") +
     theme(plot.title = element_text(hjust = 0.5),
           plot.subtitle = element_text(hjust = 0.5)) + 
-  geom_abline(slope = 1, intercept = 0) +
-  xlim(0, 0.4) +
-  ylim(0, 0.4)
+  geom_abline(slope = 1, intercept = 0)
 
 #static plot
 #p_1to1
 
 #interactive plot 
-ggplotly(p_1to1, tooltip = "text")
+ggplotly(p_1to1, tooltip = "text") %>% 
+  layout(
+    title = list(text = paste0("S2 Stripchart Stage vs Interpolated Values (", min_year, "-", max_year, ")",
+                                    '<br>',
+                                    '<sup>',
+                                     #subtitle
+                                     paste0("n = ", n), 
+                                    '</sup>')), 
+         #title size 
+         font = list(size = 14))
 ```
 
 ## Stripchart vs Point Gage Manual Checkpoints
@@ -638,17 +648,16 @@ pc_sub <- pc_clean %>%
 ##aka the range of the manual checkpoint data
 max_date <- max(pc_sub$date)
 min_date <- min(pc_sub$date)
-nrows <- nrow(pc_sub)
 
 # #subset stripchart data to fit within the time range of the manual checkpoints
-# streamflow_sub <- all_streamflow %>% 
-#   mutate(
-#     year = format(as.POSIXct(datetime, format = '%m/%d/%Y %H:%M:%S', 
-#                              tz = "GMT"),
-#                   format = '%Y'), 
-#     year = as.numeric(year)
-#     ) %>% 
-#   subset(date <= max_date & date >= min_date) 
+streamflow_sub <- all_streamflow %>%
+  mutate(
+    year = format(as.POSIXct(datetime, format = '%m/%d/%Y %H:%M:%S',
+                             tz = "GMT"),
+                  format = '%Y'),
+    year = as.numeric(year)
+    ) %>%
+  subset(date <= max_date & date >= min_date)
 ```
 
 -   Join the manual checks dataset with the stripchart dataset
