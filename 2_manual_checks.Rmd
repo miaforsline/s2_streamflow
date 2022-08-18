@@ -298,23 +298,6 @@ mc_plot <- mc_clean %>%
                names_to = "type", 
                values_to = "stream_height_ft")
 
-#save clean data CSV to use in future RMD files
-write.csv(x = mc_clean, 
-          file = file.path(here("intermediate_data", "mc_clean.csv")),
-          row.names = FALSE)
-
-write.csv(x = pc_clean, 
-          file = file.path(here("intermediate_data", "pc.csv")),
-          row.names = FALSE)
-
-write.csv(x = sc_clean, 
-          file = file.path(here("intermediate_data", "sc_clean.csv")),
-          row.names = FALSE)
-
-write.csv(x = mc_plot, 
-          file = file.path(here("intermediate_data", "mc_plot.csv")),
-          row.names = FALSE)
-
 #plot 
 ggplot(data = mc_plot) + 
   geom_point(aes(x = collected, 
