@@ -449,7 +449,7 @@ test <- full_join(x = sc_sub,
                 by = c("datetime", "date", "year")) %>% 
   arrange(datetime)
 
-x <- test[14:16, ]
+x <- test[13:17, ]
 
 #approximate linearly 
 y <- x %>% 
@@ -459,10 +459,20 @@ y <- x %>%
                             maxgap = 6)
          )
 
-#plot
-ggplot(data = y, aes(x = datetime, y = approx)) + 
-  geom_line() + 
-  geom_point()
+# #plot
+# ggplot(data = y, aes(x = datetime, y = approx)) + 
+#   geom_line() + 
+#   geom_point()
+
+z <- full_join(x = sc_sub, 
+                y = streamflow_sub, 
+                by = c("datetime", "date", "year")) %>% 
+  arrange(datetime) %>% 
+  mutate(approx = na.approx(stream_height_ft, 
+                            na.rm =FALSE, 
+                            method = "linear", 
+                            maxgap = 6)
+         )
 ```
 
 
@@ -477,21 +487,36 @@ ggplot(data = y, aes(x = datetime, y = approx)) +
 fj_sc <- full_join(x = sc_sub, 
                 y = streamflow_sub, 
                 by = c("datetime", "date", "year"))  %>%
+  #order by datetime
+  arrange(datetime) %>% 
   #interpolate to fill in missing NA values
-  mutate(approx = na.approx(object = stream_height_ft,
+  mutate(approx = na.approx(stream_height_ft,
+                            na.rm = FALSE,
                             #x = datetime,
                             #xout = datetime,
                             method = "linear",
                             maxgap = 6),
          #calculate the difference between approximated values and real values
-         diff = approx - stream_height_ft) %>%
-  #rearrange dataframe into a long format
-  pivot_longer(cols = c("stripchart_stage", "stream_height_ft"),
-               names_to = "types",
-               values_to = "stream_height_ft")
+         diff1 = approx - stream_height_ft, #should be zero 
+         diff2 = approx - stripchart_stage,
+         diff = coalesce(diff1, diff2)) 
 
 #test the full join did not drop any observations 
-if(nrow(fj_sc) != (nrow(sc_sub) + nrow(streamflow_sub))) stop("Check lj dataframe dimensions")
+if(nrow(fj_sc) != (nrow(sc_sub) + nrow(streamflow_sub))) stop("Check fj_sc dataframe dimensions")
+
+#test that diff1 = 0 at all times 
+x <- fj_sc[!is.na(fj_sc$diff1),]
+if(sum(x$diff1) != 0) stop("approx - stream_height_ft should be 0")
+
+#test that diff2 != 0 
+y <- fj_sc[!is.na(fj_sc$diff2),]
+if(sum(y$diff2) == 0) stop("approx - stripchart_stage should not be 0")
+
+fj_sc_long <- fj_sc %>% 
+  #rearrange dataframe into a long format
+  pivot_longer(cols = c("stripchart_stage", "stream_height_ft", "approx"),
+               names_to = "types",
+               values_to = "stream_height_ft")
 
 ##visually examine the approximated values 
 # ggplot(data = fj_sc) +
