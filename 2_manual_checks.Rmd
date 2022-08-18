@@ -410,7 +410,7 @@ checks.
 -   Note that the manual checks data only range from 2017-04-04 to
     2019-12-31, which is a smaller time range than the stripchart data
 
-```{r interpolate_sc}
+```{r sc}
 #clean the stripchart_stage data (using the point_gage col)
 sc_sub <- sc_clean %>% 
   #extract the data (without the timestamp)
@@ -607,7 +607,8 @@ pc_sub <- pc_clean %>%
          -name, 
          -stripchart_stage, 
          -logger_stage,
-         -diff)
+         -diff) %>% 
+  unique()
   
 
 #identify date ranges of interest: 2017-04-04 to 2019-12-31
@@ -623,7 +624,8 @@ streamflow_sub <- all_streamflow %>%
                   format = '%Y'),
     year = as.numeric(year)
     ) %>%
-  subset(date <= max_date & date >= min_date)
+  subset(date <= max_date & date >= min_date) %>% 
+  unique()
 ```
 
 -   Join the manual checks dataset with the stripchart dataset
@@ -636,14 +638,27 @@ streamflow_sub <- all_streamflow %>%
 fj_pc <- full_join(x = pc_sub, 
                 y = streamflow_sub, 
                 by = c("datetime", "date", "year")) %>% 
-  #rename columns 
-  rename(manual_check = point_gage,
-         stripchart = stream_height_ft) %>% 
+  #arrange by datetime
+  arrange(datetime) %>% 
   #interpolate to fill in missing NA values
-  mutate(approx = na.approx(object = stripchart,
-                            x = datetime,
+  mutate(approx = na.approx(stream_height_ft,
                             method = "linear",
-                            maxgap = 6))
+                            maxgap = 6),
+         #calculate the difference between approximated values and real values
+         diff1 = approx - stream_height_ft, #should be zero 
+         diff2 = approx - point_gage,
+         diff = coalesce(diff1, diff2))
+
+#test the full join did not drop any observations 
+#if(nrow(fj_pc) != (nrow(pc_sub) + nrow(streamflow_sub))) stop("Check fj_pc dataframe dimensions")
+
+#test that diff1 = 0 at all times 
+x <- fj_pc[!is.na(fj_pc$diff1),]
+if(sum(x$diff1) != 0) stop("approx - stream_height_ft should be 0")
+
+#test that diff2 != 0 
+y <- fj_pc[!is.na(fj_pc$diff2),]
+if(sum(y$diff2) == 0) stop("approx - stripchart_stage should not be 0")
 
 # #rearrange dataframe into a long format
 #   pivot_longer(cols = c("manual_check", "stripchart"),
@@ -668,9 +683,9 @@ fj_pc <- full_join(x = pc_sub,
 #              alpha = 0.05)
 
 
-fj_pc <- fj_pc %>%
-  #remove extraneous columns 
-  select(-stripchart) 
+# fj_pc <- fj_pc %>%
+#   #remove extraneous columns 
+#   select(-stripchart) 
 # %>% 
 #   #return to wide format to create scatterplot
 #   pivot_wider(
@@ -697,46 +712,56 @@ fj_pc <- fj_pc %>%
 #left join the joined data and manual checks data to keep only the timestamps of interest 
 lj_pc <- left_join(x = pc_sub, 
                 y = fj_pc,
-                by = c("datetime", "year", "date", "point_gage" = "manual_check")) %>% 
+                by = c("datetime", "year", "date", "point_gage")) %>% 
   #ensure the correct column types
   mutate(point_gage = as.numeric(point_gage),
          approx = as.numeric(approx),
          diff = point_gage - approx)
 
 #test if the subsetted data has the same number of observations as the manual checks dataframe
-#if(nrow(lj_pc) != (nrow(pc_sub))) stop("Check lj dataframe dimensions")
+if(nrow(lj_pc) != (nrow(pc_sub))) stop("Check lj dataframe dimensions")
 
 #test if the approximated data differs greatly from the stripchart/manual checks data 
-#if(abs(lj_pc$diff) > 0.01 ) stop("Check differences")
+if(abs(lj_pc$diff) > 0.01 ) stop("Check differences")
 ```
 
 ```{r 1_to_1_plot_pc}
+#sample size
+n <- nrow(lj_pc)
+
 #plot 
 p_1to1 <- ggplot() + 
   geom_point(data = lj_pc, 
-             aes(x = point_gage, 
-                 y = approx, 
+             aes(x = point_gage, #from manual checkpoints dataset
+                 y = approx, #interpolated stripchart values 
                  group = 1,
                  #create hovering labels for interactive graph 
-                 text = paste0("Manual Checkpoint (ft): ", point_gage, "\n",
-                              "Stripchart (ft): ", approx)),
-             alpha = 0.5) + 
+                 text = paste0("Point Gage (ft): ", point_gage, "\n",
+                              "Interpolated Values (ft): ", round(approx, digits = 3))),
+             alpha = 0.4) + 
   theme_classic() +
-  labs(x = "Manual Checkpoints",
-       y = "Stripchart Data",
-       title = paste0("S2 Manual Checks vs Interpolated Stripchart Values (", min_year, "-", max_year, ")"),
+  labs(x = "Point Gage",
+       y = "Interpolated Values",
+       title = paste0("S2 Manual Checkpoints vs Interpolated Values (", min_year, "-", max_year, ")"),
        subtitle = "The line y = x is plotted for reference.") +
     theme(plot.title = element_text(hjust = 0.5),
           plot.subtitle = element_text(hjust = 0.5)) + 
-  geom_abline(slope = 1, intercept = 0) +
-  xlim(0, 0.4) +
-  ylim(0, 0.4)
+  geom_abline(slope = 1, intercept = 0)
 
 #static plot
 #p_1to1
 
 #interactive plot 
-ggplotly(p_1to1, tooltip = "text")
+ggplotly(p_1to1, tooltip = "text") %>% 
+  layout(
+    title = list(text = paste0("S2 Manual Checkpoints vs Interpolated Values (", min_year, "-", max_year, ")",
+                                    '<br>',
+                                    '<sup>',
+                                     #subtitle
+                                     paste0("n = ", n), 
+                                    '</sup>')), 
+         #title size 
+         font = list(size = 14))
 ```
 
 Run this code chunk to knit to HTML without using the knit button in
