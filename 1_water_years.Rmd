@@ -111,6 +111,9 @@ if(nrow(wy2017) != nrow(wy2017_clean)) stop("Check clean dataframe dimensions")
 ```
 
 ```{r wy2017_plot}
+#sample size
+n <- nrow(wy2017_clean)
+
 #plot 
 p_2017 <- ggplot(data = wy2017_clean) + 
   geom_line(aes(x = datetime, 
@@ -122,7 +125,8 @@ p_2017 <- ggplot(data = wy2017_clean) +
   theme_classic() + 
   labs(x = "Time", 
        y = "Stream Height (ft)", 
-       title = "WY 2017 S2 Bog Weir Stream Height") + 
+       title = "WY 2017 S2 Bog Weir Stream Height", 
+       caption = paste0("n = ", n)) + 
   theme(plot.title = element_text(hjust = 0.5))
 
 #static plot 
@@ -130,7 +134,16 @@ p_2017 <- ggplot(data = wy2017_clean) +
 
 #interactive plot 
 ggplotly(p_2017, 
-         tooltip = "text")
+         tooltip = "text") %>% 
+  layout(
+    title = list(text = paste0("WY 2017 S2 Bog Weir Stream Height",
+                                    '<br>',
+                                    '<sup>',
+                                     #subtitle
+                                     paste0("n = ", n), 
+                                    '</sup>')), 
+         #title size 
+         font = list(size = 14))
 ```
 
 # Water Year 2018
@@ -206,6 +219,9 @@ if(nrow(wy2018) != nrow(wy2018_clean)) stop("Check clean dataframe dimensions")
 ```
 
 ```{r wy2018_plot}
+#sample size 
+n <- nrow(wy2018_clean)
+
 #plot
 p_2018_clean <- ggplot(data = wy2018_clean) + 
   geom_line(aes(x = datetime, 
@@ -225,7 +241,16 @@ p_2018_clean <- ggplot(data = wy2018_clean) +
 #p_2018_clean
 
 #interactive plot 
-ggplotly(p_2018_clean, tooltip = "text")
+ggplotly(p_2018_clean, tooltip = "text") %>% 
+  layout(
+    title = list(text = paste0("WY 2018 S2 Bog Weir Stream Height",
+                                    '<br>',
+                                    '<sup>',
+                                     #subtitle
+                                     paste0("n = ", n), 
+                                    '</sup>')), 
+         #title size 
+         font = list(size = 14))
 ```
 
 Next, we need to remove unusual stream height values from Oct 31 - Nov
@@ -245,6 +270,9 @@ if(nrow(wy2018_altered) == nrow(wy2018_clean)) stop("Check altered dataframe dim
 ```
 
 ```{r wy2018_altered_plot}
+#sample size 
+n <- nrow(wy2018_altered)
+
 #plot
 p_2018_altered <- ggplot(data = wy2018_altered) + 
   geom_line(aes(x = datetime, 
@@ -264,7 +292,16 @@ p_2018_altered <- ggplot(data = wy2018_altered) +
 #p_2018_altered
 
 #interactive plot 
-ggplotly(p_2018_altered, tooltip = "text")
+ggplotly(p_2018_altered, tooltip = "text") %>% 
+  layout(
+    title = list(text = paste0("WY 2018 S2 Bog Weir Stream Height",
+                                    '<br>',
+                                    '<sup>',
+                                     #subtitle
+                                     paste0("n = ", n), 
+                                    '</sup>')), 
+         #title size 
+         font = list(size = 14))
 ```
 
 ## Altered Oct 31 - Nov 1, 2018 Streamflow Data
@@ -395,6 +432,9 @@ if(nrow(wy2019) != nrow(wy2019_clean)) stop("Check clean dataframe dimensions")
 ```
 
 ```{r wy2019_plot}
+#sample size 
+n <- nrow(wy2019_clean)
+
 #plot 
 p_2019 <- ggplot(data = wy2019_clean) + 
   geom_line(aes(x = datetime, 
@@ -413,7 +453,16 @@ p_2019 <- ggplot(data = wy2019_clean) +
 #p_2019
 
 #interactive plot
-ggplotly(p_2019, tooltip = "text")
+ggplotly(p_2019, tooltip = "text") %>% 
+  layout(
+    title = list(text = paste0("WY 2019 S2 Bog Weir Stream Height",
+                                    '<br>',
+                                    '<sup>',
+                                     #subtitle
+                                     paste0("n = ", n), 
+                                    '</sup>')), 
+         #title size 
+         font = list(size = 14))
 ```
 
 # Water Year 2020
@@ -474,6 +523,9 @@ if(nrow(wy2020) != nrow(wy2020_clean)) stop("Check clean dataframe dimensions")
 ```
 
 ```{r wy2020_plot}
+#sample size
+n <- nrow(wy2020_clean)
+
 #plot 
 p_2020 <- ggplot(data = wy2020_clean) + 
   geom_line(aes(x = datetime, 
@@ -492,7 +544,16 @@ p_2020 <- ggplot(data = wy2020_clean) +
 #p_2020
 
 #interactive plot
-ggplotly(p_2020, tooltip = "text")
+ggplotly(p_2020, tooltip = "text") %>% 
+  layout(
+    title = list(text = paste0("WY 2020 S2 Bog Weir Stream Height",
+                                    '<br>',
+                                    '<sup>',
+                                     #subtitle
+                                     paste0("n = ", n), 
+                                    '</sup>')), 
+         #title size 
+         font = list(size = 14))
 ```
 
 # Water Year 2021
@@ -572,6 +633,9 @@ if(nrow(wy2021) != nrow(wy2021_clean)) stop("Check clean dataframe dimensions")
 ```
 
 ```{r wy2021_plot}
+#sample size
+n <- nrow(wy2021_clean)
+
 #plot 
 p_2021 <- ggplot(data = wy2021_clean) + 
   geom_line(aes(x = datetime, 
@@ -590,7 +654,16 @@ p_2021 <- ggplot(data = wy2021_clean) +
 #p_2021
 
 #interactive plot
-ggplotly(p_2021, tooltip = "text")
+ggplotly(p_2021, tooltip = "text") %>% 
+  layout(
+    title = list(text = paste0("WY 2021 S2 Bog Weir Stream Height",
+                                    '<br>',
+                                    '<sup>',
+                                     #subtitle
+                                     paste0("n = ", n), 
+                                    '</sup>')), 
+         #title size 
+         font = list(size = 14))
 ```
 
 # All Water Years (2017 - 2021)
@@ -602,6 +675,9 @@ all_streamflow <- rbind(wy2017_clean,
                         wy2019_clean,
                         wy2020_clean,
                         wy2021_clean)
+
+#sample size 
+n <- nrow(all_streamflow)
 
 #plot 
 p_all <- ggplot(data = all_streamflow) + 
@@ -621,7 +697,16 @@ p_all <- ggplot(data = all_streamflow) +
 #p_all
 
 #interactive plot
-ggplotly(p_all, tooltip = "text")
+ggplotly(p_all, tooltip = "text") %>% 
+  layout(
+    title = list(text = paste0("S2 Bog Weir Stream Height (WY 2017 - 2021)",
+                                    '<br>',
+                                    '<sup>',
+                                     #subtitle
+                                     paste0("n = ", n), 
+                                    '</sup>')), 
+         #title size 
+         font = list(size = 14))
 ```
 
 Run this code chunk to knit to HTML without using the knit button in
