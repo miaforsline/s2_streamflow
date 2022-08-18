@@ -443,6 +443,7 @@ streamflow_sub <- all_streamflow %>%
 
 
 ```{r na.approx()}
+#create dummy dataset (which is a subset of the data)
 test <- full_join(x = sc_sub, 
                 y = streamflow_sub, 
                 by = c("datetime", "date", "year")) %>% 
@@ -450,12 +451,18 @@ test <- full_join(x = sc_sub,
 
 x <- test[14:16, ]
 
+#approximate linearly 
 y <- x %>% 
   mutate(approx = na.approx(stream_height_ft, 
                             na.rm =FALSE, 
                             method = "linear", 
                             maxgap = 6)
          )
+
+#plot
+ggplot(data = y, aes(x = datetime, y = approx)) + 
+  geom_line() + 
+  geom_point()
 ```
 
 
