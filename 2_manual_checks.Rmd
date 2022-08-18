@@ -441,6 +441,24 @@ streamflow_sub <- all_streamflow %>%
   subset(date <= max_date & date >= min_date) 
 ```
 
+
+```{r na.approx()}
+test <- full_join(x = sc_sub, 
+                y = streamflow_sub, 
+                by = c("datetime", "date", "year")) %>% 
+  arrange(datetime)
+
+x <- test[14:16, ]
+
+y <- x %>% 
+  mutate(approx = na.approx(stream_height_ft, 
+                            na.rm =FALSE, 
+                            method = "linear", 
+                            maxgap = 6)
+         )
+```
+
+
 -   Join the manual checkpoints (`sc_sub`) dataset with the
     continuous stripchart dataset (`streamflow_sub`)
 
@@ -454,10 +472,10 @@ fj_sc <- full_join(x = sc_sub,
                 by = c("datetime", "date", "year"))  %>%
   #interpolate to fill in missing NA values
   mutate(approx = na.approx(object = stream_height_ft,
-                            x = datetime,
-                            xout = datetime,
+                            #x = datetime,
+                            #xout = datetime,
                             method = "linear",
-                            maxgap = 0),
+                            maxgap = 6),
          #calculate the difference between approximated values and real values
          diff = approx - stream_height_ft) %>%
   #rearrange dataframe into a long format
