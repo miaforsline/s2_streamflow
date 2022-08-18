@@ -28,7 +28,9 @@ we use 2 types of WTE (aka bogwell) data:
 1.  Manual stripcharts and
 2.  Shaft encoders.
 
-Install and load necessary R packages
+# Set Up 
+
+-   Install and load necessary R packages
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,
@@ -52,7 +54,7 @@ librarian::shelf(
   )
 ```
 
-Set date range of interest
+-   Set date range of interest
 
 ```{r min_max_year}
 min_year = 2017
@@ -136,9 +138,17 @@ p_bogwell
 
 ## S1 Manual Stripchart
 
+-   Subset the bogwell data to include only S1 observations
+
+-   Plot
+
 ```{r bogwell_s1}
+#extract only S1 data 
 bogwell_clean_s1 <- bogwell_clean %>% 
     subset(peatland == "S1")
+
+#sample size
+n <- nrow(bogwell_clean_s1)
 
 #plot
 p_bogwell_s1 <- ggplot(data = bogwell_clean_s1) + 
@@ -158,14 +168,31 @@ p_bogwell_s1 <- ggplot(data = bogwell_clean_s1) +
 
 #interactive plot 
 ggplotly(p_bogwell_s1,
-         tooltip = "text")
+         tooltip = "text") %>% 
+  layout(
+    title = list(text = paste0("S1 Daily Peatland Water Table Elevation (", min_year, "-", max_year, ")",
+                                    '<br>',
+                                    '<sup>',
+                                     #subtitle
+                                     paste0("n = ", n), 
+                                    '</sup>')), 
+         #title size 
+         font = list(size = 14))
 ```
 
 ## S2 Manual Stripchart
 
+-   Subset the bogwell data to include only S2 observations
+
+-   Plot
+
 ```{r bogwell_s2}
+#extract S2 observations
 bogwell_clean_s2 <- bogwell_clean %>% 
     subset(peatland == "S2")
+
+#sample size 
+n <- nrow(bogwell_clean_s2)
 
 #plot
 p_bogwell_s2 <- ggplot(data = bogwell_clean_s2) + 
@@ -185,14 +212,31 @@ p_bogwell_s2 <- ggplot(data = bogwell_clean_s2) +
 
 #interactive plot 
 ggplotly(p_bogwell_s2,
-         tooltip = "text")
+         tooltip = "text") %>% 
+  layout(
+    title = list(text = paste0("S2 Daily Peatland Water Table Elevation (", min_year, "-", max_year, ")",
+                                    '<br>',
+                                    '<sup>',
+                                     #subtitle
+                                     paste0("n = ", n), 
+                                    '</sup>')), 
+         #title size 
+         font = list(size = 14))
 ```
 
 ## S3 Manual Stripchart
 
+-   Subset the bogwell data to include only S3 observations
+
+-   Plot
+
 ```{r bogwell_s3}
+#extract S3 observations
 bogwell_clean_s3 <- bogwell_clean %>% 
     subset(peatland == "S3")
+
+#sample size 
+n <- nrow(bogwell_clean_s3)
 
 #plot
 p_bogwell_s3 <- ggplot(data = bogwell_clean_s3) + 
@@ -212,14 +256,31 @@ p_bogwell_s3 <- ggplot(data = bogwell_clean_s3) +
 
 #interactive plot 
 ggplotly(p_bogwell_s3,
-         tooltip = "text")
+         tooltip = "text") %>% 
+  layout(
+    title = list(text = paste0("S3 Daily Peatland Water Table Elevation (", min_year, "-", max_year, ")",
+                                    '<br>',
+                                    '<sup>',
+                                     #subtitle
+                                     paste0("n = ", n), 
+                                    '</sup>')), 
+         #title size 
+         font = list(size = 14))
 ```
 
 ## S4 Manual Stripchart
 
+-   Subset the bogwell data to include only S4 observations
+
+-   Plot
+
 ```{r bogwell_s4}
+#extract S4 observations
 bogwell_clean_s4 <- bogwell_clean %>% 
     subset(peatland == "S4")
+
+#sample size
+n <- nrow(bogwell_clean_s4)
 
 #plot
 p_bogwell_s4 <- ggplot(data = bogwell_clean_s4) + 
@@ -239,14 +300,31 @@ p_bogwell_s4 <- ggplot(data = bogwell_clean_s4) +
 
 #interactive plot 
 ggplotly(p_bogwell_s4,
-         tooltip = "text")
+         tooltip = "text") %>% 
+  layout(
+    title = list(text = paste0("S4 Daily Peatland Water Table Elevation (", min_year, "-", max_year, ")",
+                                    '<br>',
+                                    '<sup>',
+                                     #subtitle
+                                     paste0("n = ", n), 
+                                    '</sup>')), 
+         #title size 
+         font = list(size = 14))
 ```
 
 ## S5 Manual Stripchart
 
+-   Subset the bogwell data to include only S5 observations
+
+-   Plot
+
 ```{r bogwell_s5}
+#extract s5 observations
 bogwell_clean_s5 <- bogwell_clean %>% 
     subset(peatland == "S5")
+
+#sample size
+n <- nrow(bogwell_clean_s5)
 
 #plot
 p_bogwell_s5 <- ggplot(data = bogwell_clean_s5) + 
@@ -266,14 +344,31 @@ p_bogwell_s5 <- ggplot(data = bogwell_clean_s5) +
 
 #interactive plot 
 ggplotly(p_bogwell_s5,
-         tooltip = "text")
+         tooltip = "text") %>% 
+  layout(
+    title = list(text = paste0("S5 Daily Peatland Water Table Elevation (", min_year, "-", max_year, ")",
+                                    '<br>',
+                                    '<sup>',
+                                     #subtitle
+                                     paste0("n = ", n), 
+                                    '</sup>')), 
+         #title size 
+         font = list(size = 14))
 ```
 
 ## S6 Manual Stripchart
 
+-   Subset the bogwell data to include only S6 observations
+
+-   Plot
+
 ```{r bogwell_s6}
+#extract s6 observations
 bogwell_clean_s6 <- bogwell_clean %>% 
     subset(peatland == "S6")
+
+#sample size
+n <- nrow(bogwell_clean_s6)
 
 #plot
 p_bogwell_s6 <- ggplot(data = bogwell_clean_s6) + 
@@ -293,14 +388,31 @@ p_bogwell_s6 <- ggplot(data = bogwell_clean_s6) +
 
 #interactive plot 
 ggplotly(p_bogwell_s6,
-         tooltip = "text")
+         tooltip = "text") %>% 
+  layout(
+    title = list(text = paste0("S6 Daily Peatland Water Table Elevation (", min_year, "-", max_year, ")",
+                                    '<br>',
+                                    '<sup>',
+                                     #subtitle
+                                     paste0("n = ", n), 
+                                    '</sup>')), 
+         #title size 
+         font = list(size = 14))
 ```
 
 ## Bog Lake Fen (BOGLK) Manual Stripchart
 
+-   Subset the bogwell data to include only Bog Lake Fen observations
+
+-   Plot
+
 ```{r bogwell_boglk}
+#extract boglk observations
 bogwell_clean_boglk <- bogwell_clean %>% 
     subset(peatland == "BOGLK")
+
+#sample size 
+n <- nrow(bogwell_clean_boglk)
 
 #plot
 p_bogwell_boglk <- ggplot(data = bogwell_clean_boglk) + 
@@ -320,7 +432,16 @@ p_bogwell_boglk <- ggplot(data = bogwell_clean_boglk) +
 
 #interactive plot 
 ggplotly(p_bogwell_boglk,
-         tooltip = "text")
+         tooltip = "text") %>% 
+  layout(
+    title = list(text = paste0("BOGLK Daily Peatland Water Table Elevation (", min_year, "-", max_year, ")",
+                                    '<br>',
+                                    '<sup>',
+                                     #subtitle
+                                     paste0("n = ", n), 
+                                    '</sup>')), 
+         #title size 
+         font = list(size = 14))
 ```
 
 # Shaft Encoders
