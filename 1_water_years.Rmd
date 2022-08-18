@@ -700,7 +700,9 @@ all_streamflow <- rbind(wy2017_clean,
                         wy2018_altered, 
                         wy2019_clean,
                         wy2020_clean,
-                        wy2021_clean)
+                        wy2021_clean) %>% 
+  #remove duplicate observations 
+  unique()
 ```
 
 -   Plot
