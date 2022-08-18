@@ -512,11 +512,11 @@ if(sum(x$diff1) != 0) stop("approx - stream_height_ft should be 0")
 y <- fj_sc[!is.na(fj_sc$diff2),]
 if(sum(y$diff2) == 0) stop("approx - stripchart_stage should not be 0")
 
-fj_sc_long <- fj_sc %>% 
-  #rearrange dataframe into a long format
-  pivot_longer(cols = c("stripchart_stage", "stream_height_ft", "approx"),
-               names_to = "types",
-               values_to = "stream_height_ft")
+# fj_sc_long <- fj_sc %>% 
+#   #rearrange dataframe into a long format
+#   pivot_longer(cols = c("stripchart_stage", "stream_height_ft", "approx"),
+#                names_to = "types",
+#                values_to = "stream_height_ft")
 
 ##visually examine the approximated values 
 # ggplot(data = fj_sc) +
@@ -536,16 +536,16 @@ fj_sc_long <- fj_sc %>%
 #              alpha = 0.05)
 
 
-fj_sc_wide <- fj_sc %>%
-  #remove extraneous columns 
-  select(-stream_height_ft, -diff) %>% 
-  #return to wide format to create scatterplot
-  pivot_wider(
-    names_from = "types",
-    values_from = "approx"
-  ) %>% 
-  #unlist the columns created by pivot_wider() 
-  unnest()
+# fj_sc_wide <- fj_sc %>%
+#   #remove extraneous columns 
+#   select(-stream_height_ft, -diff) %>% 
+#   #return to wide format to create scatterplot
+#   pivot_wider(
+#     names_from = "types",
+#     values_from = "approx"
+#   ) %>% 
+#   #unlist the columns created by pivot_wider() 
+#   unnest()
 
 
 # #visually examine all data 
@@ -557,8 +557,8 @@ fj_sc_wide <- fj_sc %>%
 -   Subset the joined dataframe to include only the timestamps of
     interest (AKA the timestamps from the original stripchart_stage
     dataset)
-
--   Plot
+    
+-   Note there will be some values that could not be approximated due to lack of stripchart data
 
 ```{r 1_to_1_sc}
 #left join the joined data and stripchart_stage data to keep only the timestamps of interest 
@@ -568,7 +568,10 @@ lj_sc <- left_join(x = sc_sub,
   #ensure the correct column types
   mutate(stripchart_stage = as.numeric(stripchart_stage),
          stream_height_ft = as.numeric(stream_height_ft),
-         diff = stripchart_stage - stream_height_ft)
+         approx = as.numeric(approx)
+  ) %>% 
+  #remove duplicates
+  unique()
 
 #test if the subsetted data has the same number of observations as the manual checks dataframe
 #if(nrow(lj) != (nrow(pc_sub))) stop("Check lj dataframe dimensions")
@@ -577,21 +580,23 @@ lj_sc <- left_join(x = sc_sub,
 #if(abs(lj$diff) > 0.01 ) stop("Check differences")
 ```
 
+-   Plot
+
 ```{r 1_to_1_plot_sc}
 #plot 
 p_1to1 <- ggplot() + 
   geom_point(data = lj_sc, 
-             aes(x = stripchart_stage, #approximated values from manual checkpoints
-                 y = stream_height_ft, #continuous stripchart values 
+             aes(x = stripchart_stage, #from manual checkpoints dataset
+                 y = approx, #continuous stripchart values 
                  group = 1,
                  #create hovering labels for interactive graph 
                  text = paste0("Stripchart Stage (ft): ", stripchart_stage, "\n",
-                              "Stripchart (ft): ", stream_height_ft)),
+                              "Interpolated Values (ft): ", approx)),
              alpha = 0.4) + 
   theme_classic() +
   labs(x = "Stripchart Stage",
-       y = "Stripchart",
-       title = paste0("S2 Stripchart vs Interpolated Stripchart Values (", min_year, "-", max_year, ")"),
+       y = "Interpolated Values",
+       title = paste0("S2 Stripchart vs Interpolated Values (", min_year, "-", max_year, ")"),
        subtitle = "The line y = x is plotted for reference.") +
     theme(plot.title = element_text(hjust = 0.5),
           plot.subtitle = element_text(hjust = 0.5)) + 
