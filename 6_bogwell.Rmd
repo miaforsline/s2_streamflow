@@ -446,12 +446,12 @@ ggplotly(p_bogwell_boglk,
 
 # Shaft Encoders
 
-Note that shaft encoder bogwell data comes from 2 main sources:
+Shaft encoder bogwell data comes from 2 main sources:
 
 1.  The `RealTimeData` Box directory
 2.  The `annual_appended_logger_files` Box directory
 
--   Create a function for reading in Campbell DataLogger .dat files:
+-   First, create a function for reading in Campbell DataLogger .dat files:
 
 ```{r dat_function}
 readCDL = function(file){
@@ -472,7 +472,7 @@ readCDL = function(file){
 }
 ```
 
--   Create constants to convert between feet and meters:
+-   Next, define constants to convert between feet and meters:
 
 ```{r constants}
 MetersPerFoot = 0.3048
@@ -582,7 +582,6 @@ s1_2020_clean <- s1_2020 %>%
 -   Combine all S1 data from both the `RealTimeData` folder and
     `annual_appended_logger_files` folder in Box
 -   Note that this is all WTE observations, not daily max WTE
--   Plot
 
 ```{r s1_all}
 s1_all <- rbind(s1_se_clean, s1_2019_clean, s1_2020_clean) %>% 
@@ -595,10 +594,17 @@ s1_all <- rbind(s1_se_clean, s1_2019_clean, s1_2020_clean) %>%
     year = as.numeric(year)) %>% 
   #remove duplicate entries 
   unique()
+```
 
+-   Plot
+
+```{r s1_all_plot}
 #set min and max year 
 min_year = min(s1_all$year)
 max_year = max(s1_all$year)
+
+#sample size
+n <- nrow(s1_all)
 
 #plot
 p_s1 <- ggplot(data = s1_all) + 
@@ -618,7 +624,16 @@ p_s1 <- ggplot(data = s1_all) +
 
 #interactive plot 
 ggplotly(p_s1,
-         tooltip = "text")
+         tooltip = "text") %>% 
+  layout(
+    title = list(text = paste0("S1 Shaft Encoder Water Table Elevation (", min_year, "-", max_year, ")",
+                                    '<br>',
+                                    '<sup>',
+                                     #subtitle
+                                     paste0("n = ", n), 
+                                    '</sup>')), 
+         #title size 
+         font = list(size = 14))
 ```
 
 ## S2 Shaft Encoder
@@ -725,7 +740,6 @@ s2_2020_clean <- s2_2020 %>%
 -   Combine all S2 data from both the `RealTimeData` folder and
     `annual_appended_logger_files` folder in Box
 -   Note there is one observation per day
--   Plot
 
 ```{r s2_all}
 s2_all <- rbind(s2_se_clean, s2_2019_clean, s2_2020_clean) %>% 
@@ -740,10 +754,17 @@ s2_all <- rbind(s2_se_clean, s2_2019_clean, s2_2020_clean) %>%
     year = as.numeric(year)) %>% 
   #remove duplicate entries 
   unique()
+```
 
+- Plot
+
+```{r s2_all_plot }
 #set min and max year 
 min_year = min(s2_all$year)
 max_year = max(s2_all$year)
+
+#sample size
+n <- nrow(s2_all)
 
 #plot
 p_s2 <- ggplot(data = s2_all) + 
@@ -763,7 +784,16 @@ p_s2 <- ggplot(data = s2_all) +
 
 #interactive plot 
 ggplotly(p_s2,
-         tooltip = "text")
+         tooltip = "text") %>% 
+  layout(
+    title = list(text = paste0("S2 Shaft Encoder Water Table Elevation (", min_year, "-", max_year, ")",
+                                    '<br>',
+                                    '<sup>',
+                                     #subtitle
+                                     paste0("n = ", n), 
+                                    '</sup>')), 
+         #title size 
+         font = list(size = 14))
 ```
 
 ## S3 Shaft Encoder
@@ -813,15 +843,18 @@ s4_2020_clean <- s4_2020 %>%
 
 #remove unreliable values 
 s4_2020_clean$max_wt_elev_m[which(s4_2020_clean$max_wt_elev_m > 428.75)] <- NA
-
-#set min and max year 
-min_year = min(s4_2020_clean$year)
-max_year = max(s4_2020_clean$year)
 ```
 
 -   Plot
 
 ```{r s4_plot}
+#set min and max year 
+min_year = min(s4_2020_clean$year)
+max_year = max(s4_2020_clean$year)
+
+#sample size 
+n <- nrow(s4_2020_clean)
+
 #plot 
 p_s4 <- ggplot(data = s4_2020_clean) + 
   geom_line(aes(x = datetime, 
@@ -839,7 +872,16 @@ p_s4 <- ggplot(data = s4_2020_clean) +
 
 #interactive plot
 ggplotly(p_s4,
-         tooltip = "text")
+         tooltip = "text") %>% 
+  layout(
+    title = list(text = paste0("S4 Shaft Encoder Water Table Elevation (", min_year, "-", max_year, ")",
+                                    '<br>',
+                                    '<sup>',
+                                     #subtitle
+                                     paste0("n = ", n), 
+                                    '</sup>')), 
+         #title size 
+         font = list(size = 14))
 ```
 
 ## S5 Shaft Encoder
@@ -938,10 +980,17 @@ s5_all$max_wt_elev_m[which(s5_all$date == as.POSIXct("2022-01-31", tz = "GMT"))]
 s5_all$max_wt_elev_m[which(s5_all$date == as.POSIXct("2022-03-02", tz = "GMT"))] <- NA
 s5_all$max_wt_elev_m[which(s5_all$date == as.POSIXct("2022-03-06", tz = "GMT"))] <- NA
 s5_all$max_wt_elev_m[which(s5_all$date == as.POSIXct("2022-03-15", tz = "GMT"))] <- NA
+```
 
+- Plot
+
+```{r s5_all_plot}
 #set min and max year 
 min_year = min(s5_se_clean$year)
 max_year = max(s5_se_clean$year)
+
+#sample size 
+n <- nrow(s5_all)
 
 #plot 
 p_s5 <- ggplot(data = s5_all) + 
@@ -960,7 +1009,16 @@ p_s5 <- ggplot(data = s5_all) +
 
 #interactive plot
 ggplotly(p_s5,
-         tooltip = "text")
+         tooltip = "text") %>% 
+  layout(
+    title = list(text = paste0("S5 Shaft Encoder Water Table Elevation (", min_year, "-", max_year, ")",
+                                    '<br>',
+                                    '<sup>',
+                                     #subtitle
+                                     paste0("n = ", n), 
+                                    '</sup>')), 
+         #title size 
+         font = list(size = 14))
 ```
 
 ## S6 Shaft Encoder
@@ -1091,11 +1149,19 @@ s6_all <- rbind(s6_se_clean, s6_2019_clean, s6_2020_clean) %>%
   #remove one row where WTE = 0 
   subset(max_wt_elev_m > 0) %>% 
   #remove NA values
-  filter(!is.na(max_wt_elev_m))
+  filter(!is.na(max_wt_elev_m)) %>% 
+  #remove duplicate observations 
+  unique() 
+```
 
+
+```{r s6_all_plot}
 #set min and max year 
 min_year = min(s6_all$year)
 max_year = max(s6_all$year)
+
+#sample size
+n <- nrow(s6_all)
 
 #plot
 p_s6 <- ggplot(data = s6_all) + 
@@ -1115,7 +1181,16 @@ p_s6 <- ggplot(data = s6_all) +
 
 #interactive plot 
 ggplotly(p_s6,
-         tooltip = "text")
+         tooltip = "text") %>% 
+  layout(
+    title = list(text = paste0("S6 Shaft Encoder Water Table Elevation (", min_year, "-", max_year, ")",
+                                    '<br>',
+                                    '<sup>',
+                                     #subtitle
+                                     paste0("n = ", n), 
+                                    '</sup>')), 
+         #title size 
+         font = list(size = 14))
 ```
 
 ## Bog Lake Fen (BOGLK) Shaft Encoder
@@ -1246,10 +1321,17 @@ boglk_all <- rbind(boglk_se_clean, boglk_2019_clean, boglk_2020_clean) %>%
   filter(!is.na(max_wt_elev_m)) %>% 
   #remove duplicate observations 
   unique()
+```
 
+- Plot 
+
+```{r boglk_all_plot}
 #set min and max year 
 min_year = min(boglk_all$year)
 max_year = max(boglk_all$year)
+
+#sample size 
+n <- nrow(boglk_all)
 
 #plot
 p_boglk <- ggplot(data = boglk_all) + 
@@ -1269,7 +1351,16 @@ p_boglk <- ggplot(data = boglk_all) +
 
 #interactive plot 
 ggplotly(p_boglk,
-         tooltip = "text")
+         tooltip = "text") %>% 
+  layout(
+    title = list(text = paste0("BOGLK Shaft Encoder Water Table Elevation (", min_year, "-", max_year, ")",
+                                    '<br>',
+                                    '<sup>',
+                                     #subtitle
+                                     paste0("n = ", n), 
+                                    '</sup>')), 
+         #title size 
+         font = list(size = 14))
 ```
 
 # 1:1 Plots
