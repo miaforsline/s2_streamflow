@@ -22,7 +22,11 @@ editor_options:
 
 The goal of this step in the workflow is to examine the stripchart
 streamflow data for the S2 Marcell Experimental Forest site for the
-water years of 2017 - 2021.
+water years of 2017 - 2021. This RMD is the first in the workflow and
+reads in, cleans, and visualizes the stripchart stream height data for
+the 2017 - 2021 water years at the S2 bog site of the [Marcell
+Experimental Forest, Northern Research
+Station](https://www.nrs.fs.fed.us/ef/marcell/).
 
 # Set Up
 
@@ -58,13 +62,6 @@ librarian::shelf(
 #setwd("~/../../Box/External-MEF_DATA/Hydro/Streamflow/L0_subdaily/StripCharts")
 ```
 
-# S2 Stripchart Streamflow Data
-
-This RMD is the first in the workflow and reads in, cleans, and
-visualizes the stripchart stream height data for the 2017 - 2021 water
-years at the S2 bog site of the [Marcell Experimental Forest, Northern
-Research Station](https://www.nrs.fs.fed.us/ef/marcell/).
-
 # Water Year 2017
 
 -   Read in the WY 2017 data from the External-MEF_DATA Box folder
@@ -77,10 +74,8 @@ Research Station](https://www.nrs.fs.fed.us/ef/marcell/).
     -   Create a new `date` column that follows the format YYYY-MM-DD
         (and does not include a timestamp) for ease of
         sorting/manipulating dates
--   Test that the manipulated data frame has the same number of rows as
-    the original data frame (we do not want to accidentally lose data,
-    so the code will throw an error is the two data frames do not match)
--   Plot the WY 2017 data
+-   Note that this cleaning process will repeat for each individual
+    water year
 
 ```{r wy2017}
 #create file path to call the data from Box 
@@ -104,11 +99,21 @@ wy2017_clean <- wy2017 %>%
   mutate(date = format(as.POSIXct(datetime, format = '%m/%d/%Y %H:%M:%S', 
                                   tz = "GMT"), 
                        format = '%Y-%m-%d'),
-         date = as.POSIXct(date, tz = "GMT")) 
+         date = as.POSIXct(date, tz = "GMT"))
+```
 
+-   Test that the manipulated data frame has the same number of rows as
+    the original data frame
+
+    -   We do not want to accidentally lose data, so the code will throw
+        an error is the two data frames do not match
+
+```{r wy2017_test}
 #test the 2017 data
 if(nrow(wy2017) != nrow(wy2017_clean)) stop("Check clean dataframe dimensions")
 ```
+
+-   Plot the WY 2017 data
 
 ```{r wy2017_plot}
 #sample size
@@ -174,9 +179,6 @@ ggplotly(p_2017,
 -   NA values are derived from notes recorded in .txt files found at the
     following Box filepath:
     `External-MEF_DATA/Hydro/Streamflow/L0_daily/StripCharts/DailyBreakpoint/2018`
--   Test that the manipulated data frame has the same number of rows as
-    the original data frame
--   Plot the WY 2018 data
 
 ```{r wy2018}
 #create file path to call the data from Box 
@@ -213,10 +215,17 @@ wy2018_clean$stream_height_ft[wy2018_clean$date %between% as.Date(c('2018-11-25'
 wy2018_clean$stream_height_ft[wy2018_clean$date %between% as.Date(c('2018-12-01', '2018-12-03'))] <- NA
 wy2018_clean$stream_height_ft[wy2018_clean$date %between% as.Date(c('2018-12-08', '2018-12-10'))] <- NA
 wy2018_clean$stream_height_ft[wy2018_clean$date %between% as.Date(c('2018-12-11', '2018-12-31'))] <- NA
+```
 
+-   Test that the manipulated data frame has the same number of rows as
+    the original data frame
+
+```{r wy2018_test}
 #test the 2018 data
 if(nrow(wy2018) != nrow(wy2018_clean)) stop("Check clean dataframe dimensions")
 ```
+
+-   Plot the WY 2018 data
 
 ```{r wy2018_plot}
 #sample size 
@@ -253,11 +262,11 @@ ggplotly(p_2018_clean, tooltip = "text") %>%
          font = list(size = 14))
 ```
 
-Next, we need to remove unusual stream height values from Oct 31 - Nov
-1, 2018. During this time period, the stream height values oscillated
-rapidly, likely indicating human error in recording the data. Thus, we
-need to remove the erroneous values to smooth out the line. For more
-details see the next code chunk below.
+-   Next, we need to remove unusual stream height values from Oct 31 -
+    Nov 1, 2018. During this time period, the stream height values
+    oscillated rapidly, likely indicating human error in recording the
+    data. Thus, we need to remove the erroneous values to smooth out the
+    line. For more details see the next code chunk below.
 
 ```{r wy2018_altered}
 wy2018_altered <- wy2018_clean
@@ -268,6 +277,9 @@ wy2018_altered <- subset(wy2018_altered, !(wy2018_altered$date %between% as.Date
 #test the 2018 altered data - there should be fewer rows in the altered dataframe than the original/cleaned dataframe 
 if(nrow(wy2018_altered) == nrow(wy2018_clean)) stop("Check altered dataframe dimensions")
 ```
+
+-   A closer look at the wonky oscillating values and how the data looks
+    after the values are removed
 
 ```{r wy2018_altered_plot}
 #sample size 
@@ -388,8 +400,6 @@ p_subset_altered
 -   NA values are derived from notes recorded in .txt files found at the
     following Box filepath:
     `External-MEF_DATA/Hydro/Streamflow/L0_daily/StripCharts/DailyBreakpoint/2019/digitized/S2-19/`
--   Test the data
--   Plot the WY 2019 data
 
 ```{r wy2019}
 #create file path to call the data from Box 
@@ -426,10 +436,16 @@ wy2019_clean$stream_height_ft[wy2019_clean$date %between% as.Date(c('2019-04-17'
 
 #assign September NA values 
 wy2019_clean$stream_height_ft[wy2019_clean$date %between% as.Date(c('2019-09-03', '2019-09-10'))] <- NA
+```
 
+-   Test the data
+
+```{r wy2019_test}
 #test the 2019 data 
 if(nrow(wy2019) != nrow(wy2019_clean)) stop("Check clean dataframe dimensions")
 ```
+
+-   Plot the WY 2019 data
 
 ```{r wy2019_plot}
 #sample size 
@@ -481,8 +497,6 @@ ggplotly(p_2019, tooltip = "text") %>%
 -   NA values are derived from notes recorded in .txt files found at the
     following Box filepath:
     `External-MEF_DATA/Hydro/Streamflow/L0_daily/StripCharts/DailyBreakpoint/2020/digitized/S2-20/wy2020_s2_gaps.txt`
--   Test the data
--   Plot the WY 2020 data
 
 ```{r wy2020}
 #create file path to call the data from Box 
@@ -517,10 +531,16 @@ end_date <- as.POSIXct("8/11/2020 00:00:00",
 
 #assign February NA values 
 wy2020_clean$stream_height_ft[wy2020_clean$datetime %between% c(start_date, end_date)] <- NA
+```
 
+-   Test the data
+
+```{r wy2020_test}
 #test the 2020 data 
 if(nrow(wy2020) != nrow(wy2020_clean)) stop("Check clean dataframe dimensions")
 ```
+
+-   Plot the WY 2020 data
 
 ```{r wy2020_plot}
 #sample size
@@ -581,8 +601,6 @@ ggplotly(p_2020, tooltip = "text") %>%
 -   NA values are derived from notes recorded in .txt files found at the
     following Box filepath:
     `External-MEF_DATA/Hydro/Streamflow/L0_daily/StripCharts/DailyBreakpoint/2021/digitized/S2-21/wy2021_s2_gaps.txt`
--   Test the data
--   Plot the WY 2021 data
 
 ```{r wy2021}
 #create file path to call the data from Box 
@@ -627,10 +645,16 @@ wy2021_clean$stream_height_ft[wy2021_clean$datetime %between% c(date1, date2)] <
 
 #assign Nov-Dec NA values 
 wy2021_clean$stream_height_ft[wy2021_clean$datetime %between% c(date3, date4)] <- NA
+```
 
+-   Test the data
+
+```{r wy2021_test}
 #test the 2021 data 
 if(nrow(wy2021) != nrow(wy2021_clean)) stop("Check clean dataframe dimensions")
 ```
+
+-   Plot the WY 2021 data
 
 ```{r wy2021_plot}
 #sample size
@@ -668,6 +692,8 @@ ggplotly(p_2021, tooltip = "text") %>%
 
 # All Water Years (2017 - 2021)
 
+-   Combine each individual water year
+
 ```{r all_streamflow}
 #combine 2017 - 2021 data
 all_streamflow <- rbind(wy2017_clean, 
@@ -675,7 +701,11 @@ all_streamflow <- rbind(wy2017_clean,
                         wy2019_clean,
                         wy2020_clean,
                         wy2021_clean)
+```
 
+-   Plot
+
+```{r all_streamflow_plot}
 #sample size 
 n <- nrow(all_streamflow)
 
