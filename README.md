@@ -37,8 +37,10 @@ Each step of this workflow can be viewed online using GitHub pages:
 5. [Comparing Streamflow and Air Temperature](https://miaforsline.github.io/air_comparisons/)
 6. [Bogwell (Peatland Water Table Elevation) Data](https://miaforsline.github.io/bogwell/)
 
+This workflow uses GitHub pages linked to my personal GitHub website to host the output of each step in the workflow. Each .Rmd file in the `s2_streamflow` GitHub repo is knit into an individual GitHub repo. Each individual GitHub repo contains an `index.html` file that is then rendered into an online GitHub page. 
+
 ## File Structure 
-RMD files and HTML files are stored in the main directory. The `figures` sub-directory stores PNG images plots/visualizations created in the RMDs. The `intermediate_data` sub-directory stores processed CSV files of the raw data that are important for visualizations. 
+.Rmd files and HTML files are stored in the main directory. Each .Rmd file represents a step in the workflow and uses the following naming structure: `#_name.Rmd` 
 
 ## Data
 Data used in this project are proprietary to the USDA Forest Service and stored in a private, online Box server used by the Marcell Experimental Forest team. For data access, please contact Dr. Nina Lany. 
